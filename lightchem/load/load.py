@@ -34,13 +34,13 @@ class readData(object):
                 self.y_data = self.y_data.astype(np.float64)
 
         def features(self):
-            if np.isnan(self.X_data):
+            if not isinstance(self.X_data, np.ndarray):
                raise ValueError('You must call `read` before `read`')
             else:
                 return self.X_data
 
         def label(self):
-            if np.isnan(self.y_data):
+            if not isinstance(self.y_data, np.ndarray):
                raise ValueError('You must call `read` before `read`')
             else:
                 return self.y_data
