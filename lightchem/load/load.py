@@ -3,30 +3,44 @@ import numpy as np
 
 
 class readData(object):
-        '''Return training data as X_data, label data as y_data'''
+        '''
+        Class to load data 
+        '''
         def __init__(self,file_path,lable_name):
             self.file_path = file_path
             self.label_name = lable_name
+            self.X_data = np.nan
+            self.y_data = np.nan
         def read(self):
             data_pd = pd.read_csv(self.file_path)
-            y_data = data_pd[self.label_name]
-            y_data = y_data.astype(np.float64)
+            self.y_data = data_pd[self.label_name]
+            self.y_data = y_data.astype(np.float64)
 
             if 'fingerprint' in data_pd.columns:
-                X_data = []
+                self.X_data = []
                 for raw_fps in data_pd['fingerprint']:
-                    X_data.append(np.array(list(raw_fps)))
-                X_data = np.array(X_data)
+                    self.X_data.append(np.array(list(raw_fps)))
+                self.X_data = np.array(self.X_data)
 
-                X_data = X_data.astype(np.float64)
-                y_data = np.array(y_data)
-                y_data = y_data.astype(np.float64)
+                self.X_data = self.X_data.astype(np.float64)
+                self.y_data = np.array(self.y_data)
+                self.y_data = self.y_data.astype(np.float64)
             else: #havnt test below else code. just write a frame first
                 features_cols = [ col for col in data_pd.columns if 'Feature_' in col]
-                X_data = data_pd[features_cols]
-                X_data = np.array(X_Data)
-                X_data = X_data.astype(np.float64)
-                y_data = np.array(y_data)
-                y_data = y_data.astype(np.float64)
+                self.X_data = data_pd[features_cols]
+                self.X_data = np.array(self.X_Data)
+                self.X_data = self.X_data.astype(np.float64)
+                self.y_data = np.array(self.y_data)
+                self.y_data = self.y_data.astype(np.float64)
 
-            return X_data, y_data
+        def features(self):
+            if np.isnan(self.X_Data):
+               raise ValueError('You must call `read` before `read`')
+            else:
+                return self.X_data
+
+        def label(self):
+            if np.isnan(self.y_data):
+               raise ValueError('You must call `read` before `read`')
+            else:
+                return self.y_data
