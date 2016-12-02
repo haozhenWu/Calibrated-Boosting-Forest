@@ -14,7 +14,7 @@ class readData(object):
         def read(self):
             data_pd = pd.read_csv(self.file_path)
             self.y_data = data_pd[self.label_name]
-            self.y_data = y_data.astype(np.float64)
+            self.y_data = self.y_data.astype(np.float64)
 
             if 'fingerprint' in data_pd.columns:
                 self.X_data = []
