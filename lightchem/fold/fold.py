@@ -20,7 +20,7 @@ class fold(object):
         for train_index, test_index in skf.split(X, y):
             train_index_list.append(train_index)
             test_index_list.append(test_index)
-        folds = pd.DataFrame(np.zeros((num_row,num_fold)),index = range(num_row),columns=["fold" + str(i) for i in xrange(1,num_fold+1)])
+        folds = pd.DataFrame(np.zeros((self.num_row,self.num_fold)),index = range(self.num_row),columns=["fold" + str(i) for i in xrange(1,self.num_fold+1)])
         for i in range(folds.shape[1]):
             folds.iloc[test_index_list[i],i] = 1 # validation rows marked as 1. Last column used as final test data
         return folds
