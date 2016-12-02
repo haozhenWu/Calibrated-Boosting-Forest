@@ -5,7 +5,7 @@ import numpy as np
 
 class fold(object):
     def __init__(self,X_data,y_data,k):
-        self.numrow = X_data.shape[0]
+        self.num_row = X_data.shape[0]
         self.label = y_data
         self.num_fold = k
     # Generate kfold index according processed data's dimension and binary label.
