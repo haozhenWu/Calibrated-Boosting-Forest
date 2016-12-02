@@ -4,7 +4,7 @@ import numpy as np
 
 class readData(object):
         '''
-        Class to load data 
+        Class to load data
         '''
         def __init__(self,file_path,lable_name):
             self.file_path = file_path
@@ -34,7 +34,7 @@ class readData(object):
                 self.y_data = self.y_data.astype(np.float64)
 
         def features(self):
-            if np.isnan(self.X_Data):
+            if np.isnan(self.X_data):
                raise ValueError('You must call `read` before `read`')
             else:
                 return self.X_data
