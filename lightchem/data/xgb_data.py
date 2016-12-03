@@ -56,9 +56,9 @@ class xgbData(object):
             self.train_label = self.label
             self.collect_dtrain = []
             for i in range(self.num_train_fold):
-                dtrain = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.train_x[np.array(train_folds.iloc[:,i]==0)])),label=self.train_label[np.array(train_folds.iloc[:,i]==0)])
+                dtrain = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.train_x[np.array(self.folds.iloc[:,i]==0)])),label=self.train_label[np.array(self.folds.iloc[:,i]==0)])
                 #xgb.DMatrix.save_binary(dtrain,"./xgb_data/dtrain_" + str(TARGET_NAME) + "_" + str(feature_name_writeout) + "_" + str(label_name_writeout) + "_fold" + str(i) + "_v1.buffer")
-                dvalidate = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.train_x[np.array(train_folds.iloc[:,i]==1)])), label=self.train_label[np.array(train_folds.iloc[:,i]==1)])
+                dvalidate = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.train_x[np.array(self.folds.iloc[:,i]==1)])), label=self.train_label[np.array(self.folds.iloc[:,i]==1)])
                 #xgb.DMatrix.save_binary(dvalidate,"./xgb_data/dvalidate_" + str(TARGET_NAME) + "_" + str(feature_name_writeout) + "_" + str(label_name_writeout) + "_fold" + str(i) + "_v1.buffer")
                 self.collect_dtrain.append((dtrain,dvalidate))
 
@@ -66,13 +66,11 @@ class xgbData(object):
         return self.num_train_fold
 
     def get_dtrain(self,which_fold):
-        # todo add check, isinstance
         if not isinstance(self.collect_dtrain,list):
             raise ValueError('You must call `build` before `get_dtrain`')
         return self.collect_dtrain[which_fold]
 
     def get_dtest(self):
-        # todo add check, isinstance
         if not isinstance(self.collect_dtest,list):
             raise ValueError('You must call `build` before `get_dtest`')
         return self.collect_dtest[0]
