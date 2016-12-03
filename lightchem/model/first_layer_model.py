@@ -21,7 +21,7 @@ class firstLayerModel(object):
         self.eval_name = eval_name
         assert model_type in self.DEFINED_MODEL_TYPE
         self.model_type_writeout = model_type
-        self.collect_model = None
+        self.collect_model = []
         self.track_best_ntree = pd.DataFrame(columns = ['model_name','best_ntree'])
         self.best_score = list()
 
