@@ -117,7 +117,7 @@ class firstLayerModel(object):
                ind_model_result = pd.DataFrame({'model_name' : 'Part' + str(i),
                                                 'best_ntree' : bst.best_ntree_limit},
                                                 index = ['Part' + str(i)])
-               track_best_ntree = track_best_ntree.append(ind_model_result)
+               self.track_best_ntree = self.track_best_ntree.append(ind_model_result)
 
             elif param['booster'] == 'gblinear':
                 # model training
