@@ -1,3 +1,7 @@
+"""
+Create stratified Kfold 
+"""
+
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 import numpy as np

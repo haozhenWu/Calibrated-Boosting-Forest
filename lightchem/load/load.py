@@ -1,3 +1,7 @@
+"""
+Read data and transform to ndarray 
+"""
+
 import pandas as pd
 import numpy as np
 
