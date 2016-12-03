@@ -9,8 +9,8 @@ class readData(object):
         def __init__(self,file_path,lable_name):
             self.file_path = file_path
             self.label_name = lable_name
-            self.X_data = np.nan
-            self.y_data = np.nan
+            self.X_data = None
+            self.y_data = None
         def read(self):
             data_pd = pd.read_csv(self.file_path)
             self.y_data = data_pd[self.label_name]
@@ -35,12 +35,12 @@ class readData(object):
 
         def features(self):
             if not isinstance(self.X_data, np.ndarray):
-               raise ValueError('You must call `read` before `read`')
+               raise ValueError('You must call `read` before `features`')
             else:
                 return self.X_data
 
         def label(self):
             if not isinstance(self.y_data, np.ndarray):
-               raise ValueError('You must call `read` before `read`')
+               raise ValueError('You must call `read` before `label`')
             else:
                 return self.y_data
