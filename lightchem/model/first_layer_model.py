@@ -14,9 +14,9 @@ class firstLayerModel(object):
         self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression','GblinearLogistic','GblinearRegression']
         self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
         self.__xgbData = xgbData
-        assert eval_name in self.DEFINED_EVAL
+        assert eval_name in self.__DEFINED_EVAL
         self.__eval_name = eval_name
-        assert model_type in self.DEFINED_MODEL_TYPE
+        assert model_type in self.__DEFINED_MODEL_TYPE
         self.__model_type_writeout = model_type
         self.__collect_model = []
         self.__track_best_ntree = pd.DataFrame(columns = ['model_name','best_ntree'])
@@ -139,6 +139,38 @@ class firstLayerModel(object):
                 self.__collect_model.append(bst)
 
             self.__best_score.append(bst.best_score)
+
+    def generate_holdout_pred(TARGET_NAME, eval_name, model_type_writeout, feature_name_writeout, label_name_writeout):
+        # find number of folds User choosed
+        num_folds = find_num_folds(TARGET_NAME = TARGET_NAME)
+        folds = pd.read_csv("./folds_index/" + str(num_folds) + "folds_" + str(TARGET_NAME) + ".csv")
+        # determine number of folds
+        num_folds = folds.shape[1]
+        # use last folds,i.e.last column's valudate row as final test set.
+        train_row_index = np.where(folds.iloc[:,num_folds-1]!=1)[0]
+        train_folds = folds.iloc[train_row_index]
+        train_folds = train_folds.iloc[:,0:num_folds-1]
+        # load saved best ntree csv file
+        track_best_ntree = pd.read_csv("./xgb_param/All_models_best_ntree.csv")
+
+        holdout = np.zeros(train_folds.shape[0])
+
+        for i in range(train_folds.shape[1]):
+            model_name = "bst_layer1" + model_type_writeout + "_" + TARGET_NAME + "_" + str(feature_name_writeout) + "_" + str(label_name_writeout)+ "_Optimized" + eval_name + "_fold" + str(i) + "_v1.model"
+            bst = xgb.Booster({'nthread':-1})
+            bst.load_model("./xgb_model/" + model_name)
+            dvalidate = xgb.DMatrix("./xgb_data/dvalidate_" + TARGET_NAME + "_" + str(feature_name_writeout) + "_" + str(label_name_writeout) + "_fold" + str(i) + "_v1.buffer")
+            best_ntree = list(track_best_ntree.loc[track_best_ntree.model_name == model_name]['best_ntree'])[0]
+            if best_ntree == 'not_available': # not avilabel means this is gblinear type model and ntree_limit not availbe for bst.predict
+               temp = bst.predict(dvalidate)
+            else:
+               temp = bst.predict(dvalidate,ntree_limit = np.int64(np.float32(best_ntree)))
+
+            holdout[np.where(train_folds.iloc[:,i]==1)] = temp
+
+        holdout = pd.DataFrame(holdout,columns = ["FirstLayerHoldout_" + model_type_writeout + "_" + TARGET_NAME + "_" + str(feature_name_writeout) + "_" + str(label_name_writeout)+ "_Optimized" + eval_name + "_v1" ])
+        holdout.to_csv("./first_layer_holdout/" + "FirstLayerHoldout_" + model_type_writeout + "_" + TARGET_NAME + "_" + str(feature_name_writeout) + "_" + str(label_name_writeout)+ "_Optimized" + eval_name + "_v1.csv",index = False)
+
 
     def cv_score(self):
         print 'Evaluation metric: ' + self.__eval_name
