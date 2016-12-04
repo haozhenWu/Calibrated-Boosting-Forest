@@ -42,9 +42,9 @@ class xgbData(object):
             self.__collect_dtrain = []
             self.__collect_dtest = []
             for i in range(self.__num_train_fold):
-                dtrain = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.__train_x[np.array(train_folds.iloc[:,i]==0)])),label=self.train_label[np.array(train_folds.iloc[:,i]==0)])
+                dtrain = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.__train_x[np.array(train_folds.iloc[:,i]==0)])),label=self.__train_label[np.array(train_folds.iloc[:,i]==0)])
                 #xgb.DMatrix.save_binary(dtrain,"./xgb_data/dtrain_" + str(TARGET_NAME) + "_" + str(feature_name_writeout) + "_" + str(label_name_writeout) + "_fold" + str(i) + "_v1.buffer")
-                dvalidate = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.__train_x[np.array(train_folds.iloc[:,i]==1)])),label=self.train_label[np.array(train_folds.iloc[:,i]==1)])
+                dvalidate = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.__train_x[np.array(train_folds.iloc[:,i]==1)])),label=self.__train_label[np.array(train_folds.iloc[:,i]==1)])
                 #xgb.DMatrix.save_binary(dvalidate,"./xgb_data/dvalidate_" + str(TARGET_NAME) + "_" + str(feature_name_writeout) + "_" + str(label_name_writeout) + "_fold" + str(i) + "_v1.buffer")
                 self.__collect_dtrain.append((dtrain,dvalidate))
 
@@ -56,9 +56,9 @@ class xgbData(object):
             self.__train_label = self.__label
             self.__collect_dtrain = []
             for i in range(self.__num_train_fold):
-                dtrain = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.__train_x[np.array(self.__folds.iloc[:,i]==0)])),label=self.train_label[np.array(self.__folds.iloc[:,i]==0)])
+                dtrain = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.__train_x[np.array(self.__folds.iloc[:,i]==0)])),label=self.__train_label[np.array(self.__folds.iloc[:,i]==0)])
                 #xgb.DMatrix.save_binary(dtrain,"./xgb_data/dtrain_" + str(TARGET_NAME) + "_" + str(feature_name_writeout) + "_" + str(label_name_writeout) + "_fold" + str(i) + "_v1.buffer")
-                dvalidate = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.__train_x[np.array(self.__folds.iloc[:,i]==1)])), label=self.train_label[np.array(self.__folds.iloc[:,i]==1)])
+                dvalidate = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(self.__train_x[np.array(self.__folds.iloc[:,i]==1)])), label=self.__train_label[np.array(self.__folds.iloc[:,i]==1)])
                 #xgb.DMatrix.save_binary(dvalidate,"./xgb_data/dvalidate_" + str(TARGET_NAME) + "_" + str(feature_name_writeout) + "_" + str(label_name_writeout) + "_fold" + str(i) + "_v1.buffer")
                 self.__collect_dtrain.append((dtrain,dvalidate))
 
