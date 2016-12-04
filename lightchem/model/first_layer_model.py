@@ -106,8 +106,7 @@ class firstLayerModel(object):
                 if self.__param['objective'] == 'binary:logistic':
                     self.__param['scale_pos_weight'] = sum(dtrain.get_label()==0)/sum(dtrain.get_label()==1)
                # model training
-               bst = xgb.train(self.__param, dtrain, 1000 ,watchlist,
-                               feval = self.__eval_function,
+               bst = xgb.train(self.__param, dtrain, 1000 , watchlist, eval = self.__eval_function,
                                early_stopping_rounds = self.__STOPPING_ROUND,
                                maximize = self.__MAXIMIZE,
                                callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
@@ -124,8 +123,7 @@ class firstLayerModel(object):
 
             elif param['booster'] == 'gblinear':
                 # model training
-                bst = xgb.train(param, dtrain,300 ,watchlist,
-                                feval = self.__eval_function,
+                bst = xgb.train(param, dtrain,300 , watchlist, feval = self.__eval_function,
                                 early_stopping_rounds = self.__STOPPING_ROUND,
                                 maximize = self.__MAXIMIZE,
                                 callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
