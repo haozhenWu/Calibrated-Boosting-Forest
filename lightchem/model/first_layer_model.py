@@ -105,28 +105,28 @@ class firstLayerModel(object):
             if self.__param['booster'] == 'gbtree':
                 if self.__param['objective'] == 'binary:logistic':
                     self.__param['scale_pos_weight'] = sum(dtrain.get_label()==0)/sum(dtrain.get_label()==1)
+
                # model training
+                bst = xgb.train( self.__param, dtrain, 1000 , watchlist,
+                                 eval = self.__eval_function,
+                                 early_stopping_rounds = self.__STOPPING_ROUND,
+                                 maximize = self.__MAXIMIZE,
+                                 callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
 """
-               bst = xgb.train( self.__param, dtrain, 1000 , watchlist,
-                                eval = self.__eval_function,
-                                early_stopping_rounds = self.__STOPPING_ROUND,
-                                maximize = self.__MAXIMIZE,
-                                callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
-                                """
                bst = xgb.train( self.__param, dtrain, 1000 ,watchlist, feval = self.__eval_function,
                                 early_stopping_rounds = self.__STOPPING_ROUND,maximize = self.__MAXIMIZE,
                                 callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
-
-               # save model
-               self.__collect_model.append(bst)
-               # save best number of tree. Later when do prediction, use best ntree, not the last tree
-               # read previous cross validation result and append the target's result to it
-               #track_best_ntree = pd.read_csv("./xgb_param/All_models_best_ntree.csv")
-               # if the model name appered before, update its best ntree, o.w. add new model
-               ind_model_result = pd.DataFrame({'model_name' : 'Part' + str(i),
+"""
+                # save model
+                self.__collect_model.append(bst)
+                # save best number of tree. Later when do prediction, use best ntree, not the last tree
+                # read previous cross validation result and append the target's result to it
+                #track_best_ntree = pd.read_csv("./xgb_param/All_models_best_ntree.csv")
+                # if the model name appered before, update its best ntree, o.w. add new model
+                ind_model_result = pd.DataFrame({'model_name' : 'Part' + str(i),
                                                 'best_ntree' : bst.best_ntree_limit},
                                                 index = ['Part' + str(i)])
-               self.__track_best_ntree = self.__track_best_ntree.append(ind_model_result)
+                self.__track_best_ntree = self.__track_best_ntree.append(ind_model_result)
 
             elif param['booster'] == 'gblinear':
                 # model training
