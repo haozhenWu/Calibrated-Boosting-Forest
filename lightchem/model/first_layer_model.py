@@ -97,7 +97,7 @@ class firstLayerModel(object):
         for i in range(num_folds):
             # load xgb data for a specific target (TARGET_NAME) and 1 fold
             dtrain = self.xgbData.get_dtrain(i)[0]
-            dvalidate = self.xgbData.get_dtrain(i)[1]{}
+            dvalidate = self.xgbData.get_dtrain(i)[1]
             # prepare watchlist for model training
             watchlist  = [(dtrain,'train'),(dvalidate,'eval')]
 
