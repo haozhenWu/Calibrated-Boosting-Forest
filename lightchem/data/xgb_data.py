@@ -81,3 +81,8 @@ class xgbData(object):
         if not isinstance(self.__train_folds,pd.DataFrame):
             raise ValueError('You must call `build` before `get_train_fold`')
         return self.__train_folds
+
+    def get_holdoutLabel(self):
+        if not isinstance(self.__train_label,np.ndarray):
+            raise ValueError('You must call `build` before `get_holdoutLabel`')
+        return self.__train_label

@@ -18,7 +18,7 @@ class firstLayerModel(object):
         self.__eval_name = eval_name
         assert model_type in self.__DEFINED_MODEL_TYPE
         self.__model_type_writeout = model_type
-        self.__collect_model = []
+        self.__collect_model = None
         self.__track_best_ntree = pd.DataFrame(columns = ['model_name','best_ntree'])
         self.__best_score = list()
         self.__param = {}
@@ -27,15 +27,15 @@ class firstLayerModel(object):
         self.__STOPPING_ROUND = None
         self.__holdout = None
         self.__default_param()
-        
+
     def __default_param(self):
         match = {'ROCAUC' : [xgb_eval.evalrocauc,True,100],
                 'PRAUC' :   [xgb_eval.evalprauc,True,300],
                 'EFR1' : [xgb_eval.evalefr1,True,50],
                 'EFR015' : [xgb_eval.evalefr015,True,50]}
-        self.__eval_function = match[self.eval_name][0]
-        self.__MAXIMIZE = match[self.eval_name][1]
-        self.__STOPPING_ROUND = match[self.eval_name][2]
+        self.__eval_function = match[self.__eval_name][0]
+        self.__MAXIMIZE = match[self.__eval_name][1]
+        self.__STOPPING_ROUND = match[self.__eval_name][2]
 
         if self.__model_type_writeout == 'GbtreeLogistic':
             # define model parameter
@@ -95,11 +95,12 @@ class firstLayerModel(object):
         '''Self-define wrapper to perform xgb.cv, which can use pre-difined cv folds,not sklearn's kfolds. Train k seperate model each use k-1 of k folds data. Later when do prediction, use the mean of k models' predictions.'''
 
         # find number of folds User choosed
+        self.__collect_model = []
         num_folds = self.__xgbData.numberOfTrainFold()
         for i in range(num_folds):
             # load xgb data for a specific target (TARGET_NAME) and 1 fold
-            dtrain = self.xgbData.get_dtrain(i)[0]
-            dvalidate = self.xgbData.get_dtrain(i)[1]
+            dtrain = self.__xgbData.get_dtrain(i)[0]
+            dvalidate = self.__xgbData.get_dtrain(i)[1]
             # prepare watchlist for model training
             watchlist  = [(dtrain,'train'),(dvalidate,'eval')]
 
@@ -110,7 +111,7 @@ class firstLayerModel(object):
 
                # model training
                 bst = xgb.train( self.__param, dtrain, 1000 , watchlist,
-                                 eval = self.__eval_function,
+                                 feval = self.__eval_function,
                                  early_stopping_rounds = self.__STOPPING_ROUND,
                                  maximize = self.__MAXIMIZE,
                                  callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
@@ -127,7 +128,8 @@ class firstLayerModel(object):
 
             elif param['booster'] == 'gblinear':
                 # model training
-                bst = xgb.train(param, dtrain,300 , watchlist, feval = self.__eval_function,
+                bst = xgb.train(param, dtrain,300 , watchlist,
+                                feval = self.__eval_function,
                                 early_stopping_rounds = self.__STOPPING_ROUND,
                                 maximize = self.__MAXIMIZE,
                                 callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
@@ -142,20 +144,21 @@ class firstLayerModel(object):
 
             self.__best_score.append(bst.best_score)
 
-    def generate_holdout_pred(TARGET_NAME, eval_name, model_type_writeout, feature_name_writeout, label_name_writeout):
+    def generate_holdout_pred(self):
+        if not isinstance(self.__collect_model,list):
+            raise ValueError('You must call `xgb_cv` before `generate_holdout_pred`')
+
         # find number of folds User choosed
         num_folds = self.__xgbData.numberOfTrainFold()
         train_folds = self.__xgbData.get_train_fold()
-        # load saved best ntree csv file
-        track_best_ntree = pd.read_csv("./xgb_param/All_models_best_ntree.csv")
 
         self.__holdout = np.zeros(train_folds.shape[0])
 
         for i in range(num_folds):
             bst = self.__collect_model[i]
-            dvalidate = self.xgbData.get_dtrain(i)[1]
+            dvalidate = self.__xgbData.get_dtrain(i)[1]
             if self.__param['booster'] == 'gbtree':
-                best_ntree = self.__track_best_ntree['Part' + str(i)]
+                best_ntree = self.__track_best_ntree.loc['Part' + str(i),'best_ntree']
                 temp = bst.predict(dvalidate,ntree_limit = np.int64(np.float32(best_ntree)))
             else:
                 temp = bst.predict(dvalidate)
@@ -164,7 +167,10 @@ class firstLayerModel(object):
     def get_holdout(self):
         if not isinstance(self.__holdout,np.ndarray):
             raise ValueError('You must call `generate_holdout_pred` before `get_holdout`')
-        return self.__collect_dtest[0]
+        return self.__holdout
+
+    def get_holdoutLabel(self):
+        return self.__xgbData.get_holdoutLabel()
 
     def cv_score(self):
         print 'Evaluation metric: ' + self.__eval_name
