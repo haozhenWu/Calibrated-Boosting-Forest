@@ -15,19 +15,23 @@ import xgb_eval
 import first_layer_model
 import second_layer_model
 
+# binary label
 a = load.readData('/home/haozhen/Haozhen-data/pcba128_python/data/pcba128_mmtn_canon_ecfp1024.csv','pcba-aid995')
 a.read()
 X_data = a.features()
 y_data = a.label()
-
 myfold = fold.fold(X_data,y_data,4)
 myfold = myfold.generate_skfolds()
-
 data = xgb_data.xgbData(myfold,X_data,y_data)
 data.build()
 
-#data2 = xgb_data.xgbData(myfold,X_data,y_data,False)
-#data2.build()
+# continuous label
+b = load.readData('/home/haozhen/Haozhen-data/pcba128_python/data/pcba128_canon_ecfp1024_logac50.csv','aid995_logAC50')
+b.read()
+X_data_b = b.features()
+y_data_b = b.label()
+datab = xgb_data.xgbData(myfold,X_data_b,y_data_b)
+datab.build()
 
 model = first_layer_model.firstLayerModel(data,'ROCAUC','GbtreeLogistic')
 #model = firstLayerModel(data,'EFR1','GbtreeLogistic')
@@ -51,10 +55,24 @@ model4.generate_holdout_pred()
 
 
 list_l1model = [model,model2,model3,model4]
-l2model = second_layer_model.secondLayerModel(data,list_l1model,'ROCAUC','GbtreeLogistic')
-#l2model = secondLayerModel(data,list_l1model,'ROCAUC','GbtreeLogistic')
+#l2model = second_layer_model.secondLayerModel(data,list_l1model,'ROCAUC','GbtreeLogistic')
+l2model = secondLayerModel(data,list_l1model,'ROCAUC','GbtreeLogistic')
+
+l2model.second_layer_data()
 l2model.xgb_cv()
 
+l2model2 = secondLayerModel(data,list_l1model,'ROCAUC','GblinearLogistic')
+l2model2.second_layer_data()
+l2model2.xgb_cv()
+
+
+model.cv_score()
+model2.cv_score()
+model3.cv_score()
+model4.cv_score()
+
+l2model.cv_score()
+l2model2.cv_score()
 
 """
 Evaluation metric: ROCAUC
@@ -107,3 +125,19 @@ class temp(object):
 
     def get_m(self):
         print value
+
+
+
+
+holdout_list = list()
+for model in l2model._secondLayerModel__list_firstLayerModel:
+    holdout_list.append(model.get_holdout())
+holdout_df = pd.DataFrame(holdout_list).transpose()
+# sort the column so that column index is always the same
+#holdout_df = holdout_df[np.sort(holdout_df.columns)]
+label = l2model._secondLayerModel__xgbData.get_holdoutLabel()
+l2model._secondLayerModel__xgbData = xgb_data.xgbData(l2model._secondLayerModel__xgbData.get_train_fold(),
+                                  np.array(holdout_df),
+                                  np.array(label),
+                                  False)
+l2model._secondLayerModel__xgbData.build()

@@ -110,7 +110,7 @@ class secondLayerModel(object):
         # sort the column so that column index is always the same
         #holdout_df = holdout_df[np.sort(holdout_df.columns)]
         label = self.__xgbData.get_holdoutLabel()
-        self.__xgbData = xgb_data.xgbData(self.__xgbData.get_train_fold,
+        self.__xgbData = xgb_data.xgbData(self.__xgbData.get_train_fold(),
                                           np.array(holdout_df),
                                           np.array(label),
                                           False)

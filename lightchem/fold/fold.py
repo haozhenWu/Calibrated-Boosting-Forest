@@ -1,5 +1,5 @@
 """
-Create stratified Kfold
+Create cross validation fold
 """
 
 import pandas as pd
@@ -8,14 +8,28 @@ import numpy as np
 
 
 class fold(object):
+    """
+    Lightchem's fold object
+    """
     def __init__(self,X_data,y_data,k):
+        """Fold object
+        Parameters:
+        -----------
+        X_data: numpy.ndarray
+          Training features
+        y_data: numpy.ndarray
+          Label(Response variable)
+        """
         self.__num_row = X_data.shape[0]
         self.__label = y_data
         self.__num_fold = k
     # Generate kfold index according processed data's dimension and binary label.
     def generate_skfolds(self):
-        '''Return k-fold index in DataFrame format. Each column is one fold, where 1 stands for
-            test row, 0 stands for training row. '''
+        '''
+        Return k-fold index in DataFrame format. Each column is one
+        fold, where value = 1 stands for test row,
+        0 stands for training row.
+        '''
         X = range(self.__num_row)
         y = pd.Series(self.__label)
         skf = StratifiedKFold(n_splits=self.__num_fold,shuffle = True)
@@ -28,5 +42,5 @@ class fold(object):
                              index = range(self.__num_row),
                              columns=["fold" + str(i) for i in xrange(1,self.__num_fold+1)])
         for i in range(folds.shape[1]):
-            folds.iloc[test_index_list[i],i] = 1 # validation rows marked as 1. Last column used as final test data
+            folds.iloc[test_index_list[i],i] = 1 
         return folds
