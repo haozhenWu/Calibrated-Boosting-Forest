@@ -8,12 +8,25 @@ from sklearn.model_selection import StratifiedKFold
 import glob
 import re
 import xgb_eval
+import xgb_data
 
-class firstLayerModel(object):
-    def __init__(self,xgbData,eval_name,model_type):
+class secondLayerModel(object):
+    """
+    Use holdout(out of fold) predictions from several firstLayerModels as
+    training features to train a secondLayerModel.(So called stacking model)
+    """
+    def __init__(self,xgbData,list_firstLayerModel,eval_name,model_type):
+        """
+        xgbData: object
+         contains the label you want to use in second layer model.
+        list_firstLayerModel: list
+         list contains firstLayerModel.
+        """
         self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression','GblinearLogistic','GblinearRegression']
         self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
         self.__xgbData = xgbData
+        assert all([isinstance(item,first_layer_model.firstLayerModel) for item in list_firstLayerModel])
+        self.__list_firstLayerModel = list_firstLayerModel
         assert eval_name in self.__DEFINED_EVAL
         self.__eval_name = eval_name
         assert model_type in self.__DEFINED_MODEL_TYPE
@@ -87,6 +100,20 @@ class firstLayerModel(object):
                      'silent':1,
                      'seed' : 2016
                      }
+
+    def second_layer_data(self):
+        holdout_list = list()
+        for model in self.__list_firstLayerModel:
+            holdout_list.append(model.get_holdoutLabel())
+        holdout_df = pd.DataFrame(holdout_list).transpose()
+        # sort the column so that column index is always the same
+        #holdout_df = holdout_df[np.sort(holdout_df.columns)]
+        label = self.__xgbData.get_holdoutLabel()
+        self.__xgbData = xgb_data.xgbData(self.__xgbData.get_train_fold,
+                                          np.ndarray(holdout_df),
+                                          np.ndarray(label),
+                                          False)
+        self.__xgbData.build()                                
 
 
 
