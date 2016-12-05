@@ -105,14 +105,14 @@ class secondLayerModel(object):
     def second_layer_data(self):
         holdout_list = list()
         for model in self.__list_firstLayerModel:
-            holdout_list.append(model.get_holdoutLabel())
+            holdout_list.append(model.get_holdout())
         holdout_df = pd.DataFrame(holdout_list).transpose()
         # sort the column so that column index is always the same
         #holdout_df = holdout_df[np.sort(holdout_df.columns)]
         label = self.__xgbData.get_holdoutLabel()
         self.__xgbData = xgb_data.xgbData(self.__xgbData.get_train_fold,
-                                          np.ndarray(holdout_df),
-                                          np.ndarray(label),
+                                          np.array(holdout_df),
+                                          np.array(label),
                                           False)
         self.__xgbData.build()
 
