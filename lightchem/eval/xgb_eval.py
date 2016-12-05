@@ -1,3 +1,8 @@
+"""
+Contain self-define evalutaion methods that used for monitor xgboost
+training process.
+"""
+
 from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
 import numpy as np
@@ -5,25 +10,31 @@ import numpy as np
 
 # custom eval metrics that can pass into xgboost
 def evalrocauc(preds, dtrain):
-    '''Return ROC AUC score '''
+    '''
+    Return ROC AUC score
+    '''
     labels = dtrain.get_label()
     if len(np.unique(labels)) > 2: # which means it is continuous label. PCBA shreshold 40
         labels[np.where(dtrain.get_label()>40)] = 1
         labels[np.where(dtrain.get_label()<=40)] = 0
-
     # use sklearn.metrics to compute rocauc
     return 'ROCAUC', metrics.roc_auc_score( labels, preds )
+
 def evalprauc(preds, dtrain):
-    '''Return Precision Recall AUC score'''
+    '''
+    Return Precision Recall AUC score
+    '''
     labels = dtrain.get_label()
     if len(np.unique(labels)) > 2: # which means it is continuous label
         labels[np.where(dtrain.get_label()>40)] = 1
         labels[np.where(dtrain.get_label()<=40)] = 0
-
     # use sklearn.metrics to compute prauc
     return 'PRAUC', metrics.average_precision_score( labels, preds )
+
 def evalefr1(preds, dtrain):
-    '''Return enrichment factor at 0.01 '''
+    '''
+    Return enrichment factor at 0.01
+    '''
     labels = dtrain.get_label()
     if len(np.unique(labels)) > 2: # which means it is continuous label
         labels[np.where(dtrain.get_label()>40)] = 1
@@ -42,8 +53,11 @@ def evalefr1(preds, dtrain):
     else:
         ef = -1
     return 'EFR1', ef
+
 def evalefr015(preds, dtrain):
-    '''Return enrichment factor at 0.0015'''
+    '''
+    Return enrichment factor at 0.0015
+    '''
     labels = dtrain.get_label()
     if len(np.unique(labels)) > 2: # which means it is continuous label
         labels[np.where(dtrain.get_label()>40)] = 1

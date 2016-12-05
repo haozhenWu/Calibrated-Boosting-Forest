@@ -15,8 +15,9 @@ import xgb_eval
 import first_layer_model
 import second_layer_model
 
+# 14:12 start.
 # binary label
-a = load.readData('/home/haozhen/Haozhen-data/pcba128_python/data/pcba128_mmtn_canon_ecfp1024.csv','pcba-aid995')
+a = load.readData('/home/haozhen/Haozhen-data/pcba128_python/data/pcba128_mmtn_canon_ecfp1024.csv','pcba-aid411')
 a.read()
 X_data = a.features()
 y_data = a.label()
@@ -26,53 +27,79 @@ data = xgb_data.xgbData(myfold,X_data,y_data)
 data.build()
 
 # continuous label
-b = load.readData('/home/haozhen/Haozhen-data/pcba128_python/data/pcba128_canon_ecfp1024_logac50.csv','aid995_logAC50')
+b = load.readData('/home/haozhen/Haozhen-data/pcba128_python/data/pcba128_canon_ecfp1024_logac50.csv','aid411_logAC50')
 b.read()
 X_data_b = b.features()
 y_data_b = b.label()
 datab = xgb_data.xgbData(myfold,X_data_b,y_data_b)
 datab.build()
 
+# model based on binary data
 model = first_layer_model.firstLayerModel(data,'ROCAUC','GbtreeLogistic')
-#model = firstLayerModel(data,'EFR1','GbtreeLogistic')
 model.xgb_cv()
 model.generate_holdout_pred()
 
 model2 = first_layer_model.firstLayerModel(data,'EFR1','GbtreeLogistic')
-#model = firstLayerModel(data,'EFR1','GbtreeLogistic')
 model2.xgb_cv()
 model2.generate_holdout_pred()
 
 model3 = first_layer_model.firstLayerModel(data,'ROCAUC','GblinearLogistic')
-#model = firstLayerModel(data,'EFR1','GbtreeLogistic')
 model3.xgb_cv()
 model3.generate_holdout_pred()
 
 model4 = first_layer_model.firstLayerModel(data,'EFR1','GblinearLogistic')
-#model = firstLayerModel(data,'EFR1','GbtreeLogistic')
 model4.xgb_cv()
 model4.generate_holdout_pred()
 
+# model based on continuous data
+modelb = first_layer_model.firstLayerModel(datab,'ROCAUC','GbtreeRegression')
+modelb.xgb_cv()
+modelb.generate_holdout_pred()
 
-list_l1model = [model,model2,model3,model4]
-#l2model = second_layer_model.secondLayerModel(data,list_l1model,'ROCAUC','GbtreeLogistic')
-l2model = secondLayerModel(data,list_l1model,'ROCAUC','GbtreeLogistic')
+model2b = first_layer_model.firstLayerModel(datab,'EFR1','GbtreeRegression')
+model2b.xgb_cv()
+model2b.generate_holdout_pred()
 
+model3b = first_layer_model.firstLayerModel(datab,'ROCAUC','GblinearRegression')
+model3b.xgb_cv()
+model3b.generate_holdout_pred()
+
+model4b = first_layer_model.firstLayerModel(datab,'EFR1','GblinearRegression')
+model4b.xgb_cv()
+model4b.generate_holdout_pred()
+
+# use label from binary data to train layer2 models
+list_l1model = [model,model2,model3,model4,modelb,model2b,model3b,model4b]
+# ROCAUC
+l2model = second_layer_model.secondLayerModel(data,list_l1model,'ROCAUC','GbtreeLogistic')
 l2model.second_layer_data()
 l2model.xgb_cv()
 
-l2model2 = secondLayerModel(data,list_l1model,'ROCAUC','GblinearLogistic')
+l2model2 = second_layer_model.secondLayerModel(data,list_l1model,'ROCAUC','GblinearLogistic')
 l2model2.second_layer_data()
 l2model2.xgb_cv()
+# EFR1
+l2model3 = second_layer_model.secondLayerModel(data,list_l1model,'EFR1','GbtreeLogistic')
+l2model3.second_layer_data()
+l2model3.xgb_cv()
 
+l2model4 = second_layer_model.secondLayerModel(data,list_l1model,'EFR1','GblinearLogistic')
+l2model4.second_layer_data()
+l2model4.xgb_cv()
 
 model.cv_score()
-model2.cv_score()
 model3.cv_score()
-model4.cv_score()
-
+modelb.cv_score()
+model3b.cv_score()
 l2model.cv_score()
 l2model2.cv_score()
+
+model2.cv_score()
+model4.cv_score()
+model2b.cv_score()
+model4b.cv_score()
+l2model3.cv_score()
+l2model4.cv_score()
 
 """
 Evaluation metric: ROCAUC
