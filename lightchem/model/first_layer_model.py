@@ -125,16 +125,16 @@ class firstLayerModel(object):
                                                  index = ['Part' + str(i)])
                 self.__track_best_ntree = self.__track_best_ntree.append(ind_model_result)
 
-            elif param['booster'] == 'gblinear':
+            elif self.__param['booster'] == 'gblinear':
                 # model training
-                bst = xgb.train(param, dtrain,300 , watchlist,
+                bst = xgb.train(self.__param, dtrain,300 , watchlist,
                                 feval = self.__eval_function,
                                 early_stopping_rounds = self.__STOPPING_ROUND,
                                 maximize = self.__MAXIMIZE,
                                 callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
                 # retrain model using best ntree
                 temp_best_ntree = bst.best_ntree_limit
-                bst = xgb.train(param, dtrain,temp_best_ntree, watchlist,
+                bst = xgb.train(self.__param, dtrain,temp_best_ntree, watchlist,
                                 feval = self.__eval_function,
                                 early_stopping_rounds = self.__STOPPING_ROUND,
                                 maximize = self.__MAXIMIZE,
