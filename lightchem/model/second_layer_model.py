@@ -203,6 +203,49 @@ class secondLayerModel(object):
                 temp = bst.predict(dvalidate)
             self.__holdout[np.where(train_folds.iloc[:,i]==1)] = temp
 
+    def predict(self,list_test_x):
+        """
+        Method to predict new data.
+        Parameters:
+        -----------
+        list_test_x: xgboost.DMatrix/pandas.DataFrame
+          List containing new test data for each firstLayerModel that passed into
+          secondLayerModel. NOTE: Must make sure the order of new testset of
+          each model in the list must be the SAME as the order of first layer
+          models that pass into secondLayerModel
+        """
+        if not isinstance(self.__collect_model,list):
+            raise ValueError('You must call `xgb_cv` before `predict`')
+        # Convert test data into xgboost.DMatrix format
+        for j,item in enumerate(list_test_x):
+            if not isinstance(item,xgb.DMatrix):
+                list_test_x[j] = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(item)))
+            else:
+                list_test_x[j] = item
+        # Generate firstLayerModel predictions using new test dataset.
+        test_x = []
+        for j,model in enumerate(self.__list_firstLayerModel):
+            test_x.append(model.predict(list_test_x[j]))
+        test_x = pd.DataFrame(test_x).transpose()
+        test_x = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(test_x)))
+
+        # find number of folds User choosed
+        num_folds = self.__xgbData.numberOfTrainFold()
+        predictions = []
+        for i in range(num_folds):
+            # Find model trained on ith cv iteration and its validation set.
+            bst = self.__collect_model[i]
+            if self.__param['booster'] == 'gbtree':
+                # Retrive saved best number of tree.
+                best_ntree = self.__track_best_ntree.loc['Part' + str(i),'best_ntree']
+                temp = bst.predict(test_x,ntree_limit = np.int64(np.float32(best_ntree)))
+            else:
+                temp = bst.predict(test_x)
+            predictions.append(temp)
+        pred_df = pd.DataFrame(predictions)
+        pred_mean = pred_df.mean()
+        return pred_mean
+
     def get_holdout(self):
         """
         Return generated holdout(out of fold) prediction.

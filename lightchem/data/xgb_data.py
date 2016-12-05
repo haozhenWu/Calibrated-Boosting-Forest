@@ -114,6 +114,14 @@ class xgbData(object):
             raise ValueError('You must call `build` before `get_dtest`')
         return self.__collect_dtest[0]
 
+    def get_testLabel(self):
+        """
+        Return an array containing testing label.
+        """
+        if not isinstance(self.__collect_dtest,list):
+            raise ValueError('You must call `build` before `get_testLabel`')
+        return self.__test_label
+
     def get_train_fold(self):
         """
         Return a DataFrame containig training folds.

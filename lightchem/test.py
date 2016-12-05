@@ -15,7 +15,7 @@ import xgb_eval
 import first_layer_model
 import second_layer_model
 
-# 14:12 start.
+# 14:12 start- 15:05. 53mins. Time might influenced by Spencer's job. 2 threads maybe.
 # binary label
 a = load.readData('/home/haozhen/Haozhen-data/pcba128_python/data/pcba128_mmtn_canon_ecfp1024.csv','pcba-aid411')
 a.read()
@@ -93,7 +93,37 @@ modelb.cv_score()
 model3b.cv_score()
 l2model.cv_score()
 l2model2.cv_score()
+"""
+In [179]: model.cv_score()
+Evaluation metric: ROCAUC
+CV result mean: 0.902723
+CV result std: 0.00144810381764
 
+In [180]: model3.cv_score()
+Evaluation metric: ROCAUC
+CV result mean: 0.878986333333
+CV result std: 0.00270194551306
+
+In [181]: modelb.cv_score()
+Evaluation metric: ROCAUC
+CV result mean: 0.871077666667
+CV result std: 0.0087030881237
+
+In [182]: model3b.cv_score()
+Evaluation metric: ROCAUC
+CV result mean: 0.869077
+CV result std: 0.00243051489744
+
+In [183]: l2model.cv_score()
+Evaluation metric: ROCAUC
+CV result mean: 0.902115333333
+CV result std: 0.00295798471185
+
+In [184]: l2model2.cv_score()
+Evaluation metric: ROCAUC
+CV result mean: 0.903146333333
+CV result std: 0.00165515846841
+"""
 model2.cv_score()
 model4.cv_score()
 model2b.cv_score()
@@ -102,9 +132,35 @@ l2model3.cv_score()
 l2model4.cv_score()
 
 """
-Evaluation metric: ROCAUC
-CV result mean: 0.805586333333
-CV result std: 0.00597256044107
+In [173]: model2.cv_score()
+Evaluation metric: EFR1
+CV result mean: 27.3657286667
+CV result std: 0.552492711347
+
+In [174]: model4.cv_score()
+Evaluation metric: EFR1
+CV result mean: 23.785166
+CV result std: 1.99204101406
+
+In [175]: model2b.cv_score()
+Evaluation metric: EFR1
+CV result mean: 29.6578756667
+CV result std: 1.68795663542
+
+In [176]: model4b.cv_score()
+Evaluation metric: EFR1
+CV result mean: 22.5007643333
+CV result std: 0.59566238563
+
+In [177]: l2model3.cv_score()
+Evaluation metric: EFR1
+CV result mean: 32.4808183333
+CV result std: 2.18017249638
+
+In [178]: l2model4.cv_score()
+Evaluation metric: EFR1
+CV result mean: 31.9693096667
+CV result std: 4.19208533058
 """
 
 #metrics.roc_auc_score( model.get_holdoutLabel(), model.get_holdout())

@@ -201,6 +201,38 @@ class firstLayerModel(object):
                 temp = bst.predict(dvalidate)
             self.__holdout[np.where(train_folds.iloc[:,i]==1)] = temp
 
+    def predict(self,test_x):
+        """
+        Method to predict new data.
+        Parameters:
+        -----------
+        test_x: xgboost.DMatrix/pandas.DataFrame
+          New test data
+        """
+        if not isinstance(self.__collect_model,list):
+            raise ValueError('You must call `xgb_cv` before `predict`')
+        # Convert test data into xgboost.DMatrix format
+        if not isinstance(test_x,xgb.DMatrix):
+            test_x = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(test_x)))
+        else:
+            test_x = test_x
+        # find number of folds User choosed
+        num_folds = self.__xgbData.numberOfTrainFold()
+        predictions = []
+        for i in range(num_folds):
+            # Find model trained on ith cv iteration and its validation set.
+            bst = self.__collect_model[i]
+            if self.__param['booster'] == 'gbtree':
+                # Retrive saved best number of tree.
+                best_ntree = self.__track_best_ntree.loc['Part' + str(i),'best_ntree']
+                temp = bst.predict(test_x,ntree_limit = np.int64(np.float32(best_ntree)))
+            else:
+                temp = bst.predict(test_x)
+            predictions.append(temp)
+        pred_df = pd.DataFrame(predictions)
+        pred_mean = pred_df.mean()
+        return pred_mean
+
     def get_holdout(self):
         """
         Return generated holdout(out of fold) prediction.
