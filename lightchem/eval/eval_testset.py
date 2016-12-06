@@ -3,10 +3,11 @@ Helper method to evaluate test dataset.
 """
 import compute_eval
 import pandas as pd
+import numpy as np
 
 def eval_testset(model,list_data,label,eval_name):
     """
-    Method to evaluate test dataset.
+    Method to evaluate test dataset. Return a pd.DataFrame
     Parameters:
     -----------
     model: object
@@ -18,11 +19,6 @@ def eval_testset(model,list_data,label,eval_name):
     eval_name: str
       Name of evaluation metric
     """
-        match = {'ROCAUC' : [xgb_eval.evalrocauc,True,100],
-                'PRAUC' :   [xgb_eval.evalprauc,True,300],
-                'EFR1' : [xgb_eval.evalefr1,True,50],
-                'EFR015' : [xgb_eval.evalefr015,True,50]}
-
     if isinstance(model,first_layer_model.firstLayerModel):
         pred = [model.predict(list_data)]
         name = [model.name]
@@ -46,4 +42,4 @@ def eval_testset(model,list_data,label,eval_name):
         elif eval_name == 'EFR015':
             result.append(compute_eval.enrichment_factor(label,pred[i],0.0015))
 
-    pd.DataFrame({eval_name : result}, index = [name])
+    return pd.DataFrame({eval_name : result}, index = [name])
