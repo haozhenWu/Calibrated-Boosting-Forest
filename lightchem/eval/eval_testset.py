@@ -27,19 +27,23 @@ def eval_testset(model,list_data,label,eval_name):
         pred = [model.predict(list_data)]
         name = [model.name]
 
-
     elif isinstance(model,second_layer_model.secondLayerModel):
-        pred = 
+        pred = [model.predict(list_data)]
+        name = [model.name]
+        firstLayerModel_predictions = model.get_firstLayerModel_predictions()
+        for i in range(firstLayerModel_predictions.shape[1]):
+            pred.append(np.array(firstLayerModel_predictions.iloc[:,i]))
+            name.append(firstLayerModel_predictions.columns[i])
 
-
-
+    result = []
+    for i in range(len(pred)):
         if eval_name == 'ROCAUC':
-            result = xgb_eval.compute_roc_auc(label,pred)
+            result.append(compute_eval.compute_roc_auc(label,pred[i]))
         elif eval_name == 'PRAUC':
-            result = xgb_eval.compute_PR_auc(label,pred)
+            result.append(compute_eval.compute_PR_auc(label,pred[i]))
         elif eval_name == 'EFR1':
-            result = xgb_eval.enrichment_factor(label,pred,0.01)
+            result.append(compute_eval.enrichment_factor(label,pred[i],0.01))
         elif eval_name == 'EFR015':
-            result = xgb_Eval.enrichment_factor(label,pred,0.0015)
+            result.append(compute_eval.enrichment_factor(label,pred[i],0.0015))
 
-        pd.DataFrame({eval_name : pred}, index = [model.name])
+    pd.DataFrame({eval_name : result}, index = [name])

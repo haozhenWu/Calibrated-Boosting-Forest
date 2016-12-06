@@ -49,7 +49,7 @@ class secondLayerModel(object):
         model_name: str
           Unique name for this model.
         """
-        self.model_name = model_name
+        self.name = model_name
         self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression','GblinearLogistic','GblinearRegression']
         self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
         self.__xgbData = xgbData
@@ -228,7 +228,7 @@ class secondLayerModel(object):
 
     def predict(self,list_test_x):
         """
-        Method to predict new data.
+        Method to predict new data. Return an a np.ndarray containing prediction
         Parameters:
         -----------
         list_test_x: list, storing xgboost.DMatrix/pandas.DataFrame
@@ -248,7 +248,7 @@ class secondLayerModel(object):
         # Generate firstLayerModel predictions using new test dataset.
         test_x = []
         for j,model in enumerate(self.__list_firstLayerModel):
-            test_x.append(model.predict(list_test_x[j]))
+            test_x.append(model.predict([list_test_x[j]]))
         test_x = pd.DataFrame(test_x).transpose()
         firstLayerModel_names = [model.name for model in self.__list_firstLayerModel]
         self.__firstLayerModel_prediction = test_x
@@ -269,7 +269,7 @@ class secondLayerModel(object):
                 temp = bst.predict(test_x)
             predictions.append(temp)
         pred_df = pd.DataFrame(predictions)
-        pred_mean = pred_df.mean()
+        pred_mean = np.array(pred_df.mean())
         return pred_mean
 
     def get_holdout(self):
@@ -316,3 +316,5 @@ class secondLayerModel(object):
         """
         if not isinstance(self.__firstLayerModel_prediction,pd.DataFrame):
             raise ValueError('You must call `predict` before `get_firstLayerModel_predictions`')
+        return self.__firstLayerModel_prediction
+        

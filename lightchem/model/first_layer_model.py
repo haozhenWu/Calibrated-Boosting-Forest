@@ -206,7 +206,7 @@ class firstLayerModel(object):
 
     def predict(self,list_test_x):
         """
-        Method to predict new data.
+        Method to predict new data. Return a np.ndarry containig prediction.
         Parameters:
         -----------
         test_x: list, storing xgboost.DMatrix/pandas.DataFrame
@@ -237,7 +237,7 @@ class firstLayerModel(object):
                 temp = bst.predict(test_x)
             predictions.append(temp)
         pred_df = pd.DataFrame(predictions)
-        pred_mean = pred_df.mean()
+        pred_mean = np.array(pred_df.mean())
         return pred_mean
 
     def get_holdout(self):
