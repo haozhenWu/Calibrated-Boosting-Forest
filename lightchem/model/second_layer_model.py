@@ -18,7 +18,7 @@ class secondLayerModel(object):
     """
     second layer model object.
     """
-    def __init__(self,xgbData,list_firstLayerModel,eval_name,model_type):
+    def __init__(self,xgbData,list_firstLayerModel,eval_name,model_type,model_name):
         """Use holdout(out of fold) predictions from several firstLayerModels as
         training features to train a secondLayerModel.(So called stacking model)
         Parameters:
@@ -27,7 +27,29 @@ class secondLayerModel(object):
          contains the label you want to use in second layer model.
         list_firstLayerModel: list
          list contains firstLayerModel.
+        eval_name: str
+          Name of evaluation metric used to monitor training process. Must in
+          pre-difined evaluation list.
+          Currently supports:
+          `ROCAUC`: Area under curve of ROC
+          `PRAUC`: Area under curve of Precision-recall
+          `EFR1`: Enrichment factor at 0.01
+          `EFR015`: Enrichment factor at 0.0015
+        model_type: str
+          Name of model type you want to use.
+          Currently supports:
+          `GbtreeLogistic`: xgboost's gradient boosting tree for logistic
+                                regression.
+          `GbtreeRegression`: xgboost's gradient boosting tree for linear
+                                regression.
+          `GblinearLogistic`: xgboost's gradient boosting linear for logistic
+                                regression.
+          `GblinearRegression`: xgboost's gradient boosting linear for linear
+                                regression.
+        model_name: str
+          Unique name for this model.
         """
+        self.model_name = model_name
         self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression','GblinearLogistic','GblinearRegression']
         self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
         self.__xgbData = xgbData
@@ -40,6 +62,7 @@ class secondLayerModel(object):
         self.__collect_model = None
         self.__track_best_ntree = pd.DataFrame(columns = ['model_name','best_ntree'])
         self.__best_score = list()
+        self.__firstLayerModel_prediction = None
         self.__param = {}
         self.__eval_function = None
         self.__MAXIMIZE = None
@@ -208,7 +231,7 @@ class secondLayerModel(object):
         Method to predict new data.
         Parameters:
         -----------
-        list_test_x: xgboost.DMatrix/pandas.DataFrame
+        list_test_x: list, storing xgboost.DMatrix/pandas.DataFrame
           List containing new test data for each firstLayerModel that passed into
           secondLayerModel. NOTE: Must make sure the order of new testset of
           each model in the list must be the SAME as the order of first layer
@@ -227,6 +250,9 @@ class secondLayerModel(object):
         for j,model in enumerate(self.__list_firstLayerModel):
             test_x.append(model.predict(list_test_x[j]))
         test_x = pd.DataFrame(test_x).transpose()
+        firstLayerModel_names = [model.name for model in self.__list_firstLayerModel]
+        self.__firstLayerModel_prediction = test_x
+        self.__firstLayerModel_prediction.columns = firstLayerModel_names
         test_x = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(test_x)))
 
         # find number of folds User choosed
@@ -283,3 +309,10 @@ class secondLayerModel(object):
         self.__param = new_param
         self.__MAXIMIZE = maximize
         self.__STOPPING_ROUND = stopping_round
+
+    def get_firstLayerModel_predictions(self):
+        """
+        Return firstLayerModel_predictions as a pd.DataFrame
+        """
+        if not isinstance(self.__firstLayerModel_prediction,pd.DataFrame):
+            raise ValueError('You must call `predict` before `get_firstLayerModel_predictions`')

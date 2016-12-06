@@ -16,7 +16,7 @@ class firstLayerModel(object):
     """
     first layer model object.
     """
-    def __init__(self,xgbData,eval_name,model_type):
+    def __init__(self,xgbData,eval_name,model_type,model_name):
         """
         Parameters:
         -----------
@@ -42,7 +42,10 @@ class firstLayerModel(object):
                                 regression.
           `GblinearRegression`: xgboost's gradient boosting linear for linear
                                 regression.
+        model_name: str
+          Unique name for this model.
         """
+        self.name = model_name
         self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression',
                                         'GblinearLogistic','GblinearRegression']
         self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
@@ -201,21 +204,25 @@ class firstLayerModel(object):
                 temp = bst.predict(dvalidate)
             self.__holdout[np.where(train_folds.iloc[:,i]==1)] = temp
 
-    def predict(self,test_x):
+    def predict(self,list_test_x):
         """
         Method to predict new data.
         Parameters:
         -----------
-        test_x: xgboost.DMatrix/pandas.DataFrame
+        test_x: list, storing xgboost.DMatrix/pandas.DataFrame
           New test data
         """
+        if len(list_test_x) != 1:
+            raise ValueError('predict() only take list containing one item')
         if not isinstance(self.__collect_model,list):
             raise ValueError('You must call `xgb_cv` before `predict`')
         # Convert test data into xgboost.DMatrix format
-        if not isinstance(test_x,xgb.DMatrix):
-            test_x = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(test_x)))
-        else:
-            test_x = test_x
+        for j,item in enumerate(list_test_x):
+            if not isinstance(item,xgb.DMatrix):
+                list_test_x[j] = xgb.DMatrix(scipy.sparse.csr_matrix(np.array(item)))
+            else:
+                list_test_x[j] = item
+        test_x = list_test_x[0]
         # find number of folds User choosed
         num_folds = self.__xgbData.numberOfTrainFold()
         predictions = []
