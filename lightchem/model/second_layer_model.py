@@ -12,7 +12,7 @@ import glob
 import re
 import xgb_eval
 import xgb_data
-import first_layer_model
+from lightchem.model import first_layer_model
 
 class secondLayerModel(object):
     """
@@ -317,4 +317,3 @@ class secondLayerModel(object):
         if not isinstance(self.__firstLayerModel_prediction,pd.DataFrame):
             raise ValueError('You must call `predict` before `get_firstLayerModel_predictions`')
         return self.__firstLayerModel_prediction
-        

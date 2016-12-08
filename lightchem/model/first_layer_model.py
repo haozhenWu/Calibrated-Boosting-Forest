@@ -10,7 +10,7 @@ from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
 import glob
 import re
-import xgb_eval
+from lightchem.eval import xgb_eval
 
 class firstLayerModel(object):
     """

@@ -4,7 +4,7 @@ Helper method to evaluate test dataset.
 import compute_eval
 import pandas as pd
 import numpy as np
-import first_layer_model
+from lightchem.model import first_layer_model
 
 def eval_testset(model,list_data,label,eval_name):
     """
