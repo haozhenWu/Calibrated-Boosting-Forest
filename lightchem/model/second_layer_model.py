@@ -10,8 +10,8 @@ from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
 import glob
 import re
-import xgb_eval
-import xgb_data
+from lightchem.eval import xgb_eval
+from lightchem.data import xgb_data
 from lightchem.model import first_layer_model
 
 class secondLayerModel(object):
