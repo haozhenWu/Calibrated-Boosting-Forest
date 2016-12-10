@@ -295,6 +295,14 @@ class secondLayerModel(object):
         print "CV result mean: " + str(np.mean(self.__best_score))
         print "CV result std: " + str(np.std(self.__best_score))
 
+    def cv_score_df(self):
+        """
+        return cv score as dataframe
+        """
+        return pd.DataFrame({self.__eval_name : [np.mean(self.__best_score),
+                                                np.std(self.__best_score)]},
+                            index = [self.name+"_mean",self.name+"_std"])
+
     def get_param(self):
         """
         Return 3 items, parameter used for model, whether to maximize the

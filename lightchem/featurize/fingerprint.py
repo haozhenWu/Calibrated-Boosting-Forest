@@ -91,3 +91,5 @@ for i,smile in enumerate(result_df.smiles):
     else:
         k = k+1
         print("fail")
+
+df.to_csv("./pcba128_multitask_data/pcba128_mmtn_canon_MACCSkeys167.csv",index=False")
