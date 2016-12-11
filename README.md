@@ -13,6 +13,17 @@ at University of Wisconsin-Madison.
 * Common featurization methods to transform molecules into fingerprint  
 * Competitive benchmark results for well-known public datasets  
 
+## Dependencies:
+
+* [sklearn](http://scikit-learn.org/stable/index.html)  version = 0.18.1
+* [XGBoost](https://xgboost.readthedocs.io/en/latest/) version = 0.6  
+* [numpy](http://www.numpy.org/) version = 1.11.1  
+* [scipy](https://www.scipy.org/) version = 0.18.1  
+* [pandas](http://pandas.pydata.org/) version = 0.18.1   
+
+
+
+
 ## Installation
 
 We recommend you to use Anaconda for convenient installing packages. Right now, LightChem has been tested for Python 2.7 under OS X and linux Ubuntu Server 16.04.   
@@ -25,12 +36,31 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
    sudo yum install git-all
    ```
 
-3. Install [rdkit](http://www.rdkit.org/docs/Install.html)  Note: `rdkit` is only used to transform SMILE string into fingerprint.  
+3. Install `sklearn`:  
+   ```bash
+   conda install scikit-learn=0.18
+   ```
+
+4. Install [rdkit](http://www.rdkit.org/docs/Install.html)  Note: `rdkit` is only used to transform SMILE string into fingerprint.  
    ```bash
    conda install -c omnia rdkit
    ```
-   
-3. Clone the `lightchem` github repository:  
+
+5. Clone the `lightchem` github repository:  
    ```bash
    git clone https://github.com/haozhenWu/lightchem.git
    ```
+   `cd` into `lightchem` directory and execute  
+   ```
+   pip install -e .
+   ```
+
+
+## FAQ  
+
+1. When I import lightchem, the following error shows up `version GLIBCXX_3.4.20 not found`:   
+   Try:
+   ```bash   
+   conda install libgcc
+   ```
+   [Source](http://askubuntu.com/questions/575505/glibcxx-3-4-20-not-found-how-to-fix-this-error)
