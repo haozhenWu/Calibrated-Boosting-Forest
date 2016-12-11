@@ -72,7 +72,7 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
     ./pcba128_xgboost_models.sh arg1 arg2 arg3
     ```
 
-## Check results
+## Results
 
 The dataframes contains 3-fold cross-validation and final test results  
 of pcba128 are stored in pcba128_cv_result.csv and pcba128_test_result.csv.
