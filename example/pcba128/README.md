@@ -61,9 +61,11 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
 4. Execute bash script.  
     Argument1: dir/to/lightchem/example/pcba128/  
     e.g. ~/lightchem/example/pcba128/  
+
     Argument2: dir/to/store/result/  
     (You can just use current dir,since you are inside pcba128_run folder)  
     e.g. ./  
+    
     Argument3: aid_list.csv (A csv file containing target names, e.g. 'aid411')  
     Used to loop over each target.  
     ```bash
