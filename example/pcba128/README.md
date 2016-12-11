@@ -15,11 +15,11 @@ Abbreviation:
 
 * Datasets: Features = ecfp1024 fingerprint, Label = Binary label  
 Model: `GbtreeLogistic`
-* Datasets: Features = ecfp1024 fingerprint, Label = Continuous label
+* Datasets: Features = ecfp1024 fingerprint, Label = Continuous label  
 Model: `GbtreeRegression`
-* Datasets: Features = MACCSkeys167 fingerprint, Label = Binary label
+* Datasets: Features = MACCSkeys167 fingerprint, Label = Binary label  
 Model: `GbtreeLogistic`
-* Datasets: Features = MACCSkeys167 fingerprint, Label = Continuous label
+* Datasets: Features = MACCSkeys167 fingerprint, Label = Continuous label  
 Model: `GbtreeRegression`
 
 ### Layer two models
