@@ -8,7 +8,8 @@ at University of Wisconsin-Madison.
 
 ## Key features:  
 
-* [XGBoost](https://github.com/dmlc/xgboost) backend  
+* [XGBoost](https://github.com/dmlc/xgboost) backend
+* Parallel computing    
 * Supports tree based models and regression models  
 * Interface to use ensemble(stacking) models  
 * Support multiple evaluation metrics  
