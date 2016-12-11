@@ -9,14 +9,14 @@ as stopping metrics.
 
 ## Model detail
 
-Abbreviation:
+Abbreviation:  
 `GbtreeLogistic`: Gradient boosted tree with binary logistic as objective  
 `GbtreeRegression`: Gradient boosted tree with linear regression as objective  
 `GblinearLogistic`: Gradient boosted linear with binary logistic as objective    
 
 ### Layer one models
 
-* Stopping metric = `ROCAUC`
+#### Stopping metric = `ROCAUC`
 
 * Datasets: Features = ecfp1024 fingerprint, Label = Binary label  
 Model: `GbtreeLogistic`
@@ -29,13 +29,13 @@ Model: `GbtreeRegression`
 
 ### Layer two models
 
-* Stopping metric = `ROCAUC`
+#### Stopping metric = `ROCAUC`
 
 * Datasets: Features = holdout(out of fold) predictions from layer1 models,  
             Label = Binary label  
 Model: `GbtreeLogistic`, `GblinearLogistic`
 
-* Stopping metric = `EFR1`
+#### Stopping metric = `EFR1`
 
 * Datasets: Features = holdout(out of fold) predictions from layer1 models,  
             Label = Binary label  
