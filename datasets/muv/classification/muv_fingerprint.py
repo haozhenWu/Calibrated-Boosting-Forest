@@ -3,9 +3,10 @@
 from lightchem.featurize import fingerprint
 import pandas as pd
 import os
+import time
 
 if __name__ == "__main__":
-
+    start_time = time.time()
     current_dir = os.path.dirname(os.path.realpath(__file__))
     muv = pd.read_csv(current_dir + "/deepchem_muv.csv.gz")
     # get target names
@@ -22,6 +23,8 @@ if __name__ == "__main__":
     morgan_fp.to_csv(current_dir + "/muv_BinaryLabel_ecfp1024.csv",index = False)
 
     # MACCSkeys fp
-    fp = fingerprint.smile_to_fps(tox21,smile_colname)
+    fp = fingerprint.smile_to_fps(muv,smile_colname)
     maccs_fp = fp.MACCSkeys()
     maccs_fp.to_csv(current_dir + "/muv_BinaryLabel_MACCSkey167.csv",index = False)
+
+    print(" --- %s seconds ---\n" % (time.time() - start_time))
