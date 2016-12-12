@@ -21,6 +21,7 @@ cv_result.to_csv(dir_to_store_result + "pcba128_cv_result.csv")
 all_files = glob.glob( dir_to_store_result + 'each_target_test_result/' + "aid*_test_result.csv")
 base = pd.read_csv(all_files[0])
 aid = re.findall('aid\d{1,10}',all_files[0])[0]
+# reconstruct dataframe for easy to view
 test_result = pd.DataFrame({aid : list(base.iloc[0:10,2])+list(base.iloc[10:20,1])})
 test_result.index = base.iloc[:,0]
 test_result = test_result.iloc[[0,5,1,2,3,4,10,15,11,12,13,14]]
