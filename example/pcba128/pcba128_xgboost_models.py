@@ -39,6 +39,7 @@ for dir in dir_list:
 
 if __name__ == "__main__":
     start_time = time.time()
+    SEED = 2016
     #----------------------------------- Build first layer data
     current_dir = os.path.dirname(os.path.realpath(__file__))
     setting_list = []
@@ -52,7 +53,7 @@ if __name__ == "__main__":
     temp_data.read()
     X_data = temp_data.features()
     y_data = temp_data.label()
-    myfold = fold.fold(X_data,y_data,4)
+    myfold = fold.fold(X_data,y_data,4,SEED)
     myfold = myfold.generate_skfolds()
     data = xgb_data.xgbData(myfold,X_data,y_data)
     data.build()
@@ -114,6 +115,10 @@ if __name__ == "__main__":
             unique_name = 'layer1_' + data_dict['data_name'] + '_' + model_type + '_' + evaluation_metric_name
             model = first_layer_model.firstLayerModel(data_dict['data'],
                     evaluation_metric_name,model_type,unique_name)
+            # Retrieve default parameter and change default seed.
+            default_param,default_MAXIMIZE,default_STOPPING_ROUND = model.get_param()
+            default_param['seed'] = SEED
+            model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
             model.xgb_cv()
             model.generate_holdout_pred()
             layer1_model_list.append(model)
@@ -132,6 +137,10 @@ if __name__ == "__main__":
             l2model = second_layer_model.secondLayerModel(layer2_label_data,layer1_model_list,
                         evaluation_metric_name,model_type,unique_name)
             l2model.second_layer_data()
+            # Retrieve default parameter and change default seed.
+            default_param,default_MAXIMIZE,default_STOPPING_ROUND = l2model.get_param()
+            default_param['seed'] = SEED
+            l2model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
             l2model.xgb_cv()
             layer2_model_list.append(l2model)
 
