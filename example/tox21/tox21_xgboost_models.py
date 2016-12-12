@@ -23,20 +23,16 @@ import os
 #
 import time
 
-
+# read argument from command line
 target_name = sys.argv[1]
 dir_to_store_result = sys.argv[2]
 dataset_name = 'tox21'
-
+# create folder to store results
 dir_list = [dir_to_store_result + 'each_target_cv_result',
             dir_to_store_result + 'each_target_test_result']
-
 for dir in dir_list:
     if not os.path.exists(dir):
         os.makedirs(dir)
-
-
-# Create folder to store results.
 
 if __name__ == "__main__":
     start_time = time.time()
