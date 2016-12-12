@@ -6,6 +6,7 @@ fingerprint = MACCSkeys167, Label = Binary label
 
 Model used:
 Gbtree
+Gblinear
 """
 
 import sys
@@ -74,7 +75,7 @@ if __name__ == "__main__":
                         'data':data})
 
     #---------------------------------first layer models ----------
-    # 2 layer1 models based on ecfp,MACCSkeys data
+    # 4 layer1 models based on ecfp,MACCSkeys data
     # gbtree
     layer1_model_list = []
     evaluation_metric_name = 'ROCAUC'
