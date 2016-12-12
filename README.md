@@ -75,7 +75,7 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
 ## FAQ  
 
 1. When I import lightchem, the following error shows up `version GLIBCXX_3.4.20 not found`:   
-   Try:
+   Try:  
    ```bash   
    conda install libgcc
    ```
