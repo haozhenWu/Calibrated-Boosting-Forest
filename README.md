@@ -20,7 +20,7 @@ at University of Wisconsin-Madison.
 * [numpy](http://www.numpy.org/) version = 1.11.1  
 * [scipy](https://www.scipy.org/) version = 0.18.1  
 * [pandas](http://pandas.pydata.org/) version = 0.18.1   
-
+* [rdkit](http://www.rdkit.org/) version = 2015.09.1
 
 
 
