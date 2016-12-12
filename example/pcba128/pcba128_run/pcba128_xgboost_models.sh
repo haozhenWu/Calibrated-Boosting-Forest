@@ -10,6 +10,7 @@
 while IFS='' read -r line;do
 
 /home/haozhen/anaconda2/bin/python $1'pcba128_xgboost_models.py' $line $2
-/home/haozhen/anaconda2/bin/python $1'gather_pcba128_result.py' $2
 
 done <"$3"
+
+/home/haozhen/anaconda2/bin/python $1'gather_pcba128_result.py' $2
