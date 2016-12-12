@@ -25,7 +25,7 @@ class smile_to_fps(object):
                 self.__df.fingerprint[i] = fps.ToBitString()
                 print i
             else:
-                k = k+1
+                k += 1
         print 'Number of molecue failed: ' + str(k)
         return self.__df
 
