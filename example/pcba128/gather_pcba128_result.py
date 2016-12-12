@@ -1,5 +1,4 @@
 import sys
-sys.path.remove('/usr/lib/python2.7/dist-packages')
 import pandas as pd
 import glob
 import re

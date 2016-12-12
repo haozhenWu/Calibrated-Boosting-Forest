@@ -11,8 +11,6 @@ Gbtree
 """
 
 import sys
-sys.path.remove('/usr/lib/python2.7/dist-packages')
-sys.path.append("/home/haozhen/Haozhen-data/lightchem/")
 from sklearn import metrics
 from lightchem.envir import create_dir
 from lightchem.load import load
@@ -35,7 +33,7 @@ dir_to_store_result = sys.argv[2]
 
 dir_list = [dir_to_store_result + 'each_target_cv_result',
             dir_to_store_result + 'each_target_test_result']
-            
+
 for dir in dir_list:
     if not os.path.exists(dir):
         os.makedirs(dir)
