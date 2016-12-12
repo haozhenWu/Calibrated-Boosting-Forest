@@ -12,7 +12,6 @@ Gbtree
 
 import sys
 from sklearn import metrics
-from lightchem.envir import create_dir
 from lightchem.load import load
 from lightchem.fold import fold
 from lightchem.data import xgb_data
