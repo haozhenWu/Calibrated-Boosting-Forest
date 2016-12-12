@@ -31,7 +31,7 @@ class smile_to_fps(object):
 
     def MACCSkeys(self):
         k = 0
-        for i,smile in enumerate(result_df.smiles):
+        for i,smile in enumerate(self.__df[self.__smile_col]):
             if Chem.MolFromSmiles(smile):
                 tmp_mol = Chem.MolFromSmiles(smile)
                 fps = MACCSkeys.GenMACCSKeys(tmp_mol)
