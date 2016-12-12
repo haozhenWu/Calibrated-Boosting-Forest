@@ -25,6 +25,11 @@ class smile_to_fps(object):
                 self.__df.fingerprint[i] = fps.ToBitString()
                 print i
             else:
+                # fail to construct a RDKit molecule, mannual create fingerprint with all 0.
+                fps = '0'
+                for k in range(nBits-1):
+                    fps = fps + '0'
+                self.__df.fingerprint[i] = fps
                 k += 1
         print 'Number of molecue failed: ' + str(k)
         return self.__df
@@ -38,6 +43,11 @@ class smile_to_fps(object):
                 self.__df.fingerprint[i] = fps.ToBitString()
                 print i
             else:
+                # fail to construct a RDKit molecule, mannual create fingerprint with all 0.
+                fps = '0'
+                for k in range(166):
+                    fps = fps + '0'
+                self.__df.fingerprint[i] = fps
                 k += 1
         print 'Number of molecue failed: ' + str(k)
         return self.__df
