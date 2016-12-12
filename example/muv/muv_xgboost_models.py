@@ -45,7 +45,7 @@ if __name__ == "__main__":
                             "../../datasets/muv/classification/muv_BinaryLabel_ecfp1024.csv.zip")
     data_name = 'binaryECFP'
     label_colname = target_name # label column name of one target
-    model_name_to_use = ['GbtreeLogistic'] # Define model to use
+    model_name_to_use = ['GbtreeLogistic','GblinearLogistic'] # Define model to use
     temp_data = load.readData(file_dir,label_colname)
     temp_data.read()
     X_data = temp_data.features()
@@ -63,7 +63,7 @@ if __name__ == "__main__":
                             "../../datasets/muv/classification/muv_BinaryLabel_MACCSkey167.csv.zip")
     data_name = 'binaryMACCSkeys'
     label_colname = target_name
-    model_name_to_use = ['GbtreeLogistic']
+    model_name_to_use = ['GbtreeLogistic','GblinearLogistic']
     temp_data = load.readData(file_dir,label_colname)
     temp_data.read()
     X_data = temp_data.features()
