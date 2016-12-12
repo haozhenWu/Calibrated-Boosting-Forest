@@ -11,7 +11,7 @@ class fold(object):
     """
     Lightchem's fold object
     """
-    def __init__(self,X_data,y_data,k):
+    def __init__(self,X_data,y_data,k,seed = 2016):
         """Fold object
         Parameters:
         -----------
@@ -19,10 +19,13 @@ class fold(object):
           Training features
         y_data: numpy.ndarray
           Label(Response variable)
+        seed: int
+          Control randomness
         """
         self.__num_row = X_data.shape[0]
         self.__label = y_data
         self.__num_fold = k
+        self.__seed = seed
     # Generate kfold index according processed data's dimension and binary label.
     def generate_skfolds(self):
         '''
@@ -32,7 +35,8 @@ class fold(object):
         '''
         X = range(self.__num_row)
         y = pd.Series(self.__label)
-        skf = StratifiedKFold(n_splits=self.__num_fold,shuffle = True)
+        skf = StratifiedKFold(n_splits=self.__num_fold,
+                                shuffle = True, random_state = self.__seed)
         train_index_list = list()
         test_index_list = list()
         for train_index, test_index in skf.split(X, y):
@@ -42,5 +46,5 @@ class fold(object):
                              index = range(self.__num_row),
                              columns=["fold" + str(i) for i in xrange(1,self.__num_fold+1)])
         for i in range(folds.shape[1]):
-            folds.iloc[test_index_list[i],i] = 1 
+            folds.iloc[test_index_list[i],i] = 1
         return folds
