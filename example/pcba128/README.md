@@ -40,7 +40,7 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
 
 1. Copy the `run` folder outside lightchem:  
    ```bash
-   scp ./pcba128_run dir/outside/lightchem/
+   cp -r ./pcba128_run dir/outside/lightchem/
    ```
 
 2. `cd` into the directory:  
