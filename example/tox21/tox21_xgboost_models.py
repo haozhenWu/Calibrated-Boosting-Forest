@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     # binary MACCSkeys
     file_dir = os.path.join(current_dir,
-                            "../../datasets/pcba128/classification/tox21_BinaryLabel_MACCSkey167.csv.zip")
+                            "../../datasets/tox21/classification/tox21_BinaryLabel_MACCSkey167.csv.zip")
     data_name = 'binaryMACCSkeys'
     label_colname = target_name
     model_name_to_use = ['GbtreeLogistic']
