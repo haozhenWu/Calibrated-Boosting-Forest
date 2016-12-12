@@ -78,5 +78,5 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
    Try:  
    ```bash   
    conda install libgcc
-   ```
+   ```  
    [Source](http://askubuntu.com/questions/575505/glibcxx-3-4-20-not-found-how-to-fix-this-error)
