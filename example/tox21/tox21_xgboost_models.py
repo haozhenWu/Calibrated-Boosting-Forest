@@ -36,7 +36,7 @@ for dir in dir_list:
 
 if __name__ == "__main__":
     start_time = time.time()
-    SEED = 2016
+    SEED = 1994
     #----------------------------------- Build first layer data
     current_dir = os.path.dirname(os.path.realpath(__file__))
     setting_list = []
