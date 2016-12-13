@@ -17,9 +17,9 @@ at University of Wisconsin-Madison.
 
 * [Dependencies](#dependencies)
 * [Installation](#installation)
-* [Benchmark Results](#Benchmark Results)
-* [FAQ](#FAQ)
-* [Reference](#Reference)
+* [Benchmark Results](#benchmark-results)
+* [FAQ](#faq)
+* [Reference](#reference)
 
 ## Dependencies:
 
