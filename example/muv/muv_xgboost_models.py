@@ -51,7 +51,7 @@ if __name__ == "__main__":
     temp_data.read()
     X_data = temp_data.features()
     y_data = temp_data.label()
-    myfold = fold.fold(X_data,y_data,3,SEED)
+    myfold = fold.fold(X_data,y_data,4,SEED)
     myfold = myfold.generate_skfolds()
     data = xgb_data.xgbData(myfold,X_data,y_data)
     data.build()
@@ -87,6 +87,15 @@ if __name__ == "__main__":
             # Retrieve default parameter and change default seed.
             default_param,default_MAXIMIZE,default_STOPPING_ROUND = model.get_param()
             default_param['seed'] = SEED
+            # Default parameters overfit muv dataset, use more conservative param.
+            if model_type == 'GbtreeLogistic':
+                default_param['eta'] = 0.03
+                default_param['max_depth'] = 5
+                default_param['colsample_bytree'] = 0.5
+                default_param['min_child_weight'] = 2
+            elif model_type == 'GblinearLogistic':
+                default_param['eta'] = 0.1
+
             model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
             model.xgb_cv()
             model.generate_holdout_pred()
@@ -109,6 +118,15 @@ if __name__ == "__main__":
             # Retrieve default parameter and change default seed.
             default_param,default_MAXIMIZE,default_STOPPING_ROUND = l2model.get_param()
             default_param['seed'] = SEED
+            # Default parameters overfit muv dataset, use more conservative param.
+            if model_type == 'GbtreeLogistic':
+                default_param['eta'] = 0.06
+                default_param['max_depth'] = 5
+                default_param['colsample_bytree'] = 0.5
+                default_param['min_child_weight'] = 2
+            elif model_type == 'GblinearLogistic':
+                default_param['eta'] = 0.12
+
             l2model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
             l2model.xgb_cv()
             layer2_model_list.append(l2model)
