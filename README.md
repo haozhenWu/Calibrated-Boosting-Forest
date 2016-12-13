@@ -72,16 +72,17 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
    ```
 
 ## Benchmark Results
- 
+
 ### Classification  
 
 stratified split
 
 * 3-fold Cross-validation based on 75% of the data
 
-|Dataset |Layer |Label  |Feature |Model            |Evaluation Metrics |              |
-|--------|------|-------|--------|-----------------|----------------------------------|
-|        |      |       |        |                 |CV/ROC-AUC Mean |CV/ROC-AUC Median|
+|Dataset |Layer |Label  |Feature |Model            |Evaluation Metrics |                 |
+|--------|------|-------|--------|-----------------|-------------------|-----------------|
+|        |      |       |        |                 |CV/ROC-AUC Mean    |CV/ROC-AUC Median|
+
 |tox21   |First |Binary |ECFP1024|GbtreeLogistic   |0.783+-0.022    |0.779+-0.017     |
 |        |      |       |        |GblinearLogistic |0.729+-0.021    |0.747+-0.012     |
 |        |      |       |MACCSkeys |GbtreeLogistic |0.798+-0.019    |0.801+-0.016     |         
