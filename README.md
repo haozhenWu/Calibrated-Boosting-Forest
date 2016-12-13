@@ -95,7 +95,7 @@ stratified split
 * Testset based on remaining 25% of the data
 
 |Dataset |Layer |Label  |Feature |Model            |Evaluation Metrics |              |
-|--------|------|-------|--------|-----------------|----------------------------------|
+|--------|------|-------|--------|-----------------|-------------------|--------------|
 |        |      |       |        |                 |Test/ROC-AUC Mean |Test/ROC-AUC Median|
 |tox21   |First |Binary |ECFP1024|GbtreeLogistic   |0.776    |0.748     |
 |        |      |       |        |GblinearLogistic |0.734    |0.738     |
