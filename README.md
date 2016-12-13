@@ -142,9 +142,8 @@ Stratified Split
 ROC-AUC   
 3 folds cross-validation
 
-|Dataset |Layer |Label  |Feature |Model            |Evaluation Metrics |                 |
+|Dataset |Layer |Label  |Feature |Model            |Mean            |Median              |
 |--------|------|-------|--------|-----------------|-------------------|-----------------|
-|        |      |       |        |                 |CV/ROC-AUC Mean    |CV/ROC-AUC Median|
 |tox21   |Layer1|Binary |ECFP1024|GbtreeLogistic   |0.783+-0.022       |0.779+-0.017     |
 |        |      |       |        |GblinearLogistic |0.729+-0.021       |0.747+-0.012     |
 |        |      |       |MACCSkeys |GbtreeLogistic |0.798+-0.019    |0.801+-0.016     |         
@@ -160,9 +159,8 @@ ROC-AUC
 
 Test:
 
-|Dataset |Layer |Label  |Feature |Model            |Evaluation Metrics |              |
+|Dataset |Layer |Label  |Feature |Model            |Mean         |Median              |
 |--------|------|-------|--------|-----------------|-------------------|--------------|
-|        |      |       |        |                 |Test/ROC-AUC Mean |Test/ROC-AUC Median|
 |tox21   |Layer1|Binary |ECFP1024|GbtreeLogistic   |0.776    |0.748     |
 |        |      |       |        |GblinearLogistic |0.734    |0.738     |
 |        |      |       |MACCSkeys |GbtreeLogistic |0.805    |**0.797**     |         
@@ -179,18 +177,17 @@ Test:
 EFR1
 3 folds cross-validation
 
-|Dataset |Layer |Label  |Feature |Model            |Evaluation Metrics |                 |
+|Dataset |Layer |Label  |Feature |Model            |Mean         |Median                 |
 |--------|------|-------|--------|-----------------|-------------------|-----------------|
-|        |      |       |        |                 |CV/EFR1 Mean |CV/EFR1 Median|
 |tox21   |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**15.724**+-1.103 |**18.408**+-0.726 |
 |        |      |       |                           |GblinearLogistic |15.162+-1.702 |18.352+-1.122 |
 |PCBA128 |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**33.873**+-2.736 |32.822+-1.682 |
 |        |      |       |                           |GblinearLogistic |32.665+-3.816 |**33.053**+-1.869 |
 
 Test:
-  
-|Dataset |Layer |Label  |Feature |Model            |Evaluation Metrics |              |
-|--------|------|-------|--------|-----------------|-------------------|--------------|
+
+|Dataset |Layer |Label  |Feature |Model            |Mean         |Median                 |
+|--------|------|-------|--------|-----------------|-------------------|-----------------|
 |        |      |       |        |                 |Test/EFR1 Mean |Test/EFR1 Median|
 |        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**15.612** |**12.360**  |
 |        |      |       |                           |GblinearLogistic |14.774 |11.842 |
