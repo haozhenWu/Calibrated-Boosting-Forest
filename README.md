@@ -108,6 +108,12 @@ Cross Validation
 |        |      |           |MACCSkeys |GbtreeRegression |0.852+-0.013 |0.865+-0.009 |
 |        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**0.880**+-0.011 |**0.894**+-0.007 |
 |        |      |       |                           |GblinearLogistic |0.879+-0.015 |0.893+-0.006 |
+|muv     |Layer1|Binary |ECFP1024|GbtreeLogistic   |0.799+-0.053       |0.793+-0.048     |
+|        |      |       |        |GblinearLogistic |0.756+-0.055       |0.805+-0.044     |
+|        |      |       |MACCSkeys |GbtreeLogistic |**0.810**+-0.049    |**0.820**+-0.046     |         
+|        |      |       |          |GblinearLogistic |0.755+-0.054   |0.756+-0.059     |
+|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |0.787+-0.053 |0.811+-0.053 |
+|        |      |       |                           |GblinearLogistic |0.687+-0.155 |0.669+-0.109 |
 
 Test:
 
@@ -125,6 +131,12 @@ Test:
 |        |      |           |MACCSkeys |GbtreeRegression |0.856 |0.868 |
 |        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |0.883 |**0.903** |
 |        |      |       |                           |GblinearLogistic |**0.884** |0.901 |
+|muv     |Layer1|Binary |ECFP1024|GbtreeLogistic   |0.744    |0.712     |
+|        |      |       |        |GblinearLogistic |0.671    |0.681     |
+|        |      |       |MACCSkeys |GbtreeLogistic |0.774    |0.824     |         
+|        |      |       |          |GblinearLogistic |0.751   |0.782     |
+|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |0.663 |0.689 |
+|        |      |       |                           |GblinearLogistic |0.552 |0.605 |
 
 #### EFR1   
 Cross Validation
@@ -135,6 +147,8 @@ Cross Validation
 |        |      |       |                           |GblinearLogistic |15.162+-1.702 |18.352+-1.122 |
 |PCBA128 |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**33.873**+-2.736 |32.822+-1.682 |
 |        |      |       |                           |GblinearLogistic |32.665+-3.816 |**33.053**+-1.869 |
+|muv     |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |21.580+-9.621 |18.452+-7.192 |
+|        |      |       |                           |GblinearLogistic |7.178+-5.489 |0+-0 |
 
 Test:
 
@@ -144,6 +158,8 @@ Test:
 |        |      |       |                           |GblinearLogistic |14.774 |11.842 |
 |PCBA128 |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**34.413** |**33.333**  |
 |        |      |       |                           |GblinearLogistic |33.703 |32.727 |
+|muv     |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |11.905 |0  |
+|        |      |       |                           |GblinearLogistic |0 |0 |
 
 
 
