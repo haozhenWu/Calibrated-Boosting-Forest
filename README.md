@@ -87,9 +87,9 @@ stratified split
 |        |      |       |MACCSkeys |GbtreeLogistic |0.798+-0.019    |0.801+-0.016     |         
 |        |      |       |          |GblinearLogistic |0.766+-0.02   |0.776+-0.023     |
 |        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |0.790+-0.018 |0.794+-0.014 |
-|        |      |       |                           |GblinearLogistic |0.809+-0.020 |0.806+-0.017 |
+|        |      |       |                           |GblinearLogistic |**0.809**+-0.020 |**0.806**+-0.017 |
 |        |      |       |        |                 |CV/EFR1 Mean |CV/EFR1 Median|
-|        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |15.724+-1.103 |18.408+-0.726 |
+|        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |**15.724**+-1.103 |**18.408**+-0.726 |
 |        |      |       |                           |GblinearLogistic |15.162+-1.702 |18.352+-1.122 |
 
 * Testset based on remaining 25% of the data
@@ -99,12 +99,12 @@ stratified split
 |        |      |       |        |                 |Test/ROC-AUC Mean |Test/ROC-AUC Median|
 |tox21   |First |Binary |ECFP1024|GbtreeLogistic   |0.776    |0.748     |
 |        |      |       |        |GblinearLogistic |0.734    |0.738     |
-|        |      |       |MACCSkeys |GbtreeLogistic |0.805    |0.797     |         
+|        |      |       |MACCSkeys |GbtreeLogistic |0.805    |**0.797**     |         
 |        |      |       |          |GblinearLogistic |0.765   |0.769     |
 |        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |0.795 |0.783 |
-|        |      |       |                           |GblinearLogistic |0.808 |0.788 |
+|        |      |       |                           |GblinearLogistic |**0.808** |0.788 |
 |        |      |       |        |                 |Test/EFR1 Mean |Test/EFR1 Median|
-|        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |15.612 |12.360  |
+|        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |**15.612** |12.360  |
 |        |      |       |                           |GblinearLogistic |14.774 |11.842 |
 
 
