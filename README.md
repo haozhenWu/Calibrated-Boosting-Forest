@@ -19,6 +19,7 @@ at University of Wisconsin-Madison.
     * [MUV](https://github.com/haozhenWu/lightchem/tree/master/example/muv)
     * [TOX21](https://github.com/haozhenWu/lightchem/tree/master/example/tox21)
     * [PCBA128](https://github.com/haozhenWu/lightchem/tree/master/example/pcba128)  
+* [Datasets](https://github.com/haozhenWu/lightchem/tree/master/datasets)
 * [Dependencies](#dependencies)
 * [Installation](#installation)
 * [Benchmark Results](#benchmark-results)
