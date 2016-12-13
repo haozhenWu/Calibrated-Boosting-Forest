@@ -126,7 +126,7 @@ Test:
 |        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |0.883 |**0.903** |
 |        |      |       |                           |GblinearLogistic |**0.884** |0.901 |
 
-EFR1   
+#### EFR1   
 Cross Validation
 
 |Dataset |Layer |Label  |Feature |Model            |Mean         |Median                 |
