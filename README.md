@@ -87,60 +87,12 @@ LightChem so far only supports single-task learning, which builds separate model
 
 ### Classification  
 
-Stratified Split
+Stratified Split   
+Cross Validation: 3 folds, 75% of the data    
+Test: Remaining 25% of the data   
 
-* 3-fold Cross-validation based on 75% of the data
-
-|Dataset |Layer |Label  |Feature |Model            |Evaluation Metrics |                 |
-|--------|------|-------|--------|-----------------|-------------------|-----------------|
-|        |      |       |        |                 |CV/ROC-AUC Mean    |CV/ROC-AUC Median|
-|tox21   |Layer1|Binary |ECFP1024|GbtreeLogistic   |0.783+-0.022       |0.779+-0.017     |
-|        |      |       |        |GblinearLogistic |0.729+-0.021       |0.747+-0.012     |
-|        |      |       |MACCSkeys |GbtreeLogistic |0.798+-0.019    |0.801+-0.016     |         
-|        |      |       |          |GblinearLogistic |0.766+-0.02   |0.776+-0.023     |
-|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |0.790+-0.018 |0.794+-0.014 |
-|        |      |       |                           |GblinearLogistic |**0.809**+-0.020 |**0.806**+-0.017 |
-|        |      |       |        |                 |CV/EFR1 Mean |CV/EFR1 Median|
-|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**15.724**+-1.103 |**18.408**+-0.726 |
-|        |      |       |                           |GblinearLogistic |15.162+-1.702 |18.352+-1.122 |
-|        |      |       |        |                 |CV/ROC-AUC Mean    |CV/ROC-AUC Median|
-|PCBA128 |Layer1|Binary |ECFP1024 |GbtreeLogistic |0.843+-0.012 |0.857+-0.007 |
-|        |      |       |MACCSkeys |GbtreeLogistic |0.835+-0.012 |0.847+-0.008 |
-|        |      |Continuous |ECFP1024 |GbtreeRegression |0.863+-0.013 |0.882+-0.008 |
-|        |      |           |MACCSkeys |GbtreeRegression |0.852+-0.013 |0.865+-0.009 |
-|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**0.880**+-0.011 |**0.894**+-0.007 |
-|        |      |       |                           |GblinearLogistic |0.879+-0.015 |0.893+-0.006 |
-|        |      |       |        |                 |CV/EFR1 Mean |CV/EFR1 Median|
-|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**33.873**+-2.736 |32.822+-1.682 |
-|        |      |       |                           |GblinearLogistic |32.665+-3.816 |**33.053**+-1.869 |
-
-* Testset based on remaining 25% of the data
-
-|Dataset |Layer |Label  |Feature |Model            |Evaluation Metrics |              |
-|--------|------|-------|--------|-----------------|-------------------|--------------|
-|        |      |       |        |                 |Test/ROC-AUC Mean |Test/ROC-AUC Median|
-|tox21   |Layer1|Binary |ECFP1024|GbtreeLogistic   |0.776    |0.748     |
-|        |      |       |        |GblinearLogistic |0.734    |0.738     |
-|        |      |       |MACCSkeys |GbtreeLogistic |0.805    |**0.797**     |         
-|        |      |       |          |GblinearLogistic |0.765   |0.769     |
-|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |0.795 |0.783 |
-|        |      |       |                           |GblinearLogistic |**0.808** |0.788 |
-|        |      |       |        |                 |Test/EFR1 Mean |Test/EFR1 Median|
-|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**15.612** |**12.360**  |
-|        |      |       |                           |GblinearLogistic |14.774 |11.842 |
-|        |      |       |        |                 |CV/ROC-AUC Mean    |CV/ROC-AUC Median|
-|PCBA128 |Layer1|Binary |ECFP1024 |GbtreeLogistic |0.850 |0.866 |
-|        |      |       |MACCSkeys |GbtreeLogistic |0.843 |0.857 |
-|        |      |Continuous |ECFP1024 |GbtreeRegression |0.872 |0.890 |
-|        |      |           |MACCSkeys |GbtreeRegression |0.856 |0.868 |
-|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |0.883 |**0.903** |
-|        |      |       |                           |GblinearLogistic |**0.884** |0.901 |
-|        |      |       |        |                 |Test/EFR1 Mean |Test/EFR1 Median|
-|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**34.413** |**33.333**  |
-|        |      |       |                           |GblinearLogistic |33.703 |32.727 |
-
-ROC-AUC   
-3 folds cross-validation
+#### ROC-AUC   
+Cross Validation
 
 |Dataset |Layer |Label  |Feature |Model            |Mean            |Median              |
 |--------|------|-------|--------|-----------------|-------------------|-----------------|
@@ -174,8 +126,8 @@ Test:
 |        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |0.883 |**0.903** |
 |        |      |       |                           |GblinearLogistic |**0.884** |0.901 |
 
-EFR1
-3 folds cross-validation
+EFR1   
+Cross Validation
 
 |Dataset |Layer |Label  |Feature |Model            |Mean         |Median                 |
 |--------|------|-------|--------|-----------------|-------------------|-----------------|
