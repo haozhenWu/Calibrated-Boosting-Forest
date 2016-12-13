@@ -188,9 +188,9 @@ Test:
 
 |Dataset |Layer |Label  |Feature |Model            |Mean         |Median                 |
 |--------|------|-------|--------|-----------------|-------------------|-----------------|
-|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**15.612** |**12.360**  |
+|tox21   |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**15.612** |**12.360**  |
 |        |      |       |                           |GblinearLogistic |14.774 |11.842 |
-|        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**34.413** |**33.333**  |
+|PCBA128 |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**34.413** |**33.333**  |
 |        |      |       |                           |GblinearLogistic |33.703 |32.727 |
 
 
