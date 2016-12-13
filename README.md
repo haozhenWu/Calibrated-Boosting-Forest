@@ -79,9 +79,14 @@ Model Abbreviation:
 `GblinearLogistic`: Gradient boosted linear with binary logistic as objective    
 `GblinearRegression`: Gradient boosted linear with linear regression as objective  
 
+Evaluation results report below are mean/median of k-fold cross-validation results among all targets in a given dataset.
+
+Concatenated Version:  
+Molecules of targets from same dataset are concatenated together into a single big dataframe, which leads to many missing values in the labels. Molecules without a lab result for a given target assume having a negative label. This approach might benefit multitask learning.
+
 ### Classification  
 
-stratified split
+Stratified Split
 
 * 3-fold Cross-validation based on 75% of the data
 
