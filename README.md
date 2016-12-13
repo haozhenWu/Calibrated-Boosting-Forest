@@ -83,7 +83,7 @@ Model Abbreviation:
 
 ### Concatenated Version:  
 Molecules of targets from same dataset are concatenated together into a single big dataframe, which leads to many missing values in the labels. Molecules without a lab result for a given target assume having a negative label. This approach might benefit multi-task learning.    
-LightChem so far only supports single-task learning, which separate models for each target. Will have Self-contained molecules version later.
+LightChem so far only supports single-task learning, which builds separate models for each target. Will have Self-contained molecules version later.
 
 ### Classification  
 
