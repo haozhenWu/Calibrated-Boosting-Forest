@@ -51,7 +51,7 @@ if __name__ == "__main__":
     temp_data.read()
     X_data = temp_data.features()
     y_data = temp_data.label()
-    myfold = fold.fold(X_data,y_data,4,SEED)
+    myfold = fold.fold(X_data,y_data,3,SEED)
     myfold = myfold.generate_skfolds()
     data = xgb_data.xgbData(myfold,X_data,y_data)
     data.build()
