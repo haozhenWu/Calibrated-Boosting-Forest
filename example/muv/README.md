@@ -56,7 +56,7 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
     (You can just use current dir, which is muv_run folder)  
     e.g. ./  
 
-    Argument3: muv_TargetName.csv (A csv file containing target names, e.g. 'NR-AR')  
+    Argument3: muv_TargetName.csv (A csv file containing target names, e.g. 'MUV-466')  
     Used to loop over each target.  
     ```bash
     ./muv_xgboost_models.sh arg1 arg2 arg3
