@@ -73,6 +73,12 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
 
 ## Benchmark Results
 
+Model Abbreviation:  
+`GbtreeLogistic`: Gradient boosted tree with binary logistic as objective  
+`GbtreeRegression`: Gradient boosted tree with linear regression as objective  
+`GblinearLogistic`: Gradient boosted linear with binary logistic as objective    
+`GblinearRegression`: Gradient boosted linear with linear regression as objective  
+
 ### Classification  
 
 stratified split
@@ -117,3 +123,7 @@ stratified split
    conda install libgcc
    ```  
    [Source](http://askubuntu.com/questions/575505/glibcxx-3-4-20-not-found-how-to-fix-this-error)
+
+## Reference
+
+1. [DeepChem] (https://github.com/deepchem/deepchem): Deep-learning models for Drug Discovery and Quantum Chemistry
