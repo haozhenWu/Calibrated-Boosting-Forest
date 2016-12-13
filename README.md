@@ -188,7 +188,6 @@ Test:
 
 |Dataset |Layer |Label  |Feature |Model            |Mean         |Median                 |
 |--------|------|-------|--------|-----------------|-------------------|-----------------|
-|        |      |       |        |                 |Test/EFR1 Mean |Test/EFR1 Median|
 |        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**15.612** |**12.360**  |
 |        |      |       |                           |GblinearLogistic |14.774 |11.842 |
 |        |Layer2|Binary |Layer1 holdout predictions |GbtreeLogistic |**34.413** |**33.333**  |
