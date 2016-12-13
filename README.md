@@ -13,6 +13,14 @@ at University of Wisconsin-Madison.
 * Common featurization methods to transform molecules into fingerprint  
 * Competitive benchmark results for well-known public datasets  
 
+### Table of contents:
+
+* [Dependencies](#Dependencies)
+* [Installation](#Installation)
+* [Benchmark Results](#Benchmark Results)
+* [FAQ](#FAQ)
+* [Reference](#Reference)
+
 ## Dependencies:
 
 * [sklearn](http://scikit-learn.org/stable/index.html)  version = 0.18.1
