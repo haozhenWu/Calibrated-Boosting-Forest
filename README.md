@@ -8,7 +8,7 @@ at University of Wisconsin-Madison.
 * [XGBoost](https://github.com/dmlc/xgboost) backend
 * Parallel computing    
 * Supports tree based models and regression models  
-* Interface to use ensemble(stacking) models  
+* Interface to use ensemble( stacking ) models  
 * Support multiple evaluation metrics  
 * Common featurization methods to transform molecules into fingerprint  
 * Competitive benchmark results for well-known public datasets  
