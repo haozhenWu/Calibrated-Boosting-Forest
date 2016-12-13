@@ -104,7 +104,7 @@ stratified split
 |        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |0.795 |0.783 |
 |        |      |       |                           |GblinearLogistic |**0.808** |0.788 |
 |        |      |       |        |                 |Test/EFR1 Mean |Test/EFR1 Median|
-|        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |**15.612** |12.360  |
+|        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |**15.612** |**12.360**  |
 |        |      |       |                           |GblinearLogistic |14.774 |11.842 |
 
 
