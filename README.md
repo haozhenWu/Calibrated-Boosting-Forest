@@ -108,11 +108,11 @@ Stratified Split
 |        |      |       |MACCSkeys |GbtreeLogistic |0.835+-0.012 |0.847+-0.008 |
 |        |      |Continuous |ECFP1024 |GbtreeRegression |0.863+-0.013 |0.882+-0.008 |
 |        |      |           |MACCSkeys |GbtreeRegression |0.852+-0.013 |0.865+-0.009 |
-|        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |0.880+-0.011 |0.894+-0.007 |
-|        |      |       |                           |GblinearLogistic |0.879+-0.015 |0.895+-0.007 |
+|        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |**0.880**+-0.011 |**0.894**+-0.007 |
+|        |      |       |                           |GblinearLogistic |0.879+-0.015 |0.893+-0.006 |
 |        |      |       |        |                 |CV/EFR1 Mean |CV/EFR1 Median|
-|        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |33.873+-2.736 |32.822+-1.682 |
-|        |      |       |                           |GblinearLogistic |32.665+-3.816 |33.053+-1.869 |
+|        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |**33.873**+-2.736 |32.822+-1.682 |
+|        |      |       |                           |GblinearLogistic |32.665+-3.816 |**33.053**+-1.869 |
 
 * Testset based on remaining 25% of the data
 
