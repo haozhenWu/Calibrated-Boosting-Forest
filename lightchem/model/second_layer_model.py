@@ -189,7 +189,7 @@ class secondLayerModel(object):
 
             elif self.__param['booster'] == 'gblinear':
                 # model training
-                bst = xgb.train(self.__param, dtrain,300 , watchlist,
+                bst = xgb.train(self.__param, dtrain,600 , watchlist,
                                 feval = self.__eval_function,
                                 early_stopping_rounds = self.__STOPPING_ROUND,
                                 maximize = self.__MAXIMIZE,
