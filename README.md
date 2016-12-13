@@ -15,8 +15,8 @@ at University of Wisconsin-Madison.
 
 ### Table of contents:
 
-* [Dependencies](#Dependencies)
-* [Installation](#Installation)
+* [Dependencies](#dependencies)
+* [Installation](#installation)
 * [Benchmark Results](#Benchmark Results)
 * [FAQ](#FAQ)
 * [Reference](#Reference)
