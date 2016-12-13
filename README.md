@@ -82,9 +82,8 @@ stratified split
 |Dataset |Layer |Label  |Feature |Model            |Evaluation Metrics |                 |
 |--------|------|-------|--------|-----------------|-------------------|-----------------|
 |        |      |       |        |                 |CV/ROC-AUC Mean    |CV/ROC-AUC Median|
-
-|tox21   |First |Binary |ECFP1024|GbtreeLogistic   |0.783+-0.022    |0.779+-0.017     |
-|        |      |       |        |GblinearLogistic |0.729+-0.021    |0.747+-0.012     |
+|tox21   |First |Binary |ECFP1024|GbtreeLogistic   |0.783+-0.022       |0.779+-0.017     |
+|        |      |       |        |GblinearLogistic |0.729+-0.021       |0.747+-0.012     |
 |        |      |       |MACCSkeys |GbtreeLogistic |0.798+-0.019    |0.801+-0.016     |         
 |        |      |       |          |GblinearLogistic |0.766+-0.02   |0.776+-0.023     |
 |        |Second|Binary |Layer1 holdout predictions |GbtreeLogistic |0.790+-0.018 |0.794+-0.014 |
