@@ -24,6 +24,7 @@ at University of Wisconsin-Madison.
 * [Installation](#installation)
 * [Benchmark Results](#benchmark-results)
 * [FAQ](#faq)
+* [RoadMap](https://github.com/haozhenWu/lightchem/issues/1)
 * [Reference](#reference)
 
 ## Dependencies:
