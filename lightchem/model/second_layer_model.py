@@ -325,3 +325,16 @@ class secondLayerModel(object):
         if not isinstance(self.__firstLayerModel_prediction,pd.DataFrame):
             raise ValueError('You must call `predict` before `get_firstLayerModel_predictions`')
         return self.__firstLayerModel_prediction
+
+     def custom_eval(self,function):
+         """
+         Allow user to pass custom evaluation function. Sometime we can train a
+         model with continuous label and evaluate on classification based
+         evaluation function. We just need to internally convert continuous label
+         into binary label.
+         Parameters:
+         -----------
+         function: function
+           Custom evaluation function based on xgboost's format.
+         """
+         self.__eval_function = function
