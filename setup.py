@@ -6,6 +6,6 @@ setup(name='lightchem',
       url='https://github.com/haozhenWu/lightchem',
       author='Haozhen Wu',
       author_email='wuhaozhen@hotmail.com',
-      license='N/A',
+      license='GPL v3',
       packages=['lightchem'],
       zip_safe=False)
