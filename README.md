@@ -55,7 +55,8 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
    conda install scikit-learn=0.18
    ```
 
-4. Install `xgboost` [documentation](https://xgboost.readthedocs.io/en/latest/build.html)  
+4. Install `xgboost` [documentation](https://xgboost.readthedocs.io/en/latest/build.html)
+   Note: `-j4` builds in parallel using 4 threads and can be modified.
    Linux Ubuntu:  Build xgboost shared library  
    ```bash
    git clone --recursive https://github.com/dmlc/xgboost
