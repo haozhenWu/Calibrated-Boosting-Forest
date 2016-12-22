@@ -28,6 +28,11 @@ before_install:
 
 # Install Python packages
 install:
+  # Install scikit-learn and pytest for testing
+  # xgboost and scikit-learn depend on numpy and scipy so installing
+  # scikit-learn first provides the dependencies for xgboost
+  - conda install --yes pytest scikit-learn
+
   # Install xgboost Python package
   - cd python-package
   - python setup.py develop --user
@@ -35,8 +40,6 @@ install:
 
   # Install rdkit
   - conda install --yes -c omnia rdkit
-  # Install scikit-learn and pytest for testing
-  - conda install --yes pytest scikit-learn
 
   # Install lightchem
   - pip install -e .
