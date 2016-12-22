@@ -40,7 +40,7 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
 
 2. `cd` into the directory:  
    ```bash
-   cd dir/outside/lightchem/tox21_run/
+   cd dir/outside/lightchem/
    ```
 
 3. Give permission to execute bash script `./tox21_xgboost_models.sh`:  
