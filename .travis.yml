@@ -1,0 +1,24 @@
+# Config file for automatic testing at travis-ci.org
+# Conda testing for Travis CI from https://gist.github.com/dan-blanchard/7045057
+language: python
+
+# Will not actually use Python 2.7 installed on the Travis CI server
+# but leave this as a reminder of which versions are being tested
+python:
+  - 2.7
+
+notifications:
+  email: false
+
+# Setup Anaconda and xgboost
+before_install:
+  # Install Anaconda, default Miniconda is Python 2 based
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod u+x miniconda.sh
+  # Install in batch mode
+  - ./miniconda.sh -b  -p $HOME/miniconda
+  - export PATH=$HOME/miniconda/bin:$PATH
+  - conda update --yes conda
+
+# Do not test the package functionality yet
+script: python -c 'assert True'
