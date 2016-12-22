@@ -30,7 +30,7 @@ at University of Wisconsin-Madison.
 
 ## Dependencies:
 
-* [sklearn](http://scikit-learn.org/stable/index.html)  version = 0.18.1
+* [scikit-learn](http://scikit-learn.org/stable/index.html)  version = 0.18.1
 * [XGBoost](https://xgboost.readthedocs.io/en/latest/) version = 0.6  
 * [numpy](http://www.numpy.org/) version = 1.11.1  
 * [scipy](https://www.scipy.org/) version = 0.18.1  
@@ -52,7 +52,7 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
    sudo yum install git-all
    ```
 
-3. Install `sklearn`:  
+3. Install `scikit-learn`:  
    ```bash
    conda install scikit-learn=0.18
    ```

@@ -11,6 +11,6 @@ setup(name='lightchem',
       setup_requires=['pytest-runner'],
       # Had Travis CI build problems when listing rdkit here, need to check versions
       # Can this switch to the official conda version?
-      install_requires=['sklearn', 'xgboost', 'numpy', 'scipy', 'pandas'],
+      install_requires=['scikit-learn', 'xgboost', 'numpy', 'scipy', 'pandas'],
       tests_require=['pytest'],
       zip_safe=False)
