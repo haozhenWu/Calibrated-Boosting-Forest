@@ -9,6 +9,7 @@ setup(name='lightchem',
       license='GPL v3',
       packages=['lightchem'],
       setup_requires=['pytest-runner'],
-      install_requires=['sklearn', 'xgboost', 'numpy', 'scipy', 'pandas', 'rdkit'],
+      # Had Travis CI build problems when listing rdkit here, need to check versions
+      install_requires=['sklearn', 'xgboost', 'numpy', 'scipy', 'pandas'],
       tests_require=['pytest'],
       zip_safe=False)
