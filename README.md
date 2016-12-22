@@ -23,6 +23,7 @@ at University of Wisconsin-Madison.
 * [Dependencies](#dependencies)
 * [Installation](#installation)
 * [Benchmark Results](#benchmark-results)
+* [Testing](#testing)
 * [FAQ](#faq)
 * [RoadMap](https://github.com/haozhenWu/lightchem/issues/1)
 * [Reference](#reference)
@@ -35,6 +36,7 @@ at University of Wisconsin-Madison.
 * [scipy](https://www.scipy.org/) version = 0.18.1  
 * [pandas](http://pandas.pydata.org/) version = 0.18.1   
 * [rdkit](http://www.rdkit.org/) version = 2015.09.1
+* [pytest](http://doc.pytest.org/) (optional)
 
 
 
@@ -178,6 +180,13 @@ Test:
 |        |      |       |                           |GblinearLogistic |0 |0 |
 
 
+
+## Testing
+
+To test that the dependencies have been installed correctly, simply enter `pytest`
+in the lightchem directory.  This requires the optional `pytest` Python package.
+The current tests only confirm that the required dependencies exist and can be
+imported.
 
 ## FAQ  
 
