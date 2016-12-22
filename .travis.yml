@@ -33,15 +33,13 @@ install:
   - python setup.py develop --user
   - cd ../..
 
-  # Install rdkit and scikit-learn
-  - conda install -c omnia rdkit
-  - conda install scikit-learn
-
-  # Install pytest for testing
-  - conda install pytest
+  # Install rdkit
+  - conda install --yes -c omnia rdkit
+  # Install scikit-learn and pytest for testing
+  - conda install --yes pytest scikit-learn
 
   # Install lightchem
   - pip install -e .
 
-# Do not test the package functionality yet
-script: python -c 'assert True'
+# Run the test functions
+script: pytest
