@@ -1,7 +1,7 @@
 '''
 Test that the MUV example runs.  Does not yet test that the output is correct.
 '''
-import os, stat, subprocess, shlex
+import os, stat, subprocess, shlex, shutil, tempfile
 
 def test_muv():
     '''
@@ -15,12 +15,13 @@ def test_muv():
     script_st = os.stat(script)
     os.chmod(script, script_st.st_mode | stat.S_IEXEC)
 
-    # Relative to muv_run_dir
-    result_dir = os.path.normpath(os.path.join('..', 'results'))
+    # Use a temporary directory for output
+    result_dir = tempfile.mkdtemp()
 
     # Will call the script from muv_run_dir, so make muv_dir relative to it
     muv_dir = os.path.relpath(muv_dir, muv_run_dir)
     command = './{} {} {} muv_TargetName.csv'.format(os.path.basename(script), muv_dir, result_dir)
+    print 'Running MUV test command: {}'.format(command)
 
     # Run the MUV example script
     os.chdir(muv_run_dir)
@@ -29,3 +30,5 @@ def test_muv():
     # Can check the new output files with the stored output files here
     # Use filecmp.cmpfiles for exact matches or a custom file comparison
     # for approximate matches
+
+    shutil.rmtree(result_dir)
