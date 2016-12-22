@@ -15,10 +15,33 @@ before_install:
   # Install Anaconda, default Miniconda is Python 2 based
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod u+x miniconda.sh
-  # Install in batch mode
+  # Install Miniconda in batch mode
   - ./miniconda.sh -b  -p $HOME/miniconda
   - export PATH=$HOME/miniconda/bin:$PATH
   - conda update --yes conda
+
+  # Install xgboost
+  - git clone --recursive https://github.com/dmlc/xgboost
+  - cd xgboost
+  # https://docs.travis-ci.com/user/ci-environment/ shows we have 2 cores
+  - make -j2
+
+# Install Python packages
+install:
+  # Install xgboost Python package
+  - cd python-package
+  - python setup.py develop --user
+  - cd ../..
+
+  # Install rdkit and scikit-learn
+  - conda install -c omnia rdkit
+  - conda install scikit-learn
+
+  # Install pytest for testing
+  - conda install pytest
+
+  # Install lightchem
+  - pip install -e .
 
 # Do not test the package functionality yet
 script: python -c 'assert True'
