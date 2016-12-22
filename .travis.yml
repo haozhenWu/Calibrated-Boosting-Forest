@@ -21,6 +21,7 @@ before_install:
   - conda update --yes conda
 
   # Install xgboost
+  - cd ..
   - git clone --recursive https://github.com/dmlc/xgboost
   - cd xgboost
   # https://docs.travis-ci.com/user/ci-environment/ shows we have 2 cores
@@ -36,12 +37,12 @@ install:
   # Install xgboost Python package
   - cd python-package
   - python setup.py develop --user
-  - cd ../..
 
   # Install rdkit
   - conda install --yes -c omnia rdkit
 
   # Install lightchem
+  - cd ../../lightchem
   - pip install -e .
 
 # Run the test functions
