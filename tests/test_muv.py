@@ -25,7 +25,8 @@ def test_muv():
 
     # Run the MUV example script
     os.chdir(muv_run_dir)
-    subprocess.call(shlex.split(command), shell=False)
+    return_code = subprocess.call(shlex.split(command), shell=False)
+    assert return_code == 0, 'Non-zero return code' 
 
     # Can check the new output files with the stored output files here
     # Use filecmp.cmpfiles for exact matches or a custom file comparison
