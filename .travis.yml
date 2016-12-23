@@ -46,4 +46,4 @@ install:
   - pip install -e .
 
 # Run the test functions
-script: pytest
+script: travis_wait 20 pytest
