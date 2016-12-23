@@ -27,7 +27,7 @@ def test_muv():
 
     # Will call the script from muv_run_dir, so make muv_dir relative to it
     muv_dir = os.path.relpath(muv_dir, muv_run_dir)
-    command = './{} {} {} {}'.format(os.path.basename(script), muv_dir, result_dir, target_file)
+    command = './{} {} {} {}'.format(os.path.basename(script), muv_dir, result_dir, target_file.name)
     print 'Running MUV test command: {}'.format(command)
 
     # Run the MUV example script
