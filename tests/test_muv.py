@@ -21,9 +21,10 @@ def test_muv():
 
     # Create a smaller list of targets to test so the test runs quickly
     # Could add a second target here
+    target = 'MUV-466'
     target_file = tempfile.NamedTemporaryFile(suffix='.csv', delete=False)
     with target_file as target_f:
-        target_f.write('MUV-466\n')
+        target_f.write('{}\n'.format(target))
 
     # Will call the script from muv_run_dir, so make muv_dir relative to it
     muv_dir = os.path.relpath(muv_dir, muv_run_dir)
@@ -38,6 +39,12 @@ def test_muv():
     # Can check the new output files with the stored output files here
     # Use filecmp.cmpfiles for exact matches or a custom file comparison
     # for approximate matches
+    # For now, only check whether the expected output files were written
+    assert os.path.exists(os.path.join(result_dir, 'each_target_cv_result', 'muv_' + target + "_cv_result.csv"))
+    assert os.path.exists(os.path.join(result_dir, 'each_target_test_result', 'muv_' + target + "_test_result.csv"))
+    assert os.path.exists(os.path.join(result_dir, 'process_time.txt'))
+    assert os.path.exists(os.path.join(result_dir, 'muv_cv_result.csv'))
+    assert os.path.exists(os.path.join(result_dir, 'muv_test_result.csv'))
 
     os.remove(target_file.name)
     shutil.rmtree(result_dir)
