@@ -1,11 +1,12 @@
 '''
 Test that the MUV example runs.  Does not yet test that the output is correct.
+Only tests MUV-466.
 '''
 import os, stat, subprocess, shlex, shutil, tempfile
 
 def test_muv():
     '''
-    Run the MUV example
+    Run the MUV example with a single target
     '''
     muv_dir = os.path.join(os.path.dirname(__file__), '..', 'example', 'muv')
     muv_run_dir = os.path.join(muv_dir, 'muv_run')
@@ -18,9 +19,15 @@ def test_muv():
     # Use a temporary directory for output
     result_dir = tempfile.mkdtemp()
 
+    # Create a smaller list of targets to test so the test runs quickly
+    # Could add a second target here
+    target_file = tempfile.NamedTemporaryFile(suffix='.csv', delete=False)
+    with target_file as target_f:
+        target_f.write('MUV-466\n')
+
     # Will call the script from muv_run_dir, so make muv_dir relative to it
     muv_dir = os.path.relpath(muv_dir, muv_run_dir)
-    command = './{} {} {} muv_TargetName.csv'.format(os.path.basename(script), muv_dir, result_dir)
+    command = './{} {} {} {}'.format(os.path.basename(script), muv_dir, result_dir, target_file)
     print 'Running MUV test command: {}'.format(command)
 
     # Run the MUV example script
@@ -32,4 +39,5 @@ def test_muv():
     # Use filecmp.cmpfiles for exact matches or a custom file comparison
     # for approximate matches
 
+    os.remove(target_file.name)
     shutil.rmtree(result_dir)
