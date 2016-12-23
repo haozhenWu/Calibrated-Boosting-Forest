@@ -29,8 +29,8 @@ target_name = sys.argv[1]
 dir_to_store_result = sys.argv[2]
 dataset_name = 'muv'
 # create folder to store results
-dir_list = [dir_to_store_result + 'each_target_cv_result',
-            dir_to_store_result + 'each_target_test_result']
+dir_list = [os.path.join(dir_to_store_result, 'each_target_cv_result'),
+            os.path.join(dir_to_store_result, 'each_target_test_result')]
 for dir in dir_list:
     if not os.path.exists(dir):
         os.makedirs(dir)
@@ -163,13 +163,13 @@ if __name__ == "__main__":
         result_index.append(model.name + '_std')
     # create a dataframe
     result = pd.DataFrame({target_name : result},index = result_index)
-    result.to_csv(dir_to_store_result + 'each_target_cv_result/' + dataset_name + '_' + target_name + "_cv_result.csv")
+    result.to_csv(os.path.join(dir_to_store_result, 'each_target_cv_result', dataset_name + '_' + target_name + "_cv_result.csv"))
 
     # collect test result
     result = pd.concat(test_result_list,axis = 0,ignore_index=False)
-    result.to_csv(dir_to_store_result + 'each_target_test_result/' + dataset_name + '_' + target_name + "_test_result.csv")
+    result.to_csv(os.path.join(dir_to_store_result, 'each_target_test_result', dataset_name + '_' + target_name + "_test_result.csv"))
 
     # moniter processing time
-    with open(dir_to_store_result + "process_time.txt", "a") as text_file:
+    with open(os.path.join(dir_to_store_result, "process_time.txt"), "a") as text_file:
         text_file.write((target_name
          + " --- %s seconds ---\n" % (time.time() - start_time)))
