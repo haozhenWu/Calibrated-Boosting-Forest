@@ -45,7 +45,7 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
 
 2. `cd` into the directory:  
    ```bash
-   cd dir/outside/lightchem/
+   cd dir/outside/lightchem/pcba128_run/
    ```
 
 3. Give permission to execute bash script `./pcba128_xgboost_models.sh`:  

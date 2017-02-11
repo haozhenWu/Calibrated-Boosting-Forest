@@ -40,7 +40,7 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
 
 2. `cd` into the directory:  
    ```bash
-   cd dir/outside/lightchem/
+   cd dir/outside/lightchem/muv_run/
    ```
 
 3. Give permission to execute bash script `./muv_xgboost_models.sh`:  
