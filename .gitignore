@@ -10,3 +10,7 @@
 
 # Testing cache
 .cache
+
+# Fixed output directory for example scripts.
+./example/muv/muv_results
+
