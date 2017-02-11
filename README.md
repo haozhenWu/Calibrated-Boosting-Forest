@@ -1,5 +1,7 @@
 # LightChem
 
+[![Build Status](https://travis-ci.org/haozhenWu/lightchem.svg?branch=master)](https://travis-ci.org/haozhenWu/lightchem)
+
 LightChem provides high level machine-learning interface that served to used by researcher without deep machine-learning background. It aims to offer convenient exploration for researcher interested in machine-learning for drug discovery. LightChem is a package created by Haozhen Wu from [Small Molecule Screening Facility](http://www.uwhealth.org/uw-carbone-cancer-center/for-researchers/shared-resources/smsf/small-molecule-screening/27197)  
 at University of Wisconsin-Madison.  
 
@@ -23,18 +25,20 @@ at University of Wisconsin-Madison.
 * [Dependencies](#dependencies)
 * [Installation](#installation)
 * [Benchmark Results](#benchmark-results)
+* [Testing](#testing)
 * [FAQ](#faq)
 * [RoadMap](https://github.com/haozhenWu/lightchem/issues/1)
 * [Reference](#reference)
 
 ## Dependencies:
 
-* [sklearn](http://scikit-learn.org/stable/index.html)  version = 0.18.1
+* [scikit-learn](http://scikit-learn.org/stable/index.html)  version = 0.18.1
 * [XGBoost](https://xgboost.readthedocs.io/en/latest/) version = 0.6  
 * [numpy](http://www.numpy.org/) version = 1.11.1  
 * [scipy](https://www.scipy.org/) version = 0.18.1  
 * [pandas](http://pandas.pydata.org/) version = 0.18.1   
 * [rdkit](http://www.rdkit.org/) version = 2015.09.1
+* [pytest](http://doc.pytest.org/) (optional)
 
 
 
@@ -50,12 +54,14 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
    sudo yum install git-all
    ```
 
-3. Install `sklearn`:  
+3. Install `scikit-learn`:  
    ```bash
    conda install scikit-learn=0.18
    ```
 
-4. Install `xgboost` [documentation](https://xgboost.readthedocs.io/en/latest/build.html)  
+4. Install `xgboost` [documentation](https://xgboost.readthedocs.io/en/latest/build.html)
+   Note: `-j4` builds in parallel using 4 threads and can be modified.
+
    Linux Ubuntu:  Build xgboost shared library  
    ```bash
    git clone --recursive https://github.com/dmlc/xgboost
@@ -176,6 +182,13 @@ Test:
 |        |      |       |                           |GblinearLogistic |0 |0 |
 
 
+
+## Testing
+
+To test that the dependencies have been installed correctly, simply enter `pytest`
+in the lightchem directory.  This requires the optional `pytest` Python package.
+The current tests only confirm that the required dependencies exist and can be
+imported.
 
 ## FAQ  
 

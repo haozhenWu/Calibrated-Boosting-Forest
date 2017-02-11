@@ -29,8 +29,8 @@ target_name = sys.argv[1]
 dir_to_store_result = sys.argv[2]
 dataset_name = 'muv'
 # create folder to store results
-dir_list = [dir_to_store_result + 'each_target_cv_result',
-            dir_to_store_result + 'each_target_test_result']
+dir_list = [os.path.join(dir_to_store_result, 'each_target_cv_result'),
+            os.path.join(dir_to_store_result, 'each_target_test_result')]
 for dir in dir_list:
     if not os.path.exists(dir):
         os.makedirs(dir)
@@ -39,6 +39,7 @@ if __name__ == "__main__":
     start_time = time.time()
     SEED = 2016
     #----------------------------------- Build first layer data
+    print '{}: loading data'.format(target_name)
     current_dir = os.path.dirname(os.path.realpath(__file__))
     setting_list = []
     # binary ecfp1024
@@ -77,6 +78,7 @@ if __name__ == "__main__":
     #---------------------------------first layer models ----------
     # 4 layer1 models based on ecfp,MACCSkeys data
     # gbtree
+    print '{}: building first layer models'.format(target_name)
     layer1_model_list = []
     evaluation_metric_name = 'ROCAUC'
     for data_dict in setting_list:
@@ -105,6 +107,7 @@ if __name__ == "__main__":
     #------------------------------------second layer models
     # use label from binary data to train layer2 models
     #layer1_model_list
+    print '{}: building second layer models'.format(target_name)
     layer2_label_data = setting_list[0]['data'] # layer1 data object containing the label for layer2 model
     layer2_model_list = []
     layer2_modeltype = ['GbtreeLogistic','GblinearLogistic']
@@ -134,6 +137,7 @@ if __name__ == "__main__":
 
     #------------------------------------ evaluate model performance on test data
     # prepare test data, retrive from layer1 data
+    print '{}: evaluating test set'.format(target_name)
     list_TestData = []
     for data_dict in setting_list:
         for model_type in data_dict['model_type']:
@@ -163,13 +167,14 @@ if __name__ == "__main__":
         result_index.append(model.name + '_std')
     # create a dataframe
     result = pd.DataFrame({target_name : result},index = result_index)
-    result.to_csv(dir_to_store_result + 'each_target_cv_result/' + dataset_name + '_' + target_name + "_cv_result.csv")
+    result.to_csv(os.path.join(dir_to_store_result, 'each_target_cv_result', dataset_name + '_' + target_name + "_cv_result.csv"))
 
     # collect test result
     result = pd.concat(test_result_list,axis = 0,ignore_index=False)
-    result.to_csv(dir_to_store_result + 'each_target_test_result/' + dataset_name + '_' + target_name + "_test_result.csv")
+    result.to_csv(os.path.join(dir_to_store_result, 'each_target_test_result', dataset_name + '_' + target_name + "_test_result.csv"))
+    print '{}: finished'.format(target_name)
 
     # moniter processing time
-    with open(dir_to_store_result + "process_time.txt", "a") as text_file:
+    with open(os.path.join(dir_to_store_result, "process_time.txt"), "a") as text_file:
         text_file.write((target_name
          + " --- %s seconds ---\n" % (time.time() - start_time)))

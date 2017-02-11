@@ -9,8 +9,9 @@
 
 while IFS='' read -r line;do
 
-python $1'pcba128_xgboost_models.py' $line $2
+echo Running $line
+python $1/'pcba128_xgboost_models.py' $line $2
 
 done <"$3"
 
-python $1'gather_pcba128_result.py' $2
+python $1/'gather_pcba128_result.py' $2

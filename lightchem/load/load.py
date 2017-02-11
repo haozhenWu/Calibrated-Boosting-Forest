@@ -11,7 +11,7 @@ class readData(object):
         Class to read data,such as fingerprint stored as string in one column
         or column names starting with `Feature_`, and transform to ndarray.
         '''
-        def __init__(self,data_loc,lable_name):
+        def __init__(self,data_loc,label_name):
             """
             Parameters:
             -----------
@@ -28,7 +28,7 @@ class readData(object):
                 self.__data_pd = None
                 self.__file_path = data_loc
             #self.__file_path = file_path
-            self.__label_name = lable_name
+            self.__label_name = label_name
             self.__X_data = None
             self.__y_data = None
         def read(self):
