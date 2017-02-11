@@ -53,9 +53,9 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
    Arg2: dir/to/store/result/
    Arg3: muv_TargetName.csv
 
-   '''bash
+   ```bash
    ./muv_xgboost_models.sh .. ../muv_results ./muv_TargetName.csv
-   '''
+   ```
 
 ## Results
 
