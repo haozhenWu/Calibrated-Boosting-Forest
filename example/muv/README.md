@@ -33,11 +33,6 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
 
 ## Usage
 
-1. Copy the `run` folder outside lightchem:  
-   ```bash
-   cp -r ./muv_run dir/outside/lightchem/
-   ```
-
 1. `cd` into the muv_run directory:  
    ```bash
    cd ./muv_run/
