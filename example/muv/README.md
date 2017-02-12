@@ -55,4 +55,5 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
 ## Results
 
 The dataframes contains 3-fold cross-validation and final test results  
-of muv are stored in muv_cv_result.csv and muv_test_result.csv.
+of muv are stored in muv_cv_result.csv and muv_test_result.csv,
+inside ../muv_results folder.
