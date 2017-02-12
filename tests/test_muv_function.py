@@ -31,7 +31,7 @@ def test_muv_function():
     setting_list = []
     # binary ecfp1024
     file_dir = os.path.join(current_dir,
-                            "./muv466_ecfp.csv")
+                            "./muv466_ecfp.csv.zip")
     data_name = 'ecfp'
     label_colname = target_name # label column name of one target
     model_name_to_use = ['GbtreeLogistic','GblinearLogistic'] # Define model to use
@@ -72,7 +72,7 @@ def test_muv_function():
 
     # binary MACCSkeys
     file_dir = os.path.join(current_dir,
-                            "./test_datasets/muv_sample/muv466_macckey.csv")
+                            "./test_datasets/muv_sample/muv466_macckey.csv.zip")
     data_name = 'macckey'
     label_colname = target_name # label column name of one target
     model_name_to_use = ['GbtreeLogistic','GblinearLogistic']
