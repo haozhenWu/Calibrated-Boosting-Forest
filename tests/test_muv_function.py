@@ -31,7 +31,7 @@ def test_muv_function():
     setting_list = []
     # binary ecfp1024
     file_dir = os.path.join(current_dir,
-                            "./muv466_ecfp.csv.zip")
+                            "./test_datasets/muv_sample/muv466_ecfp.csv.zip")
     data_name = 'ecfp'
     label_colname = target_name # label column name of one target
     model_name_to_use = ['GbtreeLogistic','GblinearLogistic'] # Define model to use
@@ -51,7 +51,7 @@ def test_muv_function():
     myfold.to_csv(os.path.join(result_dir,'fold_all.csv'))
     # check whether stratified 4 folds are the same
     assert filecmp.cmp(os.path.join(result_dir,'fold_all.csv'),
-    "./test_datasets/muv_sample/muv466_folds_all.csv")
+    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_folds_all.csv"))
     data = xgb_data.xgbData(myfold,X_data,y_data)
     data.build()
     # check whether training and test data objects are xgboost.core.DMatrix
@@ -63,7 +63,7 @@ def test_muv_function():
     # check whether train folds are the same
     data.get_train_fold().to_csv(os.path.join(result_dir,'fold_train.csv'))
     assert filecmp.cmp(os.path.join(result_dir,'fold_train.csv'),
-    "./test_datasets/muv_sample/muv466_folds_train.csv")
+    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_folds_train.csv"))
     # check number of training folds
     assert data.numberOfTrainFold() == 3
     setting_list.append({'data_name':data_name,'model_type':model_name_to_use,
@@ -121,7 +121,7 @@ def test_muv_function():
     cv_result = np.round(cv_result,2)
     cv_result.to_csv(os.path.join(result_dir,'firstlayerModel_cvScore.csv'))
     assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_cvScore.csv'),
-    "./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv")
+    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"))
 
     # check whether holdout results of first layer model are same, round to THIRD decimal.
     holdout_result = pd.DataFrame({layer1_model_list[0].name : layer1_model_list[0].get_holdout(),
@@ -131,7 +131,7 @@ def test_muv_function():
     holdout_result = np.round(holdout_result,3)
     holdout_result.to_csv(os.path.join(result_dir,'firstlayerModel_holdout.csv'))
     assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_holdout.csv'),
-    "./test_datasets/muv_sample/muv466_firstlayerModel_holdout.csv")
+    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_holdout.csv"))
 
 
     #------------------------------------second layer models
@@ -172,7 +172,7 @@ def test_muv_function():
     cv_result = np.round(cv_result,2)
     cv_result.to_csv(os.path.join(result_dir,'secondlayerModel_cvScore.csv'))
     assert filecmp.cmp(os.path.join(result_dir,'secondlayerModel_cvScore.csv'),
-    "./test_datasets/muv_sample/muv466_secondlayerModel_cvScore.csv")
+    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_secondlayerModel_cvScore.csv"))
 
 
     #------------------------------------ evaluate model performance on test data
@@ -200,4 +200,4 @@ def test_muv_function():
     result = np.round(result,3)
     result.to_csv(os.path.join(result_dir,'testResult_all.csv'))
     assert filecmp.cmp(os.path.join(result_dir,'testResult_all.csv'),
-    "./test_datasets/muv_sample/muv466_testResult_all.csv")
+    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_testResult_all.csv"))
