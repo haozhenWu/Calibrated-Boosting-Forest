@@ -1,0 +1,9 @@
+,EFR1,ROCAUC
+layer2_GbtreeLogistic_ROCAUC_mean,,0.78
+layer2_GbtreeLogistic_ROCAUC_std,,0.03
+layer2_GblinearLogistic_ROCAUC_mean,,0.9
+layer2_GblinearLogistic_ROCAUC_std,,0.01
+layer2_GbtreeLogistic_EFR1_mean,14.29,
+layer2_GbtreeLogistic_EFR1_std,0.0,
+layer2_GblinearLogistic_EFR1_mean,0.0,
+layer2_GblinearLogistic_EFR1_std,0.0,
