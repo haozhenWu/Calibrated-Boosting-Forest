@@ -38,36 +38,27 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
 
 ## Usage
 
-1. Copy the `run` folder outside lightchem:  
+1. `cd` into the pcba128_run directory:  
    ```bash
-   cp -r ./pcba128_run dir/outside/lightchem/
+   cd ./pcba128_run/
    ```
 
-2. `cd` into the directory:  
-   ```bash
-   cd dir/outside/lightchem/pcba128_run/
-   ```
-
-3. Give permission to execute bash script `./pcba128_xgboost_models.sh`:  
+2. Give permission to execute bash script `./pcba128_xgboost_models.sh`:  
    ```bash
    chmod 755 ./pcba128_xgboost_models.sh
    ```
 
-4. Execute bash script.  
-    Argument1: dir/to/lightchem/example/pcba128/  
-    e.g. ~/lightchem/example/pcba128/  
+3. Execute bash script.
+   Arg1: dir/to/lightchem/example/pcba128/  
+   Arg2: dir/to/store/result/
+   Arg3: aid_list.csv
 
-    Argument2: dir/to/store/result/  
-    (You can just use current dir, which is pcba128_run folder)  
-    e.g. ./  
-
-    Argument3: aid_list.csv (A csv file containing target names, e.g. 'aid411')  
-    Used to loop over each target.  
-    ```bash
-    ./pcba128_xgboost_models.sh arg1 arg2 arg3
-    ```
+   ```bash
+   ./pcba128_xgboost_models.sh .. ../pcba128_results ./aid_list.csv
+   ```
 
 ## Results
 
 The dataframes contains 3-fold cross-validation and final test results  
-of pcba128 are stored in pcba128_cv_result.csv and pcba128_test_result.csv.
+of pcba128 are stored in pcba128_cv_result.csv and pcba128_test_result.csv,
+inside ../pcba128_results folder.

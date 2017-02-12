@@ -33,36 +33,27 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
 
 ## Usage
 
-1. Copy the `run` folder outside lightchem:  
+1. `cd` into the muv_run directory:  
    ```bash
-   cp -r ./muv_run dir/outside/lightchem/
+   cd ./muv_run/
    ```
 
-2. `cd` into the directory:  
-   ```bash
-   cd dir/outside/lightchem/muv_run/
-   ```
-
-3. Give permission to execute bash script `./muv_xgboost_models.sh`:  
+2. Give permission to execute bash script `./muv_xgboost_models.sh`:  
    ```bash
    chmod 755 ./muv_xgboost_models.sh
    ```
 
-4. Execute bash script.  
-    Argument1: dir/to/lightchem/example/muv/  
-    e.g. ~/lightchem/example/muv/  
+3. Execute bash script.
+   Arg1: dir/to/lightchem/example/muv/  
+   Arg2: dir/to/store/result/
+   Arg3: muv_TargetName.csv
 
-    Argument2: dir/to/store/result/  
-    (You can just use current dir, which is muv_run folder)  
-    e.g. ./  
-
-    Argument3: muv_TargetName.csv (A csv file containing target names, e.g. 'MUV-466')  
-    Used to loop over each target.  
-    ```bash
-    ./muv_xgboost_models.sh arg1 arg2 arg3
-    ```
+   ```bash
+   ./muv_xgboost_models.sh .. ../muv_results ./muv_TargetName.csv
+   ```
 
 ## Results
 
 The dataframes contains 3-fold cross-validation and final test results  
-of muv are stored in muv_cv_result.csv and muv_test_result.csv.
+of muv are stored in muv_cv_result.csv and muv_test_result.csv,
+inside ../muv_results folder.

@@ -7,6 +7,8 @@
 # (A csv file containing target names, e.g. 'aid411')
 # Used to loop over each target.
 
+mkdir -p ../pcba128_results
+
 while IFS='' read -r line;do
 
 echo Running $line

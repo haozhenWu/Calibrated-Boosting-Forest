@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p ../tox21_results
+
 while IFS='' read -r line;do
 
 echo Running $line

@@ -33,36 +33,27 @@ Model: `GbtreeLogistic`, `GblinearLogistic`
 
 ## Usage
 
-1. Copy the `run` folder outside lightchem:  
+1. `cd` into the tox21_run directory:  
    ```bash
-   cp -r ./tox21_run dir/outside/lightchem/
+   cd ./tox21_run/
    ```
 
-2. `cd` into the directory:  
-   ```bash
-   cd dir/outside/lightchem/tox21_run/
-   ```
-
-3. Give permission to execute bash script `./tox21_xgboost_models.sh`:  
+2. Give permission to execute bash script `./tox21_xgboost_models.sh`:  
    ```bash
    chmod 755 ./tox21_xgboost_models.sh
    ```
 
-4. Execute bash script.  
-    Argument1: dir/to/lightchem/example/tox21/  
-    e.g. ~/lightchem/example/tox21/  
+3. Execute bash script.
+   Arg1: dir/to/lightchem/example/tox21/  
+   Arg2: dir/to/store/result/
+   Arg3: tox21_TargetName.csv
 
-    Argument2: dir/to/store/result/  
-    (You can just use current dir, which is tox21_run folder)  
-    e.g. ./  
-
-    Argument3: tox21_TargetName.csv (A csv file containing target names, e.g. 'NR-AR')  
-    Used to loop over each target.  
-    ```bash
-    ./tox21_xgboost_models.sh arg1 arg2 arg3
-    ```
+   ```bash
+   ./tox21_xgboost_models.sh .. ../tox21_results ./tox21_TargetName.csv
+   ```
 
 ## Results
 
 The dataframes contains 3-fold cross-validation and final test results  
-of tox21 are stored in tox21_cv_result.csv and tox21_test_result.csv.
+of tox21 are stored in tox21_cv_result.csv and tox21_test_result.csv,
+inside ../tox21_results folder.
