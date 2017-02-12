@@ -12,6 +12,6 @@
 .cache
 
 # Fixed output directory for example scripts.
-./example/muv/muv_results
-./example/pcba128/pcba128_results
-./example/tox21/tox21_results
+/example/muv/muv_results/
+/example/pcba128/pcba128_results/
+/example/tox21/tox21_results/
