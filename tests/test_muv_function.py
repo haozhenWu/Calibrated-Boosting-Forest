@@ -120,6 +120,7 @@ def test_muv_function():
                             layer1_model_list[3].cv_score_df()])
     cv_result = np.round(cv_result,2)
     cv_result.to_csv(os.path.join(result_dir,'firstlayerModel_cvScore.csv'))
+    print cv_result
     assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_cvScore.csv'),
     os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"))
 
