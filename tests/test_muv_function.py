@@ -23,6 +23,13 @@ target_name = 'MUV-466'
 #dir_to_store_result
 dataset_name = 'muv'
 
+def rmse(series):
+    '''
+    Root mean square error
+    series: pandas.core.series.Series
+    '''
+    return np.sqrt(np.sum(np.square(series))/len(series))
+
 def test_muv_function():
     SEED = 2016
     #----------------------------------- Build first layer data
@@ -120,10 +127,15 @@ def test_muv_function():
                             layer1_model_list[3].cv_score_df()])
     cv_result = np.round(cv_result,2)
     cv_result.to_csv(os.path.join(result_dir,'firstlayerModel_cvScore.csv'))
+    # read previous saved result and combine 2 result together
+    old = pd.read_csv(os.path.join(current_dir,
+    "./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"))
+    temp_combine = pd.DataFrame({'old' : old.ROCAUC,'new':cv_result.reset_index().ROCAUC})
+    assert rmse(temp_combine.new - temo_combine.old) < 0.05
     print cv_result
-    assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_cvScore.csv'),
-    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"),
-                      shallow=False)
+#    assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_cvScore.csv'),
+#    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"),
+#                      shallow=False)
 
     # check whether holdout results of first layer model are same, round to THIRD decimal.
     holdout_result = pd.DataFrame({layer1_model_list[0].name : layer1_model_list[0].get_holdout(),
