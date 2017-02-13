@@ -131,7 +131,7 @@ def test_muv_function():
     old = pd.read_csv(os.path.join(current_dir,
     "./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"))
     temp_combine = pd.DataFrame({'old' : old.ROCAUC,'new':cv_result.reset_index().ROCAUC})
-    assert rmse(temp_combine.new - temo_combine.old) < 0.05
+    assert rmse(temp_combine.new - temp_combine.old) < 0.05
     print cv_result
 #    assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_cvScore.csv'),
 #    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"),
