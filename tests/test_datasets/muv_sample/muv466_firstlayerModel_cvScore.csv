@@ -1,9 +1,9 @@
 ,ROCAUC
-layer1_ecfp_GbtreeLogistic_ROCAUC_mean,0.82
-layer1_ecfp_GbtreeLogistic_ROCAUC_std,0.05
+layer1_ecfp_GbtreeLogistic_ROCAUC_mean,0.79
+layer1_ecfp_GbtreeLogistic_ROCAUC_std,0.04
 layer1_ecfp_GblinearLogistic_ROCAUC_mean,0.65
 layer1_ecfp_GblinearLogistic_ROCAUC_std,0.04
-layer1_macckey_GbtreeLogistic_ROCAUC_mean,0.88
-layer1_macckey_GbtreeLogistic_ROCAUC_std,0.02
+layer1_macckey_GbtreeLogistic_ROCAUC_mean,0.90
+layer1_macckey_GbtreeLogistic_ROCAUC_std,0.00
 layer1_macckey_GblinearLogistic_ROCAUC_mean,0.75
 layer1_macckey_GblinearLogistic_ROCAUC_std,0.05
