@@ -122,7 +122,8 @@ def test_muv_function():
     cv_result.to_csv(os.path.join(result_dir,'firstlayerModel_cvScore.csv'))
     print cv_result
     assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_cvScore.csv'),
-    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"))
+    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"),
+                      shallow=False)
 
     # check whether holdout results of first layer model are same, round to THIRD decimal.
     holdout_result = pd.DataFrame({layer1_model_list[0].name : layer1_model_list[0].get_holdout(),
