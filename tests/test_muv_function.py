@@ -131,8 +131,8 @@ def test_muv_function():
     old = pd.read_csv(os.path.join(current_dir,
     "./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"))
     temp_combine = pd.DataFrame({'old' : old.ROCAUC,'new':cv_result.reset_index().ROCAUC})
+    print rmse(temp_combine.new - temp_combine.old)
     assert rmse(temp_combine.new - temp_combine.old) < 0.05
-    print cv_result
 #    assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_cvScore.csv'),
 #    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"),
 #                      shallow=False)
@@ -143,9 +143,16 @@ def test_muv_function():
                                     layer1_model_list[2].name : layer1_model_list[2].get_holdout(),
                                     layer1_model_list[3].name : layer1_model_list[3].get_holdout()})
     holdout_result = np.round(holdout_result,3)
-    holdout_result.to_csv(os.path.join(result_dir,'firstlayerModel_holdout.csv'))
-    assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_holdout.csv'),
-    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_holdout.csv"))
+    old = pd.read_csv(os.path.join(current_dir,
+    "./test_datasets/muv_sample/muv466_firstlayerModel_holdout.csv"))
+    #holdout_result.to_csv(os.path.join(result_dir,'firstlayerModel_holdout.csv'))
+    # check each model's holdout prediction.
+    for colname in holdout_result.columns:
+        print colname
+        print rmse(old[colname]-holdout_result[colname])
+        assert rmse(old[colname]-holdout_result[colname]) <0.01
+#    assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_holdout.csv'),
+#    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_holdout.csv"))
 
 
     #------------------------------------second layer models
@@ -184,9 +191,21 @@ def test_muv_function():
                             layer2_model_list[2].cv_score_df(),
                             layer2_model_list[3].cv_score_df()])
     cv_result = np.round(cv_result,2)
-    cv_result.to_csv(os.path.join(result_dir,'secondlayerModel_cvScore.csv'))
-    assert filecmp.cmp(os.path.join(result_dir,'secondlayerModel_cvScore.csv'),
-    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_secondlayerModel_cvScore.csv"))
+    old = pd.read_csv(os.path.join(current_dir,
+    "./test_datasets/muv_sample/muv466_secondlayerModel_cvScore.csv"))
+    # Test second layer model cv score
+    # rocauc
+    temp_combine = pd.DataFrame({'old' : old.ROCAUC,'new':cv_result.reset_index().ROCAUC})
+    print rmse(temp_combine.new - temp_combine.old)
+    assert rmse(temp_combine.new - temp_combine.old) < 0.05
+    # EFR1
+    temp_combine = pd.DataFrame({'old' : old.EFR1,'new':cv_result.reset_index().EFR1})
+    print rmse(temp_combine.new - temp_combine.old)
+    assert rmse(temp_combine.new - temp_combine.old) < 5
+
+#    cv_result.to_csv(os.path.join(result_dir,'secondlayerModel_cvScore.csv'))
+#    assert filecmp.cmp(os.path.join(result_dir,'secondlayerModel_cvScore.csv'),
+#    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_secondlayerModel_cvScore.csv"))
 
 
     #------------------------------------ evaluate model performance on test data
@@ -212,6 +231,19 @@ def test_muv_function():
     # collect test result
     result = pd.concat(test_result_list,axis = 0,ignore_index=False)
     result = np.round(result,3)
-    result.to_csv(os.path.join(result_dir,'testResult_all.csv'))
-    assert filecmp.cmp(os.path.join(result_dir,'testResult_all.csv'),
-    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_testResult_all.csv"))
+    old = pd.read_csv(os.path.join(current_dir,
+    "./test_datasets/muv_sample/muv466_testResult_all.csv"))
+
+    # Compare final test result.
+    # rocauc
+    temp_combine = pd.DataFrame({'old' : old.ROCAUC,'new':result.reset_index().ROCAUC})
+    print rmse(temp_combine.new - temp_combine.old)
+    assert rmse(temp_combine.new - temp_combine.old) < 0.05
+    # EFR1
+    temp_combine = pd.DataFrame({'old' : old.EFR1,'new':result.reset_index().EFR1})
+    print rmse(temp_combine.new - temp_combine.old)
+    assert rmse(temp_combine.new - temp_combine.old) < 5
+
+    #result.to_csv(os.path.join(result_dir,'testResult_all.csv'))
+    #assert filecmp.cmp(os.path.join(result_dir,'testResult_all.csv'),
+    #os.path.join(current_dir,"./test_datasets/muv_sample/muv466_testResult_all.csv"))
