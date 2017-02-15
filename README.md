@@ -187,8 +187,9 @@ Test:
 
 To test that the dependencies have been installed correctly, simply enter `pytest`
 in the lightchem directory.  This requires the optional `pytest` Python package.
-The current tests only confirm that the required dependencies exist and can be
-imported.
+The current tests 1.confirm that the required dependencies exist and can be
+imported, 2.confirm the model performance results of one target MUV-466 fall into
+expected ranges. 
 
 ## FAQ  
 
