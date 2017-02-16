@@ -1,5 +1,6 @@
 '''
-Test each function used in  MUV example script.
+Use MUV-466 to test the major functionalities of data loading, train/test split,
+first layer model, second layer model.
 '''
 
 import sys
