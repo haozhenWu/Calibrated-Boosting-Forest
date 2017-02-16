@@ -201,7 +201,7 @@ def test_muv_function():
     # EFR1
     temp_combine = pd.DataFrame({'old' : old.EFR1,'new':cv_result.reset_index().EFR1})
     print rmse(temp_combine.new - temp_combine.old)
-    assert rmse(temp_combine.new - temp_combine.old) < 5
+    assert rmse(temp_combine.new - temp_combine.old) < 10
 
 #    cv_result.to_csv(os.path.join(result_dir,'secondlayerModel_cvScore.csv'))
 #    assert filecmp.cmp(os.path.join(result_dir,'secondlayerModel_cvScore.csv'),
@@ -242,7 +242,7 @@ def test_muv_function():
     # EFR1
     temp_combine = pd.DataFrame({'old' : old.EFR1,'new':result.reset_index().EFR1})
     print rmse(temp_combine.new - temp_combine.old)
-    assert rmse(temp_combine.new - temp_combine.old) < 5
+    assert rmse(temp_combine.new - temp_combine.old) < 10
 
     #result.to_csv(os.path.join(result_dir,'testResult_all.csv'))
     #assert filecmp.cmp(os.path.join(result_dir,'testResult_all.csv'),
