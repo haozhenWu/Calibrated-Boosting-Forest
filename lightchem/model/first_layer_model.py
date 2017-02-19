@@ -27,23 +27,9 @@ class firstLayerModel(object):
           info, and label.
         eval_name: str
           Name of evaluation metric used to monitor training process. Must in
-          pre-difined evaluation list.
-          Currently supports:
-          `ROCAUC`: Area under curve of ROC
-          `PRAUC`: Area under curve of Precision-recall
-          `EFR1`: Enrichment factor at 0.01
-          `EFR015`: Enrichment factor at 0.0015
+          pre-defined evaluation list.
         model_type: str
-          Name of model type you want to use.
-          Currently supports:
-          `GbtreeLogistic`: xgboost's gradient boosting tree for logistic
-                                regression.
-          `GbtreeRegression`: xgboost's gradient boosting tree for linear
-                                regression.
-          `GblinearLogistic`: xgboost's gradient boosting linear for logistic
-                                regression.
-          `GblinearRegression`: xgboost's gradient boosting linear for linear
-                                regression.
+          Name of model type you want to use. Must in pre-defined model type list.
         model_name: str
           Unique name for this model.
         """

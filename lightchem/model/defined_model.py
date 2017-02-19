@@ -5,6 +5,15 @@ Pre-defined model.
 class definedModel(object):
     """
     Pre-defined models and their default setting.
+    Currently supports:
+    `GbtreeLogistic`: xgboost's gradient boosting tree for logistic
+                        regression.
+    `GbtreeRegression`: xgboost's gradient boosting tree for linear
+                        regression.
+    `GblinearLogistic`: xgboost's gradient boosting linear for logistic
+                        regression.
+    `GblinearRegression`: xgboost's gradient boosting linear for linear
+                        regression.    
     """
     def __init__(self):
         self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression',

@@ -5,6 +5,11 @@ from lightchem.eval import xgb_eval
 class definedEvaluation(object):
     """
     Pre-defined evaluation metircs and their default setting related to models.
+    Currently supports:
+    `ROCAUC`: Area under curve of ROC
+    `PRAUC`: Area under curve of Precision-recall
+    `EFR1`: Enrichment factor at 0.01
+    `EFR015`: Enrichment factor at 0.0015    
     """
     def __init__(self):
         self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
