@@ -14,6 +14,8 @@ from lightchem.eval import xgb_eval
 from lightchem.data import xgb_data
 from lightchem.model import first_layer_model
 from lightchem.eval import defined_eval
+from lightchem.model import defined_model
+
 
 class secondLayerModel(object):
     """
@@ -51,7 +53,8 @@ class secondLayerModel(object):
           Unique name for this model.
         """
         self.name = model_name
-        self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression','GblinearLogistic','GblinearRegression']
+        self.__preDefined_model = defined_model.definedModel()
+#        self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression','GblinearLogistic','GblinearRegression']
         self.__preDefined_eval = defined_eval.definedEvaluation()
         self.__DEFINED_EVAL = self.__preDefined_eval.eval_list()
         #self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
@@ -61,22 +64,23 @@ class secondLayerModel(object):
         self.__preDefined_eval.validate_eval_name(eval_name)
         #assert eval_name in self.__DEFINED_EVAL
         self.__eval_name = eval_name
-        assert model_type in self.__DEFINED_MODEL_TYPE
+        self.__preDefined_model.validate_model_type(model_type)
+#        assert model_type in self.__DEFINED_MODEL_TYPE
         self.__model_type_writeout = model_type
         self.__collect_model = None
         self.__track_best_ntree = pd.DataFrame(columns = ['model_name','best_ntree'])
         self.__best_score = list()
         self.__firstLayerModel_prediction = None
-        self.__param = {}
-        self.__eval_function = None
-        self.__MAXIMIZE = None
-        self.__STOPPING_ROUND = None
+        self.__param = self.__preDefined_model.model_param()
+        self.__eval_function = self.__preDefined_eval.eval_function(self.__eval_name)
+        self.__MAXIMIZE = self.__preDefined_eval.is_maximize(self.__eval_name)
+        self.__STOPPING_ROUND = self.__preDefined_eval.stopping_round(self.__eval_name)
         self.__holdout = None
-        self.__default_param()
-
+#        self.__default_param()
+"""
     def __default_param(self):
         """
-        Internal method to create default parameters.
+        #Internal method to create default parameters.
         """
         self.__eval_function = self.__preDefined_eval.eval_function(self.__eval_name)
         self.__MAXIMIZE = self.__preDefined_eval.is_maximize(self.__eval_name)
@@ -132,7 +136,7 @@ class secondLayerModel(object):
                      'silent':1,
                      'seed' : 2016
                      }
-
+"""
     def second_layer_data(self):
         """
         Method to prepare training data for second layer model.
