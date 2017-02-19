@@ -54,18 +54,14 @@ class secondLayerModel(object):
         """
         self.name = model_name
         self.__preDefined_model = defined_model.definedModel()
-#        self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression','GblinearLogistic','GblinearRegression']
         self.__preDefined_eval = defined_eval.definedEvaluation()
         self.__DEFINED_EVAL = self.__preDefined_eval.eval_list()
-        #self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
         self.__xgbData = xgbData
         assert all([isinstance(item,first_layer_model.firstLayerModel) for item in list_firstLayerModel])
         self.__list_firstLayerModel = list_firstLayerModel
         self.__preDefined_eval.validate_eval_name(eval_name)
-        #assert eval_name in self.__DEFINED_EVAL
         self.__eval_name = eval_name
         self.__preDefined_model.validate_model_type(model_type)
-#        assert model_type in self.__DEFINED_MODEL_TYPE
         self.__model_type_writeout = model_type
         self.__collect_model = None
         self.__track_best_ntree = pd.DataFrame(columns = ['model_name','best_ntree'])
@@ -76,7 +72,6 @@ class secondLayerModel(object):
         self.__MAXIMIZE = self.__preDefined_eval.is_maximize(self.__eval_name)
         self.__STOPPING_ROUND = self.__preDefined_eval.stopping_round(self.__eval_name)
         self.__holdout = None
-#        self.__default_param()
 
     def second_layer_data(self):
         """
