@@ -53,15 +53,14 @@ class secondLayerModel(object):
         self.name = model_name
         self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression','GblinearLogistic','GblinearRegression']
         self.__preDefined_eval = defined_eval.definedEvaluation()
-        self.__DEFINED_EVAL = preDefined_eval.list()
+        self.__DEFINED_EVAL = __preDefined_eval.list()
         #self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
         self.__xgbData = xgbData
         assert all([isinstance(item,first_layer_model.firstLayerModel) for item in list_firstLayerModel])
         self.__list_firstLayerModel = list_firstLayerModel
-        assert eval_name in self.__DEFINED_EVAL
-        self.__eval_name = eval_name
         self.__preDefined_eval.validate_eval_name(eval_name)
         #assert eval_name in self.__DEFINED_EVAL
+        self.__eval_name = eval_name
         assert model_type in self.__DEFINED_MODEL_TYPE
         self.__model_type_writeout = model_type
         self.__collect_model = None
