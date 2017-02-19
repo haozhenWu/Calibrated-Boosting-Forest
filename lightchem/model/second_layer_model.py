@@ -71,7 +71,7 @@ class secondLayerModel(object):
         self.__track_best_ntree = pd.DataFrame(columns = ['model_name','best_ntree'])
         self.__best_score = list()
         self.__firstLayerModel_prediction = None
-        self.__param = self.__preDefined_model.model_param()
+        self.__param = self.__preDefined_model.model_param(model_type)
         self.__eval_function = self.__preDefined_eval.eval_function(self.__eval_name)
         self.__MAXIMIZE = self.__preDefined_eval.is_maximize(self.__eval_name)
         self.__STOPPING_ROUND = self.__preDefined_eval.stopping_round(self.__eval_name)
