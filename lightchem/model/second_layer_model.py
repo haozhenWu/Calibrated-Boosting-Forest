@@ -13,6 +13,9 @@ import re
 from lightchem.eval import xgb_eval
 from lightchem.data import xgb_data
 from lightchem.model import first_layer_model
+from lightchem.eval import defined_eval
+from lightchem.model import defined_model
+
 
 class secondLayerModel(object):
     """
@@ -29,109 +32,32 @@ class secondLayerModel(object):
          list contains firstLayerModel.
         eval_name: str
           Name of evaluation metric used to monitor training process. Must in
-          pre-difined evaluation list.
-          Currently supports:
-          `ROCAUC`: Area under curve of ROC
-          `PRAUC`: Area under curve of Precision-recall
-          `EFR1`: Enrichment factor at 0.01
-          `EFR015`: Enrichment factor at 0.0015
+          pre-defined evaluation list.
         model_type: str
-          Name of model type you want to use.
-          Currently supports:
-          `GbtreeLogistic`: xgboost's gradient boosting tree for logistic
-                                regression.
-          `GbtreeRegression`: xgboost's gradient boosting tree for linear
-                                regression.
-          `GblinearLogistic`: xgboost's gradient boosting linear for logistic
-                                regression.
-          `GblinearRegression`: xgboost's gradient boosting linear for linear
-                                regression.
+          Name of model type you want to use. Must in pre-defined model type list.
         model_name: str
           Unique name for this model.
         """
         self.name = model_name
-        self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression','GblinearLogistic','GblinearRegression']
-        self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
+        self.__preDefined_model = defined_model.definedModel()
+        self.__preDefined_eval = defined_eval.definedEvaluation()
+        self.__DEFINED_EVAL = self.__preDefined_eval.eval_list()
         self.__xgbData = xgbData
         assert all([isinstance(item,first_layer_model.firstLayerModel) for item in list_firstLayerModel])
         self.__list_firstLayerModel = list_firstLayerModel
-        assert eval_name in self.__DEFINED_EVAL
+        self.__preDefined_eval.validate_eval_name(eval_name)
         self.__eval_name = eval_name
-        assert model_type in self.__DEFINED_MODEL_TYPE
+        self.__preDefined_model.validate_model_type(model_type)
         self.__model_type_writeout = model_type
         self.__collect_model = None
         self.__track_best_ntree = pd.DataFrame(columns = ['model_name','best_ntree'])
         self.__best_score = list()
         self.__firstLayerModel_prediction = None
-        self.__param = {}
-        self.__eval_function = None
-        self.__MAXIMIZE = None
-        self.__STOPPING_ROUND = None
+        self.__param = self.__preDefined_model.model_param(model_type)
+        self.__eval_function = self.__preDefined_eval.eval_function(self.__eval_name)
+        self.__MAXIMIZE = self.__preDefined_eval.is_maximize(self.__eval_name)
+        self.__STOPPING_ROUND = self.__preDefined_eval.stopping_round(self.__eval_name)
         self.__holdout = None
-        self.__default_param()
-
-    def __default_param(self):
-        """
-        Internal method to create default parameters.
-        """
-        match = {'ROCAUC' : [xgb_eval.evalrocauc,True,100],
-                'PRAUC' :   [xgb_eval.evalprauc,True,300],
-                'EFR1' : [xgb_eval.evalefr1,True,50],
-                'EFR015' : [xgb_eval.evalefr015,True,50]}
-        self.__eval_function = match[self.__eval_name][0]
-        self.__MAXIMIZE = match[self.__eval_name][1]
-        self.__STOPPING_ROUND = match[self.__eval_name][2]
-
-        if self.__model_type_writeout == 'GbtreeLogistic':
-            # define model parameter
-            self.__param = {'objective':'binary:logistic',
-                'booster' : 'gbtree',
-                'eta' : 0.1,
-                'max_depth' : 6,
-                'subsample' : 0.53,
-                'colsample_bytree' : 0.7,
-                'num_parallel_tree' : 1,
-                'min_child_weight' : 5,
-                'gamma' : 5,
-                'max_delta_step':1,
-                'silent':1,
-                'seed' : 2016
-                }
-        elif self.__model_type_writeout == 'GblinearLogistic':
-             # define model parameter
-             self.__param = {'objective':'binary:logistic',
-                     'booster' : 'gblinear',
-                     'eta' : 0.2,
-                     'lambda' : 0.1,
-                     'alpha' : 0.001,
-                     'silent':1,
-                     'seed' : 2016
-                    }
-        elif self.__model_type_writeout == 'GbtreeRegression':
-             # define model parameter
-             self.__param = {'objective':'reg:linear',
-                     'booster' : 'gbtree',
-                     'eta' : 0.2,
-                     'max_depth' : 6,
-                     'subsample' : 0.53,
-                     'colsample_bytree' : 0.7,
-                     'num_parallel_tree' : 1,
-                     'min_child_weight' : 5,
-                     'gamma' : 5,
-                     'max_delta_step':1,
-                     'silent':1,
-                     'seed' : 2016
-                    }
-        elif self.__model_type_writeout == 'GblinearRegression':
-             # define model parameter
-             self.__param = {'objective':'reg:linear',
-                     'booster' : 'gblinear',
-                     'eta' : 0.2,
-                     'lambda' : 0.1,
-                     'alpha' : 0.001,
-                     'silent':1,
-                     'seed' : 2016
-                     }
 
     def second_layer_data(self):
         """
@@ -326,7 +252,7 @@ class secondLayerModel(object):
             raise ValueError('You must call `predict` before `get_firstLayerModel_predictions`')
         return self.__firstLayerModel_prediction
 
-    def custom_eval(self,function):        
+    def custom_eval(self,function):
         """
         Allow user to pass custom evaluation function. Sometime we can train a
         model with continuous label and evaluate on classification based
