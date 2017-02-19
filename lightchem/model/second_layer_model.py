@@ -13,6 +13,7 @@ import re
 from lightchem.eval import xgb_eval
 from lightchem.data import xgb_data
 from lightchem.model import first_layer_model
+from lightchem.eval import defined_eval
 
 class secondLayerModel(object):
     """
@@ -51,12 +52,16 @@ class secondLayerModel(object):
         """
         self.name = model_name
         self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression','GblinearLogistic','GblinearRegression']
-        self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
+        self.__preDefined_eval = defined_eval.definedEvaluation()
+        self.__DEFINED_EVAL = preDefined_eval.list()
+        #self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
         self.__xgbData = xgbData
         assert all([isinstance(item,first_layer_model.firstLayerModel) for item in list_firstLayerModel])
         self.__list_firstLayerModel = list_firstLayerModel
         assert eval_name in self.__DEFINED_EVAL
         self.__eval_name = eval_name
+        self.__preDefined_eval.validate_eval_name(eval_name)
+        #assert eval_name in self.__DEFINED_EVAL
         assert model_type in self.__DEFINED_MODEL_TYPE
         self.__model_type_writeout = model_type
         self.__collect_model = None
@@ -74,13 +79,9 @@ class secondLayerModel(object):
         """
         Internal method to create default parameters.
         """
-        match = {'ROCAUC' : [xgb_eval.evalrocauc,True,100],
-                'PRAUC' :   [xgb_eval.evalprauc,True,300],
-                'EFR1' : [xgb_eval.evalefr1,True,50],
-                'EFR015' : [xgb_eval.evalefr015,True,50]}
-        self.__eval_function = match[self.__eval_name][0]
-        self.__MAXIMIZE = match[self.__eval_name][1]
-        self.__STOPPING_ROUND = match[self.__eval_name][2]
+        self.__eval_function = self.__preDefined_eval.eval_function(self.__eval_name)
+        self.__MAXIMIZE = self.__preDefined_eval.is_maximize(self.__eval_name)
+        self.__STOPPING_ROUND = self.__preDefined_eval.stopping_round(self.__eval_name)
 
         if self.__model_type_writeout == 'GbtreeLogistic':
             # define model parameter
@@ -326,7 +327,7 @@ class secondLayerModel(object):
             raise ValueError('You must call `predict` before `get_firstLayerModel_predictions`')
         return self.__firstLayerModel_prediction
 
-    def custom_eval(self,function):        
+    def custom_eval(self,function):
         """
         Allow user to pass custom evaluation function. Sometime we can train a
         model with continuous label and evaluate on classification based

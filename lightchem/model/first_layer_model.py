@@ -11,6 +11,7 @@ from sklearn.model_selection import StratifiedKFold
 import glob
 import re
 from lightchem.eval import xgb_eval
+from lightchem.eval import defined_eval
 
 class firstLayerModel(object):
     """
@@ -48,9 +49,12 @@ class firstLayerModel(object):
         self.name = model_name
         self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression',
                                         'GblinearLogistic','GblinearRegression']
-        self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
+        self.__preDefined_eval = defined_eval.definedEvaluation()
+        self.__DEFINED_EVAL = preDefined_eval.list()
+        #self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
         self.__xgbData = xgbData
-        assert eval_name in self.__DEFINED_EVAL
+        self.__preDefined_eval.validate_eval_name(eval_name)
+        #assert eval_name in self.__DEFINED_EVAL
         self.__eval_name = eval_name
         assert model_type in self.__DEFINED_MODEL_TYPE
         self.__model_type_writeout = model_type
@@ -68,13 +72,9 @@ class firstLayerModel(object):
         """
         Internal method to create default parameters.
         """
-        match = {'ROCAUC' : [xgb_eval.evalrocauc,True,100],
-                'PRAUC' :   [xgb_eval.evalprauc,True,300],
-                'EFR1' : [xgb_eval.evalefr1,True,50],
-                'EFR015' : [xgb_eval.evalefr015,True,50]}
-        self.__eval_function = match[self.__eval_name][0]
-        self.__MAXIMIZE = match[self.__eval_name][1]
-        self.__STOPPING_ROUND = match[self.__eval_name][2]
+        self.__eval_function = self.__preDefined_eval.eval_function(self.__eval_name)
+        self.__MAXIMIZE = self.__preDefined_eval.is_maximize(self.__eval_name)
+        self.__STOPPING_ROUND = self.__preDefined_eval.stopping_round(self.__eval_name)
 
         if self.__model_type_writeout == 'GbtreeLogistic':
             # define model parameter
