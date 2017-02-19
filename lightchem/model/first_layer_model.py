@@ -71,66 +71,7 @@ class firstLayerModel(object):
         self.__STOPPING_ROUND = self.__preDefined_eval.stopping_round(self.__eval_name)
         self.__holdout = None
 #        self.__default_param()
-"""
-    def __default_param(self):
-        """
-        #Internal method to create default parameters.
-        """
-        self.__eval_function = self.__preDefined_eval.eval_function(self.__eval_name)
-        self.__MAXIMIZE = self.__preDefined_eval.is_maximize(self.__eval_name)
-        self.__STOPPING_ROUND = self.__preDefined_eval.stopping_round(self.__eval_name)
 
-        if self.__model_type_writeout == 'GbtreeLogistic':
-            # define model parameter
-            self.__param = {'objective':'binary:logistic',
-                'booster' : 'gbtree',
-                'eta' : 0.1,
-                'max_depth' : 6,
-                'subsample' : 0.53,
-                'colsample_bytree' : 0.7,
-                'num_parallel_tree' : 1,
-                'min_child_weight' : 5,
-                'gamma' : 5,
-                'max_delta_step':1,
-                'silent':1,
-                'seed' : 2016
-                }
-        elif self.__model_type_writeout == 'GblinearLogistic':
-             # define model parameter
-             self.__param = {'objective':'binary:logistic',
-                     'booster' : 'gblinear',
-                     'eta' : 0.2,
-                     'lambda' : 0.1,
-                     'alpha' : 0.001,
-                     'silent':1,
-                     'seed' : 2016
-                    }
-        elif self.__model_type_writeout == 'GbtreeRegression':
-             # define model parameter
-             self.__param = {'objective':'reg:linear',
-                     'booster' : 'gbtree',
-                     'eta' : 0.2,
-                     'max_depth' : 6,
-                     'subsample' : 0.53,
-                     'colsample_bytree' : 0.7,
-                     'num_parallel_tree' : 1,
-                     'min_child_weight' : 5,
-                     'gamma' : 5,
-                     'max_delta_step':1,
-                     'silent':1,
-                     'seed' : 2016
-                    }
-        elif self.__model_type_writeout == 'GblinearRegression':
-             # define model parameter
-             self.__param = {'objective':'reg:linear',
-                     'booster' : 'gblinear',
-                     'eta' : 0.2,
-                     'lambda' : 0.1,
-                     'alpha' : 0.001,
-                     'silent':1,
-                     'seed' : 2016
-                     }
-"""
     def xgb_cv(self):
         '''
         Self-define wrapper to perform cross validation, which use training and
