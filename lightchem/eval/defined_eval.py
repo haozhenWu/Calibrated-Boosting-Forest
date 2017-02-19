@@ -17,15 +17,15 @@ class definedEvaluation(object):
         return self.__DEFINED_EVAL
 
     def eval_function(self,eval_name):
-        validate_eval_name(eval_name)
+        self.validate_eval_name(eval_name)
         return self.__MATCH[eval_name][0]
 
     def is_maximize(self,eval_name):
-        validate_eval_name(eval_name)
+        self.validate_eval_name(eval_name)
         return self.__MATCH[eval_name][1]
 
     def stopping_round(self,eval_name):
-        validate_eval_name(eval_name)
+        self.validate_eval_name(eval_name)
         return self.__MATCH[eval_name][2]
 
     def validate_eval_name(self,eval_name):

@@ -50,7 +50,7 @@ class firstLayerModel(object):
         self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression',
                                         'GblinearLogistic','GblinearRegression']
         self.__preDefined_eval = defined_eval.definedEvaluation()
-        self.__DEFINED_EVAL = self.__preDefined_eval.list()
+        self.__DEFINED_EVAL = self.__preDefined_eval.eval_list()
         #self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
         self.__xgbData = xgbData
         self.__preDefined_eval.validate_eval_name(eval_name)
