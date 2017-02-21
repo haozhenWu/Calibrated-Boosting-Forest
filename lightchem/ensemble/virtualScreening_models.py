@@ -184,7 +184,7 @@ class VsEnsembleModel(object):
         test_result['temp_name'] = test_result.index
         test_result = test_result.drop_duplicates(['temp_name'])
         test_result = test_result.drop('temp_name',1)
-        cv_test = pd.merge(cv_result,temp,how='left',left_index=True,right_index=True)
+        cv_test = pd.merge(cv_result,test_result,how='left',left_index=True,right_index=True)
         num_folds = np.float64(num_folds)
         cv_test['weighted_score'] = cv_test.cv_result * (num_folds-1)/num_folds + cv_test.test_result * (1/num_folds)
         weighted_score = cv_test.cv_result * (num_folds-1)/num_folds + cv_test.test_result * (1/num_folds)
