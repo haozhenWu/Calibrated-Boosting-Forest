@@ -57,10 +57,13 @@ class VsEnsembleModel(object):
         """
         Internal method to build required data(xgbData) objects
         """
+        print '{}: Preparing data'.format(target_name)
         #Based on how many unique number, automatically detect if label column
         # is binary or continuous.
         has_fold = False
         num_xgbData = 0
+        num_folds = 3
+        my_fold = None
         for item in self.__training_info:
             temp_df = item[0]
             for column_name in item[1]:
@@ -78,7 +81,7 @@ class VsEnsembleModel(object):
                 y_data = temp_data.label()
                 # Need to generate fold once, based on binary label
                 if not has_fold:
-                    my_fold = fold.fold(X_data,y_data,4,self.seed)
+                    my_fold = fold.fold(X_data,y_data,num_folds,self.seed)
                     my_fold = my_fold.generate_skfolds()
                     has_fold = True
                 data = xgb_data.xgbData(myfold,X_data,y_data)
