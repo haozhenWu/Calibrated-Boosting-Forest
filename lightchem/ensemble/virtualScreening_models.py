@@ -77,7 +77,7 @@ class VsEnsembleModel(object):
                 X_data = temp_data.features()
                 y_data = temp_data.label()
                 # Need to generate fold once, based on binary label
-                if !has_fold:
+                if not has_fold:
                     my_fold = fold.fold(X_data,y_data,4,self.seed)
                     my_fold = my_fold.generate_skfolds()
                     has_fold = True
