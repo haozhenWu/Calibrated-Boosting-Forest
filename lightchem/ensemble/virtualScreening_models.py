@@ -104,33 +104,32 @@ class VsEnsembleModel(object):
     def train(self):
         evaluation_metric_name = self.__eval_name
         #---------------------------------first layer models ----------
-        for data_dict in setting_list:
+        for data_dict in self.__setting_list:
             for model_type in data_dict['model_type']:
                 unique_name = 'layer1_' + data_dict['data_name'] + '_' + model_type + '_' + evaluation_metric_name
                 model = first_layer_model.firstLayerModel(data_dict['data'],
                         evaluation_metric_name,model_type,unique_name)
                 # Retrieve default parameter and change default seed.
                 default_param,default_MAXIMIZE,default_STOPPING_ROUND = model.get_param()
-                default_param['seed'] = SEED
+                default_param['seed'] = self.seed
                 model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
                 model.xgb_cv()
                 model.generate_holdout_pred()
                 self.__layer1_model_list.append(model)
 
         #------------------------------------second layer models
-        layer2_label_data = setting_list[0]['data'] # layer1 data object containing the label for layer2 model
-        layer2_model_list = []
+        layer2_label_data = self.__setting_list[0]['data'] # layer1 data object containing the label for layer2 model
         layer2_modeltype = ['GbtreeLogistic','GblinearLogistic']
         layer2_evaluation_metric_name = [self.__eval_name]
         for evaluation_metric_name in layer2_evaluation_metric_name:
             for model_type in layer2_modeltype:
                 unique_name = 'layer2' + '_' + model_type + '_' + evaluation_metric_name
-                l2model = second_layer_model.secondLayerModel(layer2_label_data,layer1_model_list,
+                l2model = second_layer_model.secondLayerModel(layer2_label_data,self.__layer1_model_list,
                             evaluation_metric_name,model_type,unique_name)
                 l2model.second_layer_data()
                 # Retrieve default parameter and change default seed.
                 default_param,default_MAXIMIZE,default_STOPPING_ROUND = l2model.get_param()
-                default_param['seed'] = SEED
+                default_param['seed'] = self.seed
                 l2model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
                 l2model.xgb_cv()
                 self.__layer2_model_list.append(l2model)
@@ -139,7 +138,7 @@ class VsEnsembleModel(object):
         #------------------------------------ evaluate model performance on test data
         # prepare test data, retrive from layer1 data
         list_TestData = []
-        for data_dict in setting_list:
+        for data_dict in self.__setting_list:
             for model_type in data_dict['model_type']:
                 list_TestData.append(data_dict['data'].get_dtest())
         test_label = layer2_label_data.get_testLabel()
@@ -147,7 +146,7 @@ class VsEnsembleModel(object):
         i = 0
         for evaluation_metric_name in layer2_evaluation_metric_name:
             for model_type in layer2_modeltype:
-                test_result = eval_testset.eval_testset(layer2_model_list[i],
+                test_result = eval_testset.eval_testset(self.__layer2_model_list[i],
                                                         list_TestData,test_label,
                                                         evaluation_metric_name)
                 test_result_list.append(test_result)
@@ -169,7 +168,7 @@ class VsEnsembleModel(object):
         cv_result = pd.DataFrame({'cv_result' : result},index = result_index)
 
         test_result = pd.concat(test_result_list,axis = 0,ignore_index=False)
-        test_result = test_result.rename(columns = {eval_name:'test_result'})
+        test_result = test_result.rename(columns = {self.__eval_name:'test_result'})
         #Automatically selet distinct row.
         test_result['temp_name'] = test_result.index
         test_result = test_result.drop_duplicates(['temp_name'])
@@ -181,7 +180,7 @@ class VsEnsembleModel(object):
 
         # Determine does current evaluation metric need to maximize or minimize
         eval_info = defined_eval.definedEvaluation()
-        is_max = eval_info.is_maximize(eval_name)
+        is_max = eval_info.is_maximize(self.__eval_name)
         if is_max:
             position = np.where(cv_test.weighted_score == cv_test.weighted_score.max())
             best_model_name = cv_test.weighted_score.iloc[position].index[0]
