@@ -57,7 +57,7 @@ class VsEnsembleModel(object):
         """
         Internal method to build required data(xgbData) objects
         """
-        print '{}: Preparing data'.format(target_name)
+        print 'Preparing data'
         #Based on how many unique number, automatically detect if label column
         # is binary or continuous.
         has_fold = False
