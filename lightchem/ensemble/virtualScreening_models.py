@@ -84,7 +84,7 @@ class VsEnsembleModel(object):
                     my_fold = fold.fold(X_data,y_data,num_folds,self.seed)
                     my_fold = my_fold.generate_skfolds()
                     has_fold = True
-                data = xgb_data.xgbData(myfold,X_data,y_data)
+                data = xgb_data.xgbData(my_fold,X_data,y_data)
                 data.build()
                 num_xgbData += 1
                 temp_dataName = 'Number:' + str(num_xgbData) + " xgbData, " + 'labelType: ' + temp_labelType
