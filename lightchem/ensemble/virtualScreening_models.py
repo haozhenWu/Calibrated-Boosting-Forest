@@ -44,7 +44,7 @@ class VsEnsembleModel(object):
           `EFR1`: Enrichment factor at 0.01
           `EFR015`: Enrichment factor at 0.0015
         """
-        self.__training_info = traininig_info
+        self.__training_info = training_info
         self.__check_labelType()
         self.__eval_name = eval_name
         self.__setting_list = []
