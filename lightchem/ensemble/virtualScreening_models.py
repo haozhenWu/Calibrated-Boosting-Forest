@@ -115,8 +115,7 @@ class VsEnsembleModel(object):
                 default_param['seed'] = self.seed
                 if self.__verbose == True:
                     default_param['silent'] = 1
-                elif:
-                    self.__verbose == False:
+                elif self.__verbose == False:
                     default_param['silent'] = 0
                 model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
                 model.xgb_cv()
@@ -138,8 +137,7 @@ class VsEnsembleModel(object):
                 default_param['seed'] = self.seed
                 if self.__verbose == True:
                     default_param['silent'] = 1
-                elif:
-                    self.__verbose == False:
+                elif self.__verbose == False:
                     default_param['silent'] = 0
                 l2model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
                 l2model.xgb_cv()
