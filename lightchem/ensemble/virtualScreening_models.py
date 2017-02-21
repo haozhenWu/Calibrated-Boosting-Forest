@@ -19,7 +19,7 @@ class VsEnsembleModel(object):
     """
     Wrapper class to build default ensemble models structure
     """
-    def __init__(self,training_info,eval_name,seed = 2016):
+    def __init__(self,training_info,eval_name,seed = 2016,verbose = False):
         """
         Parameters:
         ----------
@@ -53,6 +53,7 @@ class VsEnsembleModel(object):
         self.__layer1_model_list = []
         self.__layer2_model_list = []
         self.__best_model_result = None
+        self.__verbose = verbose
     def __prepare_xgbdata(self):
         """
         Internal method to build required data(xgbData) objects
@@ -112,6 +113,11 @@ class VsEnsembleModel(object):
                 # Retrieve default parameter and change default seed.
                 default_param,default_MAXIMIZE,default_STOPPING_ROUND = model.get_param()
                 default_param['seed'] = self.seed
+                if self.__verbose == True:
+                    default_param['silent'] = 1
+                else if:
+                    self.__verbose == False:
+                    default_param['silent'] = 0
                 model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
                 model.xgb_cv()
                 model.generate_holdout_pred()
@@ -130,6 +136,11 @@ class VsEnsembleModel(object):
                 # Retrieve default parameter and change default seed.
                 default_param,default_MAXIMIZE,default_STOPPING_ROUND = l2model.get_param()
                 default_param['seed'] = self.seed
+                if self.__verbose == True:
+                    default_param['silent'] = 1
+                else if:
+                    self.__verbose == False:
+                    default_param['silent'] = 0
                 l2model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
                 l2model.xgb_cv()
                 self.__layer2_model_list.append(l2model)
