@@ -53,6 +53,7 @@ class VsEnsembleModel(object):
         self.__layer1_model_list = []
         self.__layer2_model_list = []
         self.__best_model_result = None
+        self.__best_model = None
         self.__verbose = verbose
         self.__num_folds = 3 # Manually set.
     def __prepare_xgbdata(self):
@@ -64,17 +65,16 @@ class VsEnsembleModel(object):
         # is binary or continuous.
         has_fold = False
         num_xgbData = 0
-        self.__num_folds = 3
         my_fold = None
         for item in self.__training_info:
             temp_df = item[0]
             for column_name in item[1]:
                 # if it is binary label, use models for binary label.
                 if len(np.unique(temp_df[column_name])) == 2:
-                    model_name_to_use = ['GbtreeLogistic','GblinearLogistic']
+                    model_type_to_use = ['GbtreeLogistic','GblinearLogistic']
                     temp_labelType = 'binary'
                 else:
-                    model_name_to_use = ['GbtreeRegression','GblinearRegression']
+                    model_type_to_use = ['GbtreeRegression','GblinearRegression']
                     temp_labelType = 'continuous'
 
                 temp_data = load.readData(temp_df,column_name)
@@ -91,7 +91,7 @@ class VsEnsembleModel(object):
                 num_xgbData += 1
                 temp_dataName = 'Number:' + str(num_xgbData) + " xgbData, " + 'labelType: ' + temp_labelType
                 self.__setting_list.append({'data_name':temp_dataName,
-                                            'model_type':model_name_to_use,
+                                            'model_type':model_type_to_use,
                                             'data':data})
 
     def __check_labelType(self):
@@ -104,6 +104,9 @@ class VsEnsembleModel(object):
                 assert np.issubdtype(temp_df[name].dtype,np.number)
 
     def train(self):
+        """
+        Train the model. Train and check potential first and second layer models.
+        """
         evaluation_metric_name = self.__eval_name
         #---------------------------------first layer models ----------
         for data_dict in self.__setting_list:
@@ -199,11 +202,22 @@ class VsEnsembleModel(object):
         # find best model
         all_model_name = [model.name for model in all_model]
         model_position = all_model_name.index(best_model_name)
-        best_model = all_model[model_position]
-        self.__best_model_result = pd.DataFrame(cv_test.loc[best_model.name])
+        self.__best_model = all_model[model_position]
+        self.__best_model_result = pd.DataFrame(cv_test.loc[self.__best_model.name])
 
 
     def training_result(self):
         if not isinstance(self.__best_model_result,pd.DataFrame):
             raise ValueError('You must call `train` before `training_result`')
         return self.__best_model_result
+
+    def predict(self,list_test_x):
+        """
+        Use best model to predict on test data.
+        Parameters:
+        -----------
+        list_test_x: list, storing xgboost.DMatrix/Pandas.DataFrame
+            New test data
+        """
+        pred = self.__best_model.predict(list_test_x)
+        return pred
