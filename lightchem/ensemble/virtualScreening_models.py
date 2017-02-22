@@ -54,6 +54,7 @@ class VsEnsembleModel(object):
         self.__layer2_model_list = []
         self.__best_model_result = None
         self.__verbose = verbose
+        self.__self.__num_folds = 3 # Manually set.
     def __prepare_xgbdata(self):
         """
         Internal method to build required data(xgbData) objects
@@ -63,7 +64,7 @@ class VsEnsembleModel(object):
         # is binary or continuous.
         has_fold = False
         num_xgbData = 0
-        num_folds = 3
+        self.__num_folds = 3
         my_fold = None
         for item in self.__training_info:
             temp_df = item[0]
@@ -82,7 +83,7 @@ class VsEnsembleModel(object):
                 y_data = temp_data.label()
                 # Need to generate fold once, based on binary label
                 if not has_fold:
-                    my_fold = fold.fold(X_data,y_data,num_folds,self.seed)
+                    my_fold = fold.fold(X_data,y_data,self.__num_folds,self.seed)
                     my_fold = my_fold.generate_skfolds()
                     has_fold = True
                 data = xgb_data.xgbData(my_fold,X_data,y_data)
@@ -183,9 +184,9 @@ class VsEnsembleModel(object):
         test_result = test_result.drop_duplicates(['temp_name'])
         test_result = test_result.drop('temp_name',1)
         cv_test = pd.merge(cv_result,test_result,how='left',left_index=True,right_index=True)
-        num_folds = np.float64(num_folds)
-        cv_test['weighted_score'] = cv_test.cv_result * (num_folds-1)/num_folds + cv_test.test_result * (1/num_folds)
-        weighted_score = cv_test.cv_result * (num_folds-1)/num_folds + cv_test.test_result * (1/num_folds)
+        self.__num_folds = np.float64(self.__num_folds)
+        cv_test['weighted_score'] = cv_test.cv_result * (self.__num_folds-1)/self.__num_folds + cv_test.test_result * (1/self.__num_folds)
+        weighted_score = cv_test.cv_result * (self.__num_folds-1)/self.__num_folds + cv_test.test_result * (1/self.__num_folds)
 
         # Determine does current evaluation metric need to maximize or minimize
         eval_info = defined_eval.definedEvaluation()
