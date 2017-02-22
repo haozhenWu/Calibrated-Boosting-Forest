@@ -54,7 +54,7 @@ class VsEnsembleModel(object):
         self.__layer2_model_list = []
         self.__best_model_result = None
         self.__verbose = verbose
-        self.__self.__num_folds = 3 # Manually set.
+        self.__num_folds = 3 # Manually set.
     def __prepare_xgbdata(self):
         """
         Internal method to build required data(xgbData) objects
@@ -164,8 +164,7 @@ class VsEnsembleModel(object):
 
         # merge cv and test result together. Calcuate the weighted average of
         # cv and test result for each model(layer1, layer2 model). Then use the best
-        # model to predict. Need to find the optimal model from model list.
-        # collect cv result and convert to a list
+        # model to predict.
         all_model = self.__layer1_model_list + self.__layer2_model_list
         result = []
         for model in all_model:
@@ -179,7 +178,7 @@ class VsEnsembleModel(object):
 
         test_result = pd.concat(test_result_list,axis = 0,ignore_index=False)
         test_result = test_result.rename(columns = {self.__eval_name:'test_result'})
-        #Automatically selet distinct row.
+        #selet distinct row.
         test_result['temp_name'] = test_result.index
         test_result = test_result.drop_duplicates(['temp_name'])
         test_result = test_result.drop('temp_name',1)
