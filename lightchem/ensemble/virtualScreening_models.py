@@ -49,14 +49,15 @@ class VsEnsembleModel(object):
         self.__eval_name = eval_name
         self.__setting_list = []
         self.seed  = seed
-        self.__prepare_xgbdata()
+        self.__prepare_xgbdata_train()
         self.__layer1_model_list = []
         self.__layer2_model_list = []
         self.__best_model_result = None
         self.__best_model = None
         self.__verbose = verbose
         self.__num_folds = 3 # Manually set.
-    def __prepare_xgbdata(self):
+
+    def __prepare_xgbdata_train(self):
         """
         Internal method to build required data(xgbData) objects
         """
@@ -93,6 +94,53 @@ class VsEnsembleModel(object):
                 self.__setting_list.append({'data_name':temp_dataName,
                                             'model_type':model_type_to_use,
                                             'data':data})
+
+    def __prepare_xgbdata_test(self,list_test_x):
+        """
+        Internal method to prepare test data.
+        Since VsEnsembleModel will choose best model from first and second layer2
+        model. If first layer model is the best, need to identify which data is
+        used for that model. If it is second layer model, data used is just all
+        the data we have. [df1,df2]
+        """
+        name = self.__best_model.name
+        test_data = []
+        if 'layer2' in name:
+            temp = []
+            # retrive all the data
+            for i,item in enumerate(self.__training_info):
+                temp_data = list_test_x[i]
+                for column_name in item[1]:
+                    temp.append(temp_data)
+            assert len(temp) == len(self.__setting_list)
+            for i,data_dict in enumerate(self.__setting_list):
+                temp_data = temp[i]
+                for model_type in data_dict['model_type']:
+                    test_data.append(temp_data)
+            assert len(test_data) == len(self.__layer1_model_list + self.__layer2_model_list)
+
+        else: # find specific data for layer1 model
+            # Find a better way to use regular expression
+            #a = 'layer1_Number:2 xgbData, labelType binary'
+            #a = a.split('layer1_Number:')[1]
+            #a = a.split('xgbData')[0]
+            #a = a.strip()
+            index = name.split('layer1_Number:')[1]
+            index = index.split('xgbData')[0]
+            index = np.int64(index.strip())
+            #Use same loop procedure to find corresponding data.
+            j = 0
+            for i,item in enumerate(self.__training_info):
+                for column_name in item[1]:
+                    if j == index:
+                        test_data.append(list_test_x[i])
+                    j += 1
+            assert len(test_data) == 1
+
+
+
+
+
 
     def __check_labelType(self):
         """
@@ -219,5 +267,7 @@ class VsEnsembleModel(object):
         list_test_x: list, storing xgboost.DMatrix/Pandas.DataFrame
             New test data
         """
-        pred = self.__best_model.predict(list_test_x)
+        # prepare test data. If it is first layer model, need to retrive corresponding data.
+        self.__
+        pred = self.__best_model.predict()
         return pred
