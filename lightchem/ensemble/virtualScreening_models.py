@@ -56,7 +56,7 @@ class VsEnsembleModel(object):
         self.__best_model = None
         self.__verbose = verbose
         self.__num_folds = 3 # Manually set.
-
+        self.__test_data = None
     def __prepare_xgbdata_train(self):
         """
         Internal method to build required data(xgbData) objects
@@ -104,7 +104,7 @@ class VsEnsembleModel(object):
         the data we have. [df1,df2]
         """
         name = self.__best_model.name
-        test_data = []
+        self.__test_data = []
         if 'layer2' in name:
             temp = []
             # retrive all the data
@@ -116,8 +116,8 @@ class VsEnsembleModel(object):
             for i,data_dict in enumerate(self.__setting_list):
                 temp_data = temp[i]
                 for model_type in data_dict['model_type']:
-                    test_data.append(temp_data)
-            assert len(test_data) == len(self.__layer1_model_list + self.__layer2_model_list)
+                    self.__test_data.append(temp_data)
+            assert len(self.__test_data) == len(self.__layer1_model_list + self.__layer2_model_list)
 
         else: # find specific data for layer1 model
             # Find a better way to use regular expression
@@ -133,9 +133,9 @@ class VsEnsembleModel(object):
             for i,item in enumerate(self.__training_info):
                 for column_name in item[1]:
                     if j == index:
-                        test_data.append(list_test_x[i])
+                        self.__test_data.append(list_test_x[i])
                     j += 1
-            assert len(test_data) == 1
+            assert len(self.__test_data) == 1
 
 
 
@@ -268,6 +268,6 @@ class VsEnsembleModel(object):
             New test data
         """
         # prepare test data. If it is first layer model, need to retrive corresponding data.
-        self.__
-        pred = self.__best_model.predict()
+        self.__prepare_xgbdata_test(list_test_x)
+        pred = self.__best_model.predict(self.__test_data)
         return pred
