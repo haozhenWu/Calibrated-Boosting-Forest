@@ -32,7 +32,8 @@ class VsEnsembleModel(object):
          used for both layer models.
          If multiple label names present, VsEnsembleModel will automatically build
          model based on each label and ensemble them together.
-         EX: [(my_dataframe,['binary_label','continuous_label'])]
+         EX: [(my_dataframe,['binary_label','continuous_label']),
+                (my_dataframe2,['binary_label','continuous_label'])]
          For this specific model object, REQUIRED first label name always be
          Binary label name.
         eval_name: str
@@ -49,7 +50,7 @@ class VsEnsembleModel(object):
         self.__eval_name = eval_name
         self.__setting_list = []
         self.seed  = seed
-        self.__num_folds = 3 # Manually set.
+        self.__num_folds = 4 # Manually set.
         self.__prepare_xgbdata_train()
         self.__layer1_model_list = []
         self.__layer2_model_list = []
