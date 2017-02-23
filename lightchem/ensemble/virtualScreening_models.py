@@ -168,7 +168,7 @@ class VsEnsembleModel(object):
                 if self.__verbose == True:
                     default_param['silent'] = 1
                 elif self.__verbose == False:
-                    default_param['silent'] = 0
+                    default_param['verbose_eval'] = False
                 model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
                 model.xgb_cv()
                 model.generate_holdout_pred()
@@ -190,7 +190,7 @@ class VsEnsembleModel(object):
                 if self.__verbose == True:
                     default_param['silent'] = 0
                 elif self.__verbose == False:
-                    default_param['silent'] = 1
+                    default_param['verbose_eval'] = False
                 l2model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
                 l2model.xgb_cv()
                 self.__layer2_model_list.append(l2model)
