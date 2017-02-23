@@ -125,7 +125,7 @@ class VsEnsembleModel(object):
             assert len(self.__test_data) == len(self.__layer1_model_list)
 
         else: # find specific data for layer1 model
-            # Find a better way to use regular expression
+            #TODO Find a better way to use regular expression
             #a = 'layer1_Number:2 xgbData, labelType binary'
             #a = a.split('layer1_Number:')[1]
             #a = a.split('xgbData')[0]
@@ -141,11 +141,6 @@ class VsEnsembleModel(object):
                         self.__test_data.append(list_test_x_array[i])
                     j += 1
             assert len(self.__test_data) == 1
-
-
-
-
-
 
     def __check_labelType(self):
         """
