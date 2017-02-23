@@ -49,13 +49,13 @@ class VsEnsembleModel(object):
         self.__eval_name = eval_name
         self.__setting_list = []
         self.seed  = seed
+        self.__num_folds = 3 # Manually set.
         self.__prepare_xgbdata_train()
         self.__layer1_model_list = []
         self.__layer2_model_list = []
         self.__best_model_result = None
         self.__best_model = None
         self.__verbose = verbose
-        self.__num_folds = 3 # Manually set.
         self.__test_data = None
     def __prepare_xgbdata_train(self):
         """
