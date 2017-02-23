@@ -106,7 +106,7 @@ class VsEnsembleModel(object):
         # transform fp string into array
         list_test_x_array = []
         for i,item in enumerate(list_test_x):
-            list_test_x_array[i] = util.fpString_to_array(item)
+            list_test_x_array.append(util.fpString_to_array(item))
 
         name = self.__best_model.name
         self.__test_data = []
