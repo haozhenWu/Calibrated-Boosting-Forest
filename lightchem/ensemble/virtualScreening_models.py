@@ -12,7 +12,7 @@ from lightchem.eval import eval_testset
 from lightchem.model import first_layer_model
 from lightchem.model import second_layer_model
 from lightchem.eval import defined_eval
-
+from lightchem.utility import util
 # For this specific model object, REQUIRED first label name always represent
 # Binary label column, where value are 1 or 0.
 class VsEnsembleModel(object):
@@ -101,15 +101,20 @@ class VsEnsembleModel(object):
         Since VsEnsembleModel will choose best model from first and second layer2
         model. If first layer model is the best, need to identify which data is
         used for that model. If it is second layer model, data used is just all
-        the data we have. [df1,df2]
+        the data we have. [df1,df2], where df is concatanated fp string.
         """
+        # transform fp string into array
+        list_test_x_array = []
+        for i,item in enumerate(list_test_x):
+            list_test_x_array[i] = util.fpString_to_array(item)
+
         name = self.__best_model.name
         self.__test_data = []
         if 'layer2' in name:
             temp = []
             # retrive all the data
             for i,item in enumerate(self.__training_info):
-                temp_data = list_test_x[i]
+                temp_data = list_test_x_array[i]
                 for column_name in item[1]:
                     temp.append(temp_data)
             assert len(temp) == len(self.__setting_list)
@@ -133,7 +138,7 @@ class VsEnsembleModel(object):
             for i,item in enumerate(self.__training_info):
                 for column_name in item[1]:
                     if j == index:
-                        self.__test_data.append(list_test_x[i])
+                        self.__test_data.append(list_test_x_array[i])
                     j += 1
             assert len(self.__test_data) == 1
 
