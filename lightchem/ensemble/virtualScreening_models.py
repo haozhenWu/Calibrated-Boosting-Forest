@@ -117,7 +117,7 @@ class VsEnsembleModel(object):
                 temp_data = temp[i]
                 for model_type in data_dict['model_type']:
                     self.__test_data.append(temp_data)
-            assert len(self.__test_data) == len(self.__layer1_model_list + self.__layer2_model_list)
+            assert len(self.__test_data) == len(self.__layer1_model_list)
 
         else: # find specific data for layer1 model
             # Find a better way to use regular expression
