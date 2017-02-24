@@ -32,7 +32,7 @@ class smile_to_fps(object):
                 self.__df.fingerprint[i] = fps
                 k += 1
         print 'Number of molecue failed: ' + str(k)
-        return self.__df
+        return self.__df.copy()
 
     def MACCSkeys(self):
         k = 0
@@ -50,7 +50,7 @@ class smile_to_fps(object):
                 self.__df.fingerprint[i] = fps
                 k += 1
         print 'Number of molecue failed: ' + str(k)
-        return self.__df
+        return self.__df.copy()
 
 """ RDKit featurization method has problem. Create unequal length fingerprint.
 
