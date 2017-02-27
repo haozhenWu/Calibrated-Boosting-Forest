@@ -71,6 +71,7 @@ if __name__ == "__main__":
     model.train()
     cv_result = model.training_result()
 
+    # TODO: prepare a train.csv, test.csv for muv548. Test using command line input.
     #future_data = [morgan_fp.fingerprint,maccs_fp.fingerprint]
     future_data = [morgan_fp.fingerprint,morgan_fp.fingerprint]
     pred = model.predict(future_data)
