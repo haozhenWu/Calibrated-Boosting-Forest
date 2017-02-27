@@ -38,7 +38,7 @@ class VsEnsembleModel(object):
          Binary label name.
         eval_name: str
          Name of evaluation metric used to monitor and stop training process.
-         Must in eval.defined_eval 
+         Must in eval.defined_eval
         """
         self.__training_info = training_info
         self.__check_labelType()
@@ -85,11 +85,11 @@ class VsEnsembleModel(object):
                     has_fold = True
                 data = xgb_data.xgbData(my_fold,X_data,y_data)
                 data.build()
-                num_xgbData += 1
                 temp_dataName = 'Number:' + str(num_xgbData) + " xgbData, " + 'labelType: ' + temp_labelType
                 self.__setting_list.append({'data_name':temp_dataName,
                                             'model_type':model_type_to_use,
                                             'data':data})
+                num_xgbData += 1
 
     def __prepare_xgbdata_test(self,list_test_x):
         """
