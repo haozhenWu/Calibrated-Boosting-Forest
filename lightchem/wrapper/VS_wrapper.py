@@ -55,7 +55,7 @@ if __name__ == "__main__":
     label_name_list = ['MUV-466'] # arg3
     eval_name = 'ROCAUC' # arg4
     preDefined_eval = defined_eval.definedEvaluation()
-    preDefined_eval.validate_eval_name(eval_name)    
+    preDefined_eval.validate_eval_name(eval_name)
     df = pd.read_csv(dir)
     # identify NA row.
     missing_row = pd.isnull(df.loc[:,label_name_list[0]])
@@ -76,5 +76,5 @@ if __name__ == "__main__":
 
     # TODO: prepare a train.csv, test.csv for muv548. Test using command line input.
     #future_data = [morgan_fp.fingerprint,maccs_fp.fingerprint]
-    future_data = [morgan_fp.fingerprint,morgan_fp.fingerprint]
+    future_data = [morgan_fp.fingerprint,maccs_fp.fingerprint]
     pred = model.predict(future_data)
