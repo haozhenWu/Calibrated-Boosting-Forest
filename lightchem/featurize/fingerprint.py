@@ -11,7 +11,7 @@ class smile_to_fps(object):
 
     def __init__(self,input_df,smile_col_name):
         # TODO: assert smile_col_name in df
-        self.__df = input_df
+        self.__df = input_df.copy()
         self.__smile_col = smile_col_name
         self.__df['fingerprint'] = "none"
 
@@ -32,7 +32,7 @@ class smile_to_fps(object):
                 self.__df.fingerprint[i] = fps
                 k += 1
         print 'Number of molecue failed: ' + str(k)
-        return self.__df.copy()
+        return self.__df
 
     def MACCSkeys(self):
         k = 0
@@ -50,7 +50,7 @@ class smile_to_fps(object):
                 self.__df.fingerprint[i] = fps
                 k += 1
         print 'Number of molecue failed: ' + str(k)
-        return self.__df.copy()
+        return self.__df
 
 """ RDKit featurization method has problem. Create unequal length fingerprint.
 
