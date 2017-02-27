@@ -38,12 +38,7 @@ class VsEnsembleModel(object):
          Binary label name.
         eval_name: str
          Name of evaluation metric used to monitor and stop training process.
-         Must in pre-difined evaluation list.
-          Currently supports:
-          `ROCAUC`: Area under curve of ROC
-          `PRAUC`: Area under curve of Precision-recall
-          `EFR1`: Enrichment factor at 0.01
-          `EFR015`: Enrichment factor at 0.0015
+         Must in eval.defined_eval 
         """
         self.__training_info = training_info
         self.__check_labelType()
