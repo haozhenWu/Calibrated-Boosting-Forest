@@ -141,10 +141,7 @@ class VsEnsembleModel(object):
                     if j == index:
                         self.__test_data.append(list_test_x_array[i])
                     j += 1
-            print len(self.__test_data)
-            print index
-            print j
-#            assert len(self.__test_data) == 1
+            assert len(self.__test_data) == 1
 
     def __check_labelType(self):
         """
