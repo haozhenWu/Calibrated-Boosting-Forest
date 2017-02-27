@@ -25,7 +25,7 @@ df = df.reset_index(drop=True)
     fp = fingerprint.smile_to_fps(df,smile_colname)
     # morgan(ecfp) fp
     morgan_fp = fp.Morgan()
-
+    
     # MACCSkeys fp
     fp = fingerprint.smile_to_fps(df,smile_colname)
     maccs_fp = fp.MACCSkeys()
