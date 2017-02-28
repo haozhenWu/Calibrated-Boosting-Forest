@@ -15,7 +15,7 @@ class smile_to_fps(object):
         self.__smile_col = smile_col_name
 
     def Morgan(self,radius = 2, nBits = 1024):
-        k = 0
+        mol_fail = 0
         fingerprint = []
         for i,smile in enumerate(self.__df[self.__smile_col]):
             if Chem.MolFromSmiles(smile):
@@ -29,13 +29,13 @@ class smile_to_fps(object):
                 for k in range(nBits-1):
                     fps = fps + '0'
                 fingerprint.append(fps)
-                k += 1
+                mol_fail += 1
         self.__df['fingerprint'] = fingerprint
-        print 'Number of molecue failed: ' + str(k)
+        print 'Number of molecue failed: ' + str(mol_fail)
         return self.__df
 
     def MACCSkeys(self):
-        k = 0
+        mol_fail = 0
         fingerprint = []
         for i,smile in enumerate(self.__df[self.__smile_col]):
             if Chem.MolFromSmiles(smile):
@@ -48,9 +48,9 @@ class smile_to_fps(object):
                 for k in range(166):
                     fps = fps + '0'
                 fingerprint.append(fps)
-                k += 1
+                mol_fail += 1
         self.__df['fingerprint'] = fingerprint
-        print 'Number of molecue failed: ' + str(k)
+        print 'Number of molecue failed: ' + str(mol_fail)
         return self.__df
 
 """ RDKit featurization method has problem. Create unequal length fingerprint.
