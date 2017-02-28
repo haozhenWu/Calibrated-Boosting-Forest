@@ -28,6 +28,7 @@ class smile_to_fps(object):
                 fps = '0'
                 for k in range(nBits-1):
                     fps = fps + '0'
+                #TODO: according to pandas SettingWithCopyWarning, create fp first then combind to df.
                 self.__df.fingerprint[i] = fps
                 k += 1
         print 'Number of molecue failed: ' + str(k)
