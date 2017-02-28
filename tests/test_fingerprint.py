@@ -28,4 +28,3 @@ def test_fingerprint():
     assert len(smiles) == maccs_fp.shape[0]
     for fp in maccs_fp.fingerprint:
         assert len(fp) == 167
-    
