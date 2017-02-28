@@ -23,15 +23,12 @@ class smile_to_fps(object):
                 fps = AllChem.GetMorganFingerprintAsBitVect(tmp_mol,
                                                 radius = radius,nBits = nBits ) # GetHashedTopologicalTorsionFingerprintAsBitVec
                 fingerprint.append(fps.ToBitString())
-                #self.__df.fingerprint[i] = fps.ToBitString()
             else:
                 # fail to construct a RDKit molecule, mannual create fingerprint with all 0.
                 fps = '0'
                 for k in range(nBits-1):
                     fps = fps + '0'
-                #TODO: according to pandas SettingWithCopyWarning, create fp first then combind to df.
                 fingerprint.append(fps)
-                #self.__df.fingerprint[i] = fps
                 k += 1
         self.__df['fingerprint'] = fingerprint
         print 'Number of molecue failed: ' + str(k)
@@ -45,14 +42,12 @@ class smile_to_fps(object):
                 tmp_mol = Chem.MolFromSmiles(smile)
                 fps = MACCSkeys.GenMACCSKeys(tmp_mol)
                 fingerprint.append(fps.ToBitString())
-                #self.__df.fingerprint[i] = fps.ToBitString()
             else:
                 # fail to construct a RDKit molecule, mannual create fingerprint with all 0.
                 fps = '0'
                 for k in range(166):
                     fps = fps + '0'
                 fingerprint.append(fps)
-                #self.__df.fingerprint[i] = fps
                 k += 1
         self.__df['fingerprint'] = fingerprint
         print 'Number of molecue failed: ' + str(k)
