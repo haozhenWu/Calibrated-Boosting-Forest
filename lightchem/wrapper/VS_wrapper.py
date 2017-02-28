@@ -12,9 +12,9 @@ import os
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.realpath(__file__))
     dir_train = os.path.join(current_dir,
-                            "../example/wrapper/muv-548/datasets/muv548_raw_train.csv.zip")
+                            "../../example/wrapper/muv-548/datasets/muv548_raw_train.csv.zip")
     dir_test =  os.path.join(current_dir,
-                            "../example/wrapper/muv-548/datasets/muv548_raw_test.csv.zip")
+                            "../../example/wrapper/muv-548/datasets/muv548_raw_test.csv.zip")
 #    dir = "./datasets/muv/classification/deepchem_muv.csv.gz" # arg1
     smile_colname = 'smiles' # arg2
     label_name_list = ['MUV-548'] # arg3
