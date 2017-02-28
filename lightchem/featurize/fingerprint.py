@@ -13,41 +13,48 @@ class smile_to_fps(object):
         # TODO: assert smile_col_name in df
         self.__df = input_df.copy()
         self.__smile_col = smile_col_name
-        self.__df['fingerprint'] = "none"
 
     def Morgan(self,radius = 2, nBits = 1024):
         k = 0
+        fingerprint = []
         for i,smile in enumerate(self.__df[self.__smile_col]):
             if Chem.MolFromSmiles(smile):
                 tmp_mol = Chem.MolFromSmiles(smile)
                 fps = AllChem.GetMorganFingerprintAsBitVect(tmp_mol,
                                                 radius = radius,nBits = nBits ) # GetHashedTopologicalTorsionFingerprintAsBitVec
-                self.__df.fingerprint[i] = fps.ToBitString()
+                fingerprint.append(fps.ToBitString())
+                #self.__df.fingerprint[i] = fps.ToBitString()
             else:
                 # fail to construct a RDKit molecule, mannual create fingerprint with all 0.
                 fps = '0'
                 for k in range(nBits-1):
                     fps = fps + '0'
                 #TODO: according to pandas SettingWithCopyWarning, create fp first then combind to df.
-                self.__df.fingerprint[i] = fps
+                fingerprint.append(fps)
+                #self.__df.fingerprint[i] = fps
                 k += 1
+        self.__df['fingerprint'] = fingerprint
         print 'Number of molecue failed: ' + str(k)
         return self.__df
 
     def MACCSkeys(self):
         k = 0
+        fingerprint = []
         for i,smile in enumerate(self.__df[self.__smile_col]):
             if Chem.MolFromSmiles(smile):
                 tmp_mol = Chem.MolFromSmiles(smile)
                 fps = MACCSkeys.GenMACCSKeys(tmp_mol)
-                self.__df.fingerprint[i] = fps.ToBitString()
+                fingerprint.append(fps.ToBitString())
+                #self.__df.fingerprint[i] = fps.ToBitString()
             else:
                 # fail to construct a RDKit molecule, mannual create fingerprint with all 0.
                 fps = '0'
                 for k in range(166):
                     fps = fps + '0'
-                self.__df.fingerprint[i] = fps
+                fingerprint.append(fps)
+                #self.__df.fingerprint[i] = fps
                 k += 1
+        self.__df['fingerprint'] = fingerprint
         print 'Number of molecue failed: ' + str(k)
         return self.__df
 
