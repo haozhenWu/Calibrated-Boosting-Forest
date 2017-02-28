@@ -23,7 +23,6 @@ class smile_to_fps(object):
                 fps = AllChem.GetMorganFingerprintAsBitVect(tmp_mol,
                                                 radius = radius,nBits = nBits ) # GetHashedTopologicalTorsionFingerprintAsBitVec
                 self.__df.fingerprint[i] = fps.ToBitString()
-                print i
             else:
                 # fail to construct a RDKit molecule, mannual create fingerprint with all 0.
                 fps = '0'
@@ -41,7 +40,6 @@ class smile_to_fps(object):
                 tmp_mol = Chem.MolFromSmiles(smile)
                 fps = MACCSkeys.GenMACCSKeys(tmp_mol)
                 self.__df.fingerprint[i] = fps.ToBitString()
-                print i
             else:
                 # fail to construct a RDKit molecule, mannual create fingerprint with all 0.
                 fps = '0'
