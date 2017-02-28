@@ -28,6 +28,7 @@ class readData(object):
                 self.__data_pd = None
                 self.__file_path = data_loc
             #self.__file_path = file_path
+            assert isinstance(label_name,str)
             self.__label_name = label_name
             self.__X_data = None
             self.__y_data = None
