@@ -19,7 +19,7 @@ class VsEnsembleModel(object):
     """
     Wrapper class to build default ensemble models structure
     """
-    def __init__(self,training_info,eval_name,seed = 2016,verbose = False):
+    def __init__(self,training_info,eval_name,num_of_fold = 4,seed = 2016,verbose = False):
         """
         Parameters:
         ----------
@@ -45,7 +45,7 @@ class VsEnsembleModel(object):
         self.__eval_name = eval_name
         self.__setting_list = []
         self.seed  = seed
-        self.__num_folds = 4 # Manually set.
+        self.__num_folds = num_of_fold 
         self.__prepare_xgbdata_train()
         self.__layer1_model_list = []
         self.__layer2_model_list = []

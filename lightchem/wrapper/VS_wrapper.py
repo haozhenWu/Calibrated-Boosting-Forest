@@ -37,7 +37,7 @@ if __name__ == "__main__":
     comb2 = (maccs_fp,label_name_list)
     training_info = [comb1,comb2]
     print 'Building and selecting best model'
-    model = virtualScreening_models.VsEnsembleModel(training_info,eval_name)
+    model = virtualScreening_models.VsEnsembleModel(training_info,eval_name,num_of_fold=3)
     model.train()
     cv_result = model.training_result()
     print cv_result
