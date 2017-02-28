@@ -54,4 +54,5 @@ if __name__ == "__main__":
         test_data = [morgan_fp.fingerprint,maccs_fp.fingerprint]
         print 'Predict test data'
         pred = model.predict(test_data)
+        pred = pd.DataFrame({'Prediction':pred})
         pred.to_csv("./prediction.csv")
