@@ -8,17 +8,32 @@ from lightchem.featurize import fingerprint
 from lightchem.eval import defined_eval
 import pandas as pd
 import os
+import numpy as np
 
 if __name__ == "__main__":
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    dir_train = os.path.join(current_dir,
-                            "../../example/wrapper/muv-548/datasets/muv548_raw_train.csv.zip")
-    dir_test =  os.path.join(current_dir,
-                            "../../example/wrapper/muv-548/datasets/muv548_raw_test.csv.zip")
+    """
+    Command line input, setting.json.
+    """
+    # Read command line inpu and match input.
+    with open(sys.argv[1], 'r') as f:
+        info = f.read()
+    info = pd.read_json(info)
+    dir_train = np.str(info.loc['full_directory_to_training_data'][0])
+    dir_test = np.str(info.loc['full_directory_to_dataToPredict_if_exit'][0])
+    smile_colname = np.str(info.loc['smile_column_name'][0])
+    label_name_list = info.loc['label_name_list'][0]
+    label_name_list = [np.str(item) for item in label_name_list]
+    eval_name = np.str(info.loc['evaluation_name'][0])
+    dir_to_store = np.str(info.loc['full_directory_to_store_prediction'][0])
+#    current_dir = os.path.dirname(os.path.realpath(__file__))
+#    dir_train = os.path.join(current_dir,
+#                            "../../example/wrapper/muv-548/datasets/muv548_raw_train.csv.zip")
+#    dir_test =  os.path.join(current_dir,
+#                            "../../example/wrapper/muv-548/datasets/muv548_raw_test.csv.zip")
 #    dir = "./datasets/muv/classification/deepchem_muv.csv.gz" # arg1
-    smile_colname = 'smiles' # arg2
-    label_name_list = ['MUV-548'] # arg3
-    eval_name = 'ROCAUC' # arg4
+#    smile_colname = 'smiles' # arg2
+#    label_name_list = ['MUV-548'] # arg3
+#    eval_name = 'ROCAUC' # arg4
     preDefined_eval = defined_eval.definedEvaluation()
     preDefined_eval.validate_eval_name(eval_name)
     df = pd.read_csv(dir_train)
@@ -42,7 +57,7 @@ if __name__ == "__main__":
     cv_result = model.training_result()
     print cv_result
 
-    if True:
+    if dir_test != "":
         df_test = pd.read_csv(dir_test)
         print 'Preparing testing data fingerprints'
         # morgan(ecfp) fp
@@ -55,4 +70,4 @@ if __name__ == "__main__":
         print 'Predict test data'
         pred = model.predict(test_data)
         pred = pd.DataFrame({'Prediction':pred})
-        pred.to_csv("./prediction.csv")
+        pred.to_csv(os.path.join(dir_to_store,"prediction.csv"))
