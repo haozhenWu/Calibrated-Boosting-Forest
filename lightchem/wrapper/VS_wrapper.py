@@ -5,62 +5,26 @@ from lightchem.ensemble import virtualScreening_models
 from lightchem.featurize import fingerprint
 from lightchem.eval import defined_eval
 import pandas as pd
+import os
 
-# 1. convert SMILE string into fp, for both training and testing data.
-# 2. call ensemble model
-# 3. predict and store result.
-    dir = "./datasets/muv/classification/deepchem_muv.csv.gz" # arg1
+if __name__ == "__main__":
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    dir_train = os.path.join(current_dir,
+                            "../example/wrapper/muv-548/datasets/muv548_raw_train.csv.zip")
+    dir_test =  os.path.join(current_dir,
+                            "../example/wrapper/muv-548/datasets/muv548_raw_test.csv.zip")
+#    dir = "./datasets/muv/classification/deepchem_muv.csv.gz" # arg1
     smile_colname = 'smiles' # arg2
     label_name_list = ['MUV-548'] # arg3
     eval_name = 'ROCAUC' # arg4
     preDefined_eval = defined_eval.definedEvaluation()
     preDefined_eval.validate_eval_name(eval_name)
-
-df = pd.read_csv("./datasets/muv/classification/deepchem_muv.csv.gz")
-# identify NA row.
-missing_row = pd.isnull(df.loc[:,label_name_list[0]])
-df = df.loc[~missing_row]
-df = df.reset_index(drop=True)
-#backup = df
-    fp = fingerprint.smile_to_fps(df,smile_colname)
-    # morgan(ecfp) fp
-    morgan_fp = fp.Morgan()
-
-    # MACCSkeys fp
-    fp = fingerprint.smile_to_fps(df,smile_colname)
-    maccs_fp = fp.MACCSkeys()
-
-comb1 = (morgan_fp,label_name_list)
-comb2 = (maccs_fp,label_name_list)
-training_info = [comb1,comb2]
-model = virtualScreening_models.VsEnsembleModel(training_info,eval_name)
-model.train()
-cv_result = model.training_result()
-
-future_data = [morgan_fp.fingerprint,maccs_fp.fingerprint]
-pred = model.predict(future_data)
-
-#
-#            print len(self.__test_data)
-#            print index
-#            print j
-#1
-#1
-#2
-# test data feature name, mismatch, train feature name
-
-if __name__ == "__main__":
-    dir = "./datasets/muv/classification/deepchem_muv.csv.gz" # arg1
-    smile_colname = 'smiles' # arg2
-    label_name_list = ['MUV-466'] # arg3
-    eval_name = 'ROCAUC' # arg4
-    preDefined_eval = defined_eval.definedEvaluation()
-    preDefined_eval.validate_eval_name(eval_name)
-    df = pd.read_csv(dir)
+    df = pd.read_csv(dir_train)
     # identify NA row.
     missing_row = pd.isnull(df.loc[:,label_name_list[0]])
     df = df.loc[~missing_row]
     df = df.reset_index(drop=True)
+    print 'Preparing training data fingerprints'
     # morgan(ecfp) fp
     fp = fingerprint.smile_to_fps(df,smile_colname)
     morgan_fp = fp.Morgan()
@@ -70,11 +34,22 @@ if __name__ == "__main__":
     comb1 = (morgan_fp,label_name_list)
     comb2 = (maccs_fp,label_name_list)
     training_info = [comb1,comb2]
+    print 'Building and selecting best model'
     model = virtualScreening_models.VsEnsembleModel(training_info,eval_name)
     model.train()
     cv_result = model.training_result()
+    print cv_result
 
-    # TODO: prepare a train.csv, test.csv for muv548. Test using command line input.
-    #future_data = [morgan_fp.fingerprint,maccs_fp.fingerprint]
-    future_data = [morgan_fp.fingerprint,maccs_fp.fingerprint]
-    pred = model.predict(future_data)
+    if True:
+        df_test = pd.read_csv(dir_test)
+        print 'Preparing testing data fingerprints'
+        # morgan(ecfp) fp
+        fp = fingerprint.smile_to_fps(df_test,smile_colname)
+        morgan_fp = fp.Morgan()
+        # MACCSkeys fp
+        fp = fingerprint.smile_to_fps(df_test,smile_colname)
+        maccs_fp = fp.MACCSkeys()
+        test_data = [morgan_fp.fingerprint,maccs_fp.fingerprint]
+        print 'Predict test data'
+        pred = model.predict(test_data)
+        pred.to_csv("./prediction.csv")
