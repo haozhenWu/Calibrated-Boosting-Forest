@@ -1,0 +1,10 @@
+{"info":
+        {"target_name":"MUV548",
+        "full_directory_to_training_data":"./datasets/muv548_raw_train.csv",
+        "full_directory_to_dataToPredict_if_exit":"./datasets/muv548_raw_test.csv",
+        "smile_column_name":"smile",
+        "label_name_list":["MUV-548"],
+        "evaluation_name":"ROCAUC",
+        "full_directory_to_store_prediction":"./"
+        }
+}
