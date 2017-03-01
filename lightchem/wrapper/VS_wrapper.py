@@ -18,6 +18,7 @@ if __name__ == "__main__":
     with open(sys.argv[1], 'r') as f:
         info = f.read()
     info = pd.read_json(info)
+    target_name = np.str(info.loc['target_name'][0])
     dir_train = np.str(info.loc['full_directory_to_training_data'][0])
     dir_test = np.str(info.loc['full_directory_to_dataToPredict_if_exit'][0])
     smile_colname = np.str(info.loc['smile_column_name'][0])
@@ -70,4 +71,4 @@ if __name__ == "__main__":
         print 'Predict test data'
         pred = model.predict(test_data)
         pred = pd.DataFrame({'Prediction':pred})
-        pred.to_csv(os.path.join(dir_to_store,"prediction.csv"))
+        pred.to_csv(os.path.join(dir_to_store,target_name + "_prediction.csv"))
