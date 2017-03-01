@@ -2,7 +2,6 @@
 Wrapper script, provides high level interface.
 '''
 import sys
-sys.path.remove('/usr/lib/python2.7/dist-packages')
 from lightchem.ensemble import virtualScreening_models
 from lightchem.featurize import fingerprint
 from lightchem.eval import defined_eval
@@ -12,7 +11,7 @@ import numpy as np
 
 if __name__ == "__main__":
     """
-    Require VS_wrapper_config.json. 
+    Require VS_wrapper_config.json.
     """
     # Read command line inpu and match input.
     with open(sys.argv[1], 'r') as f:
