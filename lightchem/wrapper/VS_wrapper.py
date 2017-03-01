@@ -12,7 +12,7 @@ import numpy as np
 
 if __name__ == "__main__":
     """
-    Command line input, setting.json.
+    Require VS_wrapper_config.json. 
     """
     # Read command line inpu and match input.
     with open(sys.argv[1], 'r') as f:
