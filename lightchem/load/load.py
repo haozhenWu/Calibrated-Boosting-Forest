@@ -4,7 +4,7 @@ Contains helper class to read data and transform to ndarray
 
 import pandas as pd
 import numpy as np
-
+from lightchem.utility import util
 
 class readData(object):
         '''
@@ -28,6 +28,7 @@ class readData(object):
                 self.__data_pd = None
                 self.__file_path = data_loc
             #self.__file_path = file_path
+            assert isinstance(label_name,str)
             self.__label_name = label_name
             self.__X_data = None
             self.__y_data = None
@@ -42,15 +43,7 @@ class readData(object):
             self.__y_data = self.__y_data.astype(np.float64)
             # extracting features from DataFrame
             if 'fingerprint' in self.__data_pd.columns:
-                self.__X_data = []
-                for raw_fps in self.__data_pd['fingerprint']:
-                    # Split k bit fingerprint string into list containing k items.
-                    # Then transform list into array so that it can be used for
-                    # machine learning/
-                    self.__X_data.append(np.array(list(raw_fps)))
-                self.__X_data = np.array(self.__X_data)
-
-                self.__X_data = self.__X_data.astype(np.float64)
+                self.__X_data = util.fpString_to_array(self.__data_pd['fingerprint'])
                 self.__y_data = np.array(self.__y_data)
                 self.__y_data = self.__y_data.astype(np.float64)
             else: #havnt test below else code. just write a frame first
