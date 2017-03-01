@@ -10,7 +10,7 @@ import pandas as pd
 class smile_to_fps(object):
 
     def __init__(self,input_df,smile_col_name):
-        # TODO: assert smile_col_name in df
+        assert smile_col_name in input_df.columns
         self.__df = input_df.copy()
         self.__smile_col = smile_col_name
 
