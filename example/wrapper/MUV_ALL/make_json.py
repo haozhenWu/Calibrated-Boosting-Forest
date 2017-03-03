@@ -15,6 +15,7 @@ if __name__ == "__main__":
     json.loc['target_name'] = name
     name_list = []
     name_list.append(name)
+    # TODO: seems that pd.to_json does not keep []. Find a way to output []
     json.loc['label_name_list'] = name_list
 
     json.to_json("./config.json")
