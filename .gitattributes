@@ -1,0 +1,4 @@
+datasets/pcba128/classification/pcba128_BinaryLabel_MACCSkeys167.csv.zip filter=lfs diff=lfs merge=lfs -text
+datasets/pcba128/classification/pcba128_BinaryLabel_ecfp1024.csv.zip filter=lfs diff=lfs merge=lfs -text
+datasets/pcba128/regression/pcba128_ContinuousLabel_MACCSkeys167.csv.zip filter=lfs diff=lfs merge=lfs -text
+datasets/pcba128/regression/pcba128_ContinuousLabel_ecfp1024.csv.zip filter=lfs diff=lfs merge=lfs -text
