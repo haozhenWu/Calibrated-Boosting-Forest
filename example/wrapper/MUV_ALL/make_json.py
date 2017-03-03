@@ -3,9 +3,9 @@
 # templete.json
 # label_name_list
 # target_name
-
-import pandas as pd
 import sys
+sys.path.remove('/usr/lib/python2.7/dist-packages')
+import pandas as pd
 
 if __name__ == "__main__":
     with open(sys.argv[1], 'r') as f:
