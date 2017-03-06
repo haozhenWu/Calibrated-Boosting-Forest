@@ -102,8 +102,9 @@ class secondLayerModel(object):
                 bst = xgb.train( self.__param, dtrain, 1000 , watchlist,
                                  feval = self.__eval_function,
                                  early_stopping_rounds = self.__STOPPING_ROUND,
-                                 maximize = self.__MAXIMIZE,
-                                 callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
+                                 maximize = self.__MAXIMIZE
+                                 #,callbacks=[xgb.callback.print_evaluation(show_stdv=True)]
+                                 )
                # collect this model
                 self.__collect_model.append(bst)
                # save best number of tree. Later when do prediction,
@@ -118,15 +119,17 @@ class secondLayerModel(object):
                 bst = xgb.train(self.__param, dtrain,600 , watchlist,
                                 feval = self.__eval_function,
                                 early_stopping_rounds = self.__STOPPING_ROUND,
-                                maximize = self.__MAXIMIZE,
-                                callbacks=[xgb.callback.print_evaluation(show_stdv=True)])
+                                maximize = self.__MAXIMIZE
+                                #,callbacks=[xgb.callback.print_evaluation(show_stdv=True)]
+                                )
                 # retrain model using best ntree
                 temp_best_ntree = bst.best_ntree_limit
                 bst = xgb.train(self.__param, dtrain,temp_best_ntree, watchlist,
                                 feval = self.__eval_function,
                                 early_stopping_rounds = self.__STOPPING_ROUND,
-                                maximize = self.__MAXIMIZE,
-                                callbacks = [xgb.callback.print_evaluation(show_stdv=True)])
+                                maximize = self.__MAXIMIZE
+                                #,callbacks = [xgb.callback.print_evaluation(show_stdv=True)]
+                                )
                 self.__collect_model.append(bst)
 
             self.__best_score.append(bst.best_score)
