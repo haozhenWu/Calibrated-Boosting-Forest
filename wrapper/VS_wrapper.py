@@ -56,6 +56,7 @@ if __name__ == "__main__":
     model.train()
     cv_result = model.training_result()
     print cv_result
+    cv_result.to_csv(dir_to_store + target_name + "_result.csv")
 
     if dir_test != "":
         df_test = pd.read_csv(dir_test)
