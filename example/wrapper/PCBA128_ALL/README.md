@@ -5,6 +5,6 @@ one time and use each target's own molecules to build models.
 Usage:
 
 ```bash
-chmod 755 ./run.sh
-./run.sh pcba128_TargetName.csv
+$ chmod 755 ./run.sh
+$ ./run.sh pcba128_TargetName.csv
 ```
