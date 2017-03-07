@@ -7,7 +7,7 @@ from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
 import numpy as np
 
-
+#TODO: Implement cut change to all evaluation metrics
 # custom eval metrics that can pass into xgboost
 def evalrocauc(preds, dtrain):
     '''
