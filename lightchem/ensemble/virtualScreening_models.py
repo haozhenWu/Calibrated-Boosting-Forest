@@ -53,6 +53,7 @@ class VsEnsembleModel(object):
         self.__best_model = None
         self.__verbose = verbose
         self.__test_data = None
+        self.__all_model_result = None
     def __prepare_xgbdata_train(self):
         """
         Internal method to build required data(xgbData) objects
@@ -171,7 +172,7 @@ class VsEnsembleModel(object):
         layer2_label_data = self.__setting_list[0]['data'] # layer1 data object containing the label for layer2 model
         layer2_modeltype = ['GbtreeLogistic','GblinearLogistic']
         layer2_evaluation_metric_name = [self.__eval_name]
-        print 'Building second layer models'        
+        print 'Building second layer models'
         for evaluation_metric_name in layer2_evaluation_metric_name:
             for model_type in layer2_modeltype:
                 unique_name = 'layer2' + '_' + model_type + '_' + evaluation_metric_name
@@ -246,13 +247,19 @@ class VsEnsembleModel(object):
         model_position = all_model_name.index(best_model_name)
         self.__best_model = all_model[model_position]
         self.__best_model_result = pd.DataFrame(cv_test.loc[self.__best_model.name])
-
+        self.__all_model_result = cv_test
 
     def training_result(self):
         if not isinstance(self.__best_model_result,pd.DataFrame):
             raise ValueError('You must call `train` before `training_result`')
         return self.__best_model_result
 
+    def detail_result(self):
+        """
+        Get detail training and testing result for each models.
+        """
+        return self.__all_model_result
+        
     def predict(self,list_test_x):
         """
         Use best model to predict on test data.
