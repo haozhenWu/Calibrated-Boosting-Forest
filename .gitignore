@@ -17,3 +17,4 @@
 /example/tox21/tox21_results/
 /example/wrapper/PCBA128_ALL/run/*.csv
 /example/wrapper/MUV_ALL/run/*.csv
+/example/wrapper/MUV_548/run/*.csv
