@@ -12,6 +12,6 @@ if __name__ == "__main__":
     name_list = []
     name_list.append(name + "_binary")
     name_list.append(name + "_logAC50")
-    json.loc['label_name_list'] = name_list
+    json.loc['label_name_list'][0] = name_list
 
     json.to_json("./config.json")
