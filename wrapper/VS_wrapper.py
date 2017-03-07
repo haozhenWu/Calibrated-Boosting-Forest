@@ -47,8 +47,10 @@ if __name__ == "__main__":
     model = virtualScreening_models.VsEnsembleModel(training_info,eval_name,num_of_fold=3)
     model.train()
     cv_result = model.training_result()
+    all_results = model.detail_result()
     print cv_result
     cv_result.to_csv(dir_to_store + target_name + "_result.csv")
+    all_results.to_csv(dir_to_store + target_name + "_result_allModels.csv")
 
     if dir_test != "":
         df_test = pd.read_csv(dir_test)
