@@ -1,8 +1,5 @@
 # This script makes required json file for VS_wrapper.py
 
-# templete.json
-# label_name_list
-# target_name
 import sys
 import pandas as pd
 
@@ -13,9 +10,8 @@ if __name__ == "__main__":
     name = sys.argv[2]
     json.loc['target_name'] = name
     name_list = []
-    name_list.append(name)
-    # TODO: seems that pd.to_json does not keep [] when only 1 item in list.
-    #       Find a way to output []
+    name_list.append(name + "_binary")
+    name_list.append(name + "_logAC50")
     json.loc['label_name_list'] = name_list
 
     json.to_json("./config.json")
