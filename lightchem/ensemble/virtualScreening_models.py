@@ -45,7 +45,7 @@ class VsEnsembleModel(object):
         self.__eval_name = eval_name
         self.__setting_list = []
         self.seed  = seed
-        self.__num_folds = num_of_fold 
+        self.__num_folds = num_of_fold
         self.__prepare_xgbdata_train()
         self.__layer1_model_list = []
         self.__layer2_model_list = []
@@ -122,10 +122,6 @@ class VsEnsembleModel(object):
 
         else: # find specific data for layer1 model
             #TODO Find a better way to use regular expression
-            #a = 'layer1_Number:2 xgbData, labelType binary'
-            #a = a.split('layer1_Number:')[1]
-            #a = a.split('xgbData')[0]
-            #a = a.strip()
             index = name.split('layer1_Number:')[1]
             index = index.split('xgbData')[0]
             index = np.int64(index.strip())
@@ -152,6 +148,7 @@ class VsEnsembleModel(object):
         Train the model. Train and check potential first and second layer models.
         """
         evaluation_metric_name = self.__eval_name
+        print 'Building first layer models'
         #---------------------------------first layer models ----------
         for data_dict in self.__setting_list:
             for model_type in data_dict['model_type']:
@@ -174,6 +171,7 @@ class VsEnsembleModel(object):
         layer2_label_data = self.__setting_list[0]['data'] # layer1 data object containing the label for layer2 model
         layer2_modeltype = ['GbtreeLogistic','GblinearLogistic']
         layer2_evaluation_metric_name = [self.__eval_name]
+        print 'Building second layer models'        
         for evaluation_metric_name in layer2_evaluation_metric_name:
             for model_type in layer2_modeltype:
                 unique_name = 'layer2' + '_' + model_type + '_' + evaluation_metric_name
