@@ -1,0 +1,12 @@
+{"info":
+        {"target_name":"",
+        "full_directory_to_training_data":"",
+        "full_directory_to_dataToPredict_if_exit":"",
+        "smile_column_name":"",
+        "label_name_list":[""],
+        "evaluation_name":"",
+        "full_directory_to_store_prediction":"",
+        "maccKeys_column_name":"",
+        "ecfp1024_column_name":""
+        }
+}
