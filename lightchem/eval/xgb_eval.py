@@ -14,9 +14,11 @@ def evalrocauc(preds, dtrain):
     Return ROC AUC score
     '''
     labels = dtrain.get_label()
-    if len(np.unique(labels)) > 2: # which means it is continuous label. PCBA shreshold 40
-        labels[np.where(dtrain.get_label()>40)] = 1
-        labels[np.where(dtrain.get_label()<=40)] = 0
+    unique = np.unique(labels)
+    if len(unique) > 2: # which means it is continuous label. PCBA shreshold 40
+        cut = unique[1]
+        labels[np.where(dtrain.get_label()>cut)] = 1
+        labels[np.where(dtrain.get_label()<=cut)] = 0
     # use sklearn.metrics to compute rocauc
     return 'ROCAUC', metrics.roc_auc_score( labels, preds )
 
