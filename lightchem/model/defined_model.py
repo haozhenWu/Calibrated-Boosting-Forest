@@ -13,7 +13,7 @@ class definedModel(object):
     `GblinearLogistic`: xgboost's gradient boosting linear for logistic
                         regression.
     `GblinearRegression`: xgboost's gradient boosting linear for linear
-                        regression.    
+                        regression.
     """
     def __init__(self):
         self.__DEFINED_MODEL_TYPE = ['GbtreeLogistic','GbtreeRegression',
@@ -65,7 +65,7 @@ class definedModel(object):
                      'silent':1,
                      'seed' : 2016
                     }
-        elif model_type_writeout == 'GblinearRegression':
+        elif model_name == 'GblinearRegression':
              # define model parameter
              param = {'objective':'reg:linear',
                      'booster' : 'gblinear',
