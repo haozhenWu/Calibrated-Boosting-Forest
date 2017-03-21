@@ -19,7 +19,7 @@ before_install:
   - ./miniconda.sh -b  -p $HOME/miniconda
   - export PATH=$HOME/miniconda/bin:$PATH
   - conda update --yes conda
-
+  - apt-get install gcc-4.7
   # Install xgboost
   - cd ..
   - git clone --recursive https://github.com/dmlc/xgboost
