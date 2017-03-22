@@ -33,7 +33,7 @@ install:
   - conda install --yes -c omnia rdkit
 
   # Install lightchem
-  - cd ../../lightchem
+  - cd ../lightchem
   - pip install -e .
 
 # Run the test functions
