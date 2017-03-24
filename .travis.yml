@@ -19,13 +19,8 @@ before_install:
   - ./miniconda.sh -b  -p $HOME/miniconda
   - export PATH=$HOME/miniconda/bin:$PATH
   - conda update --yes conda
-
-  # Install xgboost
-  - cd ..
-  - git clone --recursive https://github.com/dmlc/xgboost
-  - cd xgboost
-  # https://docs.travis-ci.com/user/ci-environment/ shows we have 2 cores
-  - make -j2
+  # Install conda distribution of xgboost
+  - conda install --yes -c bioconda xgboost=0.6a2
 
 # Install Python packages
 install:
@@ -34,15 +29,11 @@ install:
   # scikit-learn first provides the dependencies for xgboost
   - conda install --yes pytest scikit-learn
 
-  # Install xgboost Python package
-  - cd python-package
-  - python setup.py develop --user
-
   # Install rdkit
   - conda install --yes -c omnia rdkit
 
   # Install lightchem
-  - cd ../../lightchem
+  - cd ../lightchem
   - pip install -e .
 
 # Run the test functions
