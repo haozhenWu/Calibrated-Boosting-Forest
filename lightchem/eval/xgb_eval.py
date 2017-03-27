@@ -13,8 +13,10 @@ def evalrocauc(preds, dtrain):
     '''
     labels = dtrain.get_label()
     unique = np.unique(labels)
-    if len(unique) > 2: # which means it is continuous label. PCBA shreshold 40
-        cut = unique[1]
+    if len(unique) > 2: # which means it is continuous label
+        cut = np.percentile(labels,99)
+        if cut == unique[0]:
+            cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
     # use sklearn.metrics to compute rocauc
@@ -27,7 +29,9 @@ def evalprauc(preds, dtrain):
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(unique) > 2: # which means it is continuous label
-        cut = unique[1]
+        cut = np.percentile(labels,99)
+        if cut == unique[0]:
+            cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
     # use sklearn.metrics to compute prauc
@@ -40,7 +44,9 @@ def evalefr1(preds, dtrain):
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(unique) > 2: # which means it is continuous label
-        cut = unique[1]
+        cut = np.percentile(labels,99)
+        if cut == unique[0]:
+            cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
 
@@ -65,7 +71,9 @@ def evalefr015(preds, dtrain):
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(np.unique(labels)) > 2: # which means it is continuous label
-        cut = unique[1]
+        cut = np.percentile(labels,99)
+        if cut == unique[0]:
+            cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
 
