@@ -49,7 +49,7 @@ class readData(object):
             else: #havnt test below else code. just write a frame first
                 features_cols = [ col for col in self.__data_pd.columns if 'Feature_' in col]
                 self.__X_data = self.__data_pd[features_cols]
-                self.__X_data = np.array(self.__X_Data)
+                self.__X_data = np.array(self.__X_data)
                 self.__X_data = self.__X_data.astype(np.float64)
                 self.__y_data = np.array(self.__y_data)
                 self.__y_data = self.__y_data.astype(np.float64)
