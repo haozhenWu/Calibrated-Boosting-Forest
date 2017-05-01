@@ -92,7 +92,7 @@ class VsEnsembleModel(object):
                                             'data':data})
                 num_xgbData += 1
 
-    def __prepare_xgbdata_test(self,list_test_x):
+    def __prepare_xgbdata_test(self,testing_info):
         """
         Internal method to prepare test data.
         Since VsEnsembleModel will choose best model from first and second layer2
@@ -102,8 +102,12 @@ class VsEnsembleModel(object):
         """
         # transform fp string into array
         list_test_x_array = []
-        for i,item in enumerate(list_test_x):
-            list_test_x_array.append(util.fpString_to_array(item))
+        for item in testing_info:
+            temp_df = item[0]
+            temp_data = load.readData(temp_df)
+            temp_data.read()
+            X_data = temp_data.features()
+            list_test_x_array.append(X_data)
 
         name = self.__best_model.name
         self.__test_data = []
@@ -259,7 +263,7 @@ class VsEnsembleModel(object):
         Get detail training and testing result for each models.
         """
         return self.__all_model_result
-        
+
     def predict(self,list_test_x):
         """
         Use best model to predict on test data.
