@@ -48,7 +48,7 @@ class readData(object):
             # extracting features from DataFrame
             if 'fingerprint' in self.__data_pd.columns:
                 self.__X_data = util.fpString_to_array(self.__data_pd['fingerprint'])
-            else: #havnt test below else code. just write a frame first
+            else:
                 features_cols = [ col for col in self.__data_pd.columns if 'Feature_' in col]
                 self.__X_data = self.__data_pd[features_cols]
                 self.__X_data = np.array(self.__X_data)
