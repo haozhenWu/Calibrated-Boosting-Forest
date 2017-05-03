@@ -95,7 +95,7 @@ for fold_num in [3,4,5]:#4
         comb1 = (df,label_name_list)
 
         print 'Preparing training data fingerprints'
-        # morgan(ecfp) fp
+        # morgan(ecfp) fp + descriptors
         fp = fingerprint.smile_to_fps(df,smile_colname)
         morgan_fp = fp.Morgan()
         morgan_fp_array = util.fpString_to_array(morgan_fp.fingerprint)
@@ -107,7 +107,7 @@ for fold_num in [3,4,5]:#4
 
         comb2 = (morgan_fp_df,label_name_list)
 
-        # MACCSkeys fp
+        # MACCSkeys fp + descriptors
         fp = fingerprint.smile_to_fps(df,smile_colname)
         maccs_fp = fp.MACCSkeys()
         maccs_fp_array = util.fpString_to_array(maccs_fp.fingerprint)
@@ -126,7 +126,7 @@ for fold_num in [3,4,5]:#4
         df_test = test_pd
         comb1_test = (df_test,None)# test data does not need label name
         print 'Preparing testing data fingerprints'
-        # morgan(ecfp) fp
+        # morgan(ecfp) fp + descriptors
         fp = fingerprint.smile_to_fps(df_test,smile_colname)
         morgan_fp = fp.Morgan()
         morgan_fp_array = util.fpString_to_array(morgan_fp.fingerprint)
@@ -138,7 +138,7 @@ for fold_num in [3,4,5]:#4
 
         comb2_test = (morgan_fp_df,None)
 
-        # MACCSkeys fp
+        # MACCSkeys fp + descriptors
         fp = fingerprint.smile_to_fps(df_test,smile_colname)
         maccs_fp = fp.MACCSkeys()
         maccs_fp_array = util.fpString_to_array(maccs_fp.fingerprint)
