@@ -289,6 +289,13 @@ class VsEnsembleModel(object):
         pred = self.__best_model.predict(self.__test_data)
         return pred
 
+    def get_get_validation_info(self):
+        """
+        Return validation info.
+        """
+        self.__best_model.generate_holdout_pred()
+        return self.__best_model.get_validation_info()
+
 
 #TODO: Future customized VsEnsembleModel_ should inherit from VsEnsembleModel.
 # Read hyperparameters from a file, instead of changing inside the class.
@@ -600,3 +607,10 @@ class VsEnsembleModel_keck(object):
         self.__prepare_xgbdata_test(list_test_x)
         pred = self.__best_model.predict(self.__test_data)
         return pred
+
+    def get_get_validation_info(self):
+        """
+        Return validation info.
+        """
+        self.__best_model.generate_holdout_pred()
+        return self.__best_model.get_validation_info()
