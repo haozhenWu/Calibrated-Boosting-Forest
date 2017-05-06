@@ -1,12 +1,12 @@
 import sys
 #sys.path.remove('/usr/lib/python2.7/dist-packages')
-sys.path.append("./src/")
+sys.path.append("../virtual-screening/virtual_screening")
 from lightchem.ensemble import virtualScreening_models
 from lightchem.featurize import fingerprint
 from lightchem.eval import defined_eval
 from function import *
-from data_preparation import *
-from evaluation import *
+#from data_preparation import *
+#from evaluation import *
 from openpyxl import Workbook
 import pandas as pd
 import numpy as np
