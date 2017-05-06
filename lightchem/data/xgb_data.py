@@ -111,7 +111,8 @@ class xgbData(object):
         Return a tuple, containing testing data in xgboost data format.
         """
         if not isinstance(self.__collect_dtest,list):
-            raise ValueError('You must call `build` before `get_dtest`')
+            raise ValueError('You must call `build` before `get_dtest` ',
+                             'and set createTestset = True')
         return self.__collect_dtest[0]
 
     def get_testLabel(self):
