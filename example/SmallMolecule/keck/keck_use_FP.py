@@ -1,9 +1,10 @@
 import sys
 #sys.path.remove('/usr/lib/python2.7/dist-packages')
 sys.path.append("../virtual-screening/virtual_screening")
-from lightchem.ensemble import virtualScreening_models
+from lightchem.ensemble.virtualScreening_models import *
 from lightchem.featurize import fingerprint
 from lightchem.eval import defined_eval
+from lightchem.utility.util import reverse_generate_fold_index
 from function import *
 #from data_preparation import *
 #from evaluation import *
@@ -15,6 +16,7 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 import time
 import os
+
 
 # Need to make sure relative directory has required datasets.
 # Need to download prive datasets from Tony's lab.
@@ -56,6 +58,8 @@ for fold_num in [3,4,5]:
         train_pd = read_merged_data(train_file)
         print test_file
         test_pd = read_merged_data(test_file)
+        my_fold_index = reverse_generate_fold_index(train_pd, train_file,
+                                                     index, 'Molecule')
 
         # Using lightchem
 
@@ -96,7 +100,7 @@ for fold_num in [3,4,5]:
         # Current VsEnsembleModel create test data by default
         model = VsEnsembleModel_keck(training_info,
                                      eval_name,
-                                     num_of_fold=4)
+                                     fold_info=my_fold_index)
         model.train()
         cv_result = model.training_result()
         all_results = model.detail_result()
