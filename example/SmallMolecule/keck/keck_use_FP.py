@@ -7,7 +7,7 @@ from lightchem.eval import defined_eval
 from lightchem.utility.util import reverse_generate_fold_index
 from function import *
 #from data_preparation import *
-#from evaluation import *
+from evaluation import * # need to comment out rpy2* and croc.
 from openpyxl import Workbook
 import pandas as pd
 import numpy as np
