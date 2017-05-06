@@ -19,7 +19,7 @@ class VsEnsembleModel(object):
     """
     Wrapper class to build default ensemble models structure
     """
-    def __init__(self,training_info,eval_name,num_of_fold = 4,seed = 2016,verbose = False):
+    def __init__(self,training_info,eval_name,fold_info = 4,seed = 2016,verbose = False):
         """
         Parameters:
         ----------
@@ -45,7 +45,7 @@ class VsEnsembleModel(object):
         self.__eval_name = eval_name
         self.__setting_list = []
         self.seed  = seed
-        self.__num_folds = num_of_fold
+        self.__determine_fold(fold_info)
         self.__prepare_xgbdata_train()
         self.__layer1_model_list = []
         self.__layer2_model_list = []
@@ -54,6 +54,20 @@ class VsEnsembleModel(object):
         self.__verbose = verbose
         self.__test_data = None
         self.__all_model_result = None
+
+    def __determine_fold(self, fold_info):
+        if isinstance(fold_info, pd.DataFrame):
+            self.__has_fold = True
+            self.my_fold = fold_info
+            self.__num_folds = fold_info.shape[1]
+        elif isinstance(fold_info, int):
+            self.__has_fold = False
+            self.my_fold = None
+            self.__num_folds = fold_info
+        else:
+            raise ValueError("'fold_info' should be either a DataFrame contains "
+            "fold index or a single integer indicating number of fold to create")
+
     def __prepare_xgbdata_train(self):
         """
         Internal method to build required data(xgbData) objects
@@ -61,9 +75,7 @@ class VsEnsembleModel(object):
         print 'Preparing data'
         #Based on how many unique number, automatically detect if label column
         # is binary or continuous.
-        has_fold = False
         num_xgbData = 0
-        my_fold = None
         for item in self.__training_info:
             temp_df = item[0]
             for column_name in item[1]:
@@ -80,11 +92,11 @@ class VsEnsembleModel(object):
                 X_data = temp_data.features()
                 y_data = temp_data.label()
                 # Need to generate fold once, based on binary label
-                if not has_fold:
-                    my_fold = fold.fold(X_data,y_data,self.__num_folds,self.seed)
-                    my_fold = my_fold.generate_skfolds()
-                    has_fold = True
-                data = xgb_data.xgbData(my_fold,X_data,y_data)
+                if not self.__has_fold:
+                    self.my_fold = fold.fold(X_data,y_data,self.__num_folds,self.seed)
+                    self.my_fold = self.my_fold.generate_skfolds()
+                    self.__has_fold = True
+                data = xgb_data.xgbData(self.my_fold,X_data,y_data)
                 data.build()
                 temp_dataName = 'Number:' + str(num_xgbData) + " xgbData, " + 'labelType: ' + temp_labelType
                 self.__setting_list.append({'data_name':temp_dataName,
@@ -285,7 +297,7 @@ class VsEnsembleModel_keck(object):
     Wrapper class to build ensemble models structure for KECK dataset.
     The difference compared to VsEnsembleModel is only the hyperparameters step.
     """
-    def __init__(self,training_info,eval_name,num_of_fold = 4,seed = 2016,verbose = False):
+    def __init__(self,training_info,eval_name,fold_info = 4,seed = 2016,verbose = False):
         """
         Parameters:
         ----------
@@ -311,7 +323,7 @@ class VsEnsembleModel_keck(object):
         self.__eval_name = eval_name
         self.__setting_list = []
         self.seed  = seed
-        self.__num_folds = num_of_fold
+        self.__determine_fold(fold_info)
         self.__prepare_xgbdata_train()
         self.__layer1_model_list = []
         self.__layer2_model_list = []
@@ -320,6 +332,20 @@ class VsEnsembleModel_keck(object):
         self.__verbose = verbose
         self.__test_data = None
         self.__all_model_result = None
+
+    def __determine_fold(self, fold_info):
+        if isinstance(fold_info, pd.DataFrame):
+            self.__has_fold = True
+            self.my_fold = fold_info
+            self.__num_folds = fold_info.shape[1]
+        elif isinstance(fold_info, int):
+            self.__has_fold = False
+            self.my_fold = None
+            self.__num_folds = fold_info
+        else:
+            raise ValueError("'fold_info' should be either a DataFrame contains "
+            "fold index or a single integer indicating number of fold to create")
+
     def __prepare_xgbdata_train(self):
         """
         Internal method to build required data(xgbData) objects
@@ -327,9 +353,7 @@ class VsEnsembleModel_keck(object):
         print 'Preparing data'
         #Based on how many unique number, automatically detect if label column
         # is binary or continuous.
-        has_fold = False
         num_xgbData = 0
-        my_fold = None
         for item in self.__training_info:
             temp_df = item[0]
             for column_name in item[1]:
@@ -346,11 +370,11 @@ class VsEnsembleModel_keck(object):
                 X_data = temp_data.features()
                 y_data = temp_data.label()
                 # Need to generate fold once, based on binary label
-                if not has_fold:
-                    my_fold = fold.fold(X_data,y_data,self.__num_folds,self.seed)
-                    my_fold = my_fold.generate_skfolds()
-                    has_fold = True
-                data = xgb_data.xgbData(my_fold,X_data,y_data)
+                if not self.__has_fold:
+                    self.my_fold = fold.fold(X_data,y_data,self.__num_folds,self.seed)
+                    self.my_fold = self.my_fold.generate_skfolds()
+                    self.__has_fold = True
+                data = xgb_data.xgbData(self.my_fold,X_data,y_data)
                 data.build()
                 temp_dataName = 'Number:' + str(num_xgbData) + " xgbData, " + 'labelType: ' + temp_labelType
                 self.__setting_list.append({'data_name':temp_dataName,
