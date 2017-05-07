@@ -43,12 +43,15 @@ for fold_num in [5,3,4]:
                 'Keck_Pria_Continuous': np.float64,
                 'Keck_RMI_cdd': np.float64}
     output_file_list = [directory + f_ for f_ in file_list]
-    train_auc = []
-    val_auc = []
-    test_auc = []
+    train_roc = []
+    val_roc = []
+    test_roc = []
     train_precision = []
     val_precision = []
     test_precision = []
+    train_bedroc = []
+    val_bedroc = []
+    test_bedroc = []
     test_ef01 = []
     test_ef02 = []
     test_ef0015 = []
@@ -132,17 +135,32 @@ for fold_num in [5,3,4]:
         print >> f, all_results
         print >> f, cv_result
         print >> f, " "
-        print >> f,('train precision: {}'.format(average_precision_score(y_train, y_pred_on_train)))
-        print >> f,('train roc: {}'.format(roc_auc_score(y_train, y_pred_on_train)))
+        print >> f,('train precision: {}'.format(precision_auc_single(
+                    y_train, y_pred_on_train, mode='auc.sklearn')))
+        print >> f,('train roc: {}'.format(roc_auc_single(
+                    y_train, y_pred_on_train)))
+#        print >> f,('train bedroc: {}'.format(bedroc_auc_single(
+#                    y_train, y_pred_on_train)))
         print >> f, " "
         for i,val in enumerate(validation_info):
-            print >> f,('validation precision ' + str(i) + ': {}'.format(average_precision_score(val.label, val.validation_pred)))
+            print >> f,('validation precision ' + str(i) + ': {}'.format(
+                     precision_auc_single(val.label, val.validation_pred,
+                     mode='auc.sklearn')))
         print >> f, " "
         for i,val in enumerate(validation_info):
-            print >> f,('validation roc ' + str(i) + ': {}'.format(roc_auc_score(val.label, val.validation_pred)))
+            print >> f,('validation roc ' + str(i) + ': {}'.format(
+                     roc_auc_single(val.label, val.validation_pred)))
         print >> f, " "
-        print >> f,('test precision: {}'.format(average_precision_score(y_test, y_pred_on_test)))
-        print >> f,('test roc: {}'.format(roc_auc_score(y_test, y_pred_on_test)))
+#        for i,val in enumerate(validation_info):
+#            print >> f,('validation bedroc ' + str(i) + ': {}'.format(
+#                     bedroc_auc_single(val.label, val.validation_pred)))
+#        print >> f, " "
+        print >> f,('test precision: {}'.format(precision_auc_single(
+                    y_test, y_pred_on_test,mode='auc.sklearn')))
+        print >> f,('test roc: {}'.format(roc_auc_single(
+                    y_test, y_pred_on_test)))
+#        print >> f,('test bedroc: {}'.format(bedroc_auc_single(
+#                    y_test, y_pred_on_test)))
         print >> f, " "
 
         EF_ratio_list = [0.02, 0.01, 0.0015, 0.001]
@@ -155,15 +173,20 @@ for fold_num in [5,3,4]:
         f.close()
 
         # Accumulate results for each set. ex: 5fold, 4fold, 3fold.
-        train_auc.append(roc_auc_score(y_train, y_pred_on_train))
+        train_roc.append(roc_auc_single(y_train, y_pred_on_train))
         for i,val in enumerate(validation_info):
-            val_auc.append(roc_auc_score(val.label, val.validation_pred))
-        test_auc.append(roc_auc_score(y_test, y_pred_on_test))
+            val_roc.append(roc_auc_single(val.label, val.validation_pred))
+        test_roc.append(roc_auc_single(y_test, y_pred_on_test))
 
-        train_precision.append(average_precision_score(y_train, y_pred_on_train))
+        train_precision.append(precision_auc_single(y_train, y_pred_on_train, mode='auc.sklearn'))
         for i,val in enumerate(validation_info):
-            val_precision.append(average_precision_score(val.label, val.validation_pred))
-        test_precision.append(average_precision_score(y_test, y_pred_on_test))
+            val_precision.append(precision_auc_single(val.label, val.validation_pred,mode='auc.sklearn'))
+        test_precision.append(precision_auc_single(y_test, y_pred_on_test, mode='auc.sklearn'))
+
+#        train_bedroc.append(bedroc_auc_single(y_train, y_pred_on_train))
+#        for i,val in enumerate(validation_info):
+#            val_bedroc.append(bedroc_auc_single(val.label, val.validation_pred))
+#        test_bedroc.append(bedroc_auc_single(y_test, y_pred_on_test))
 
         n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
         test_ef01.append(ef)
@@ -207,18 +230,24 @@ for fold_num in [5,3,4]:
     f = open('./result/summary_' + start_date + '.txt', 'a')
     print >> f, "########################################"
     print >> f, "Number of Fold: ", k
-    print >> f, 'Train ROC AUC mean: ', np.mean(train_auc)
-    print >> f, 'Train ROC AUC std', np.std(train_auc)
-    print >> f, 'Validatoin ROC AUC mean: ', np.mean(val_auc)
-    print >> f, 'Validation ROC AUC std', np.std(val_auc)
-    print >> f, 'Test ROC AUC mean: ', np.mean(test_auc)
-    print >> f, 'Test ROC AUC std', np.std(test_auc)
+    print >> f, 'Train ROC AUC mean: ', np.mean(train_roc)
+    print >> f, 'Train ROC AUC std', np.std(train_roc)
+    print >> f, 'Validatoin ROC AUC mean: ', np.mean(val_roc)
+    print >> f, 'Validation ROC AUC std', np.std(val_roc)
+    print >> f, 'Test ROC AUC mean: ', np.mean(test_roc)
+    print >> f, 'Test ROC AUC std', np.std(test_roc)
     print >> f, 'Train Precision mean: ', np.mean(train_precision)
     print >> f, 'Train Precision std', np.std(train_precision)
     print >> f, 'Validation Precision mean: ', np.mean(val_precision)
     print >> f, 'Validation Precision std', np.std(val_precision)
     print >> f, 'Test Precision mean: ', np.mean(test_precision)
     print >> f, 'Test Precision std', np.std(test_precision)
+#    print >> f, 'Train BEDROC AUC mean: ', np.mean(train_bedroc)
+#    print >> f, 'Train BEDROC AUC std', np.std(train_bedroc)
+#    print >> f, 'Validatoin BEDROC AUC mean: ', np.mean(val_bedroc)
+#    print >> f, 'Validation BEDROC AUC std', np.std(val_bedroc)
+#    print >> f, 'Test BEDROC AUC mean: ', np.mean(test_bedroc)
+#    print >> f, 'Test BEDROC AUC std', np.std(test_bedroc)
     print >> f, 'Test ef@0.01 mean: ', np.mean(test_ef01)
     print >> f, 'Test ef@0.01 std', np.std(test_ef01)
     print >> f, 'Test ef@0.02 mean: ', np.mean(test_ef02)
