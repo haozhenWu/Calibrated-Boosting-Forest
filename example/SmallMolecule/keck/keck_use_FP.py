@@ -207,7 +207,7 @@ for fold_num in [5,3,4]:
         # Store prediction scores.
         if store_prediction:
             base_dir = "./predictions/pred_" + start_date
-            directory = base_dir + "/test" + str(j) + "_" + str(fold_num) + 'fold'
+            directory = base_dir + "/" + str(fold_num) + 'fold' + "_" +"test" + str(j) 
             if not os.path.exists(directory):
                 os.makedirs(directory)
             train = pd.DataFrame({'label':y_train,'train_pred':y_pred_on_train})
