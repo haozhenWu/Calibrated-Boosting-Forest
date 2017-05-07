@@ -120,7 +120,7 @@ for fold_num in [5,3,4]:
         y_pred_on_train = model.predict(training_info)
         y_test = np.array(df_test['Keck_Pria_AS_Retest'])
         y_train = np.array(comb1[0]['Keck_Pria_AS_Retest'])
-        validation_info = model.get_get_validation_info()
+        validation_info = model.get_validation_info()
         #---------- Use same evaluation functions
         if not os.path.exists("./result"):
             os.makedirs("./result")
