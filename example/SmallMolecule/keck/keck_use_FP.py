@@ -127,53 +127,54 @@ for fold_num in [5,3,4]:
         #---------- Use same evaluation functions
         if not os.path.exists("./result"):
             os.makedirs("./result")
-        f = open('./result/result_' + start_date + '.txt' , 'a')
-        print >> f, "########################################"
-        print >> f, "Number of Fold: ", k
-        print >> f, "Test file: ", j
-        print >> f, "Stopping metric: ", eval_name
-        print >> f, all_results
-        print >> f, cv_result
-        print >> f, " "
-        print >> f,('train precision: {}'.format(precision_auc_single(
-                    y_train, y_pred_on_train, mode='auc.sklearn')))
-        print >> f,('train roc: {}'.format(roc_auc_single(
-                    y_train, y_pred_on_train)))
-        print >> f,('train bedroc: {}'.format(bedroc_auc_single(
-                    reshape_data_into_2_dim(y_train),
-                    reshape_data_into_2_dim(y_pred_on_train))))
-        print >> f, " "
-        for i,val in enumerate(validation_info):
-            print >> f,('validation precision ' + str(i) + ': {}'.format(
+
+        for z,val in enumerate(validation_info):
+            str1 = './result/result_' + start_date + "_" + str(fold_num)
+            str2 = 'fold_test' + str(j) + '_' + str(z) +'.txt'
+            f = open(str1 + str2 , 'a')
+            print >> f, "########################################"
+            print >> f, "Number of Fold: ", k
+            print >> f, "Test file: ", j
+            print >> f, "Stopping metric: ", eval_name
+            print >> f, all_results
+            print >> f, cv_result
+            print >> f, " "
+            print >> f,('train precision: {}'.format(precision_auc_single(
+                        y_train, y_pred_on_train, mode='auc.sklearn')))
+            print >> f,('train roc: {}'.format(roc_auc_single(
+                        y_train, y_pred_on_train)))
+            print >> f,('train bedroc: {}'.format(bedroc_auc_single(
+                        reshape_data_into_2_dim(y_train),
+                        reshape_data_into_2_dim(y_pred_on_train))))
+            print >> f, " "
+            print >> f,('validation precision : {}'.format(
                      precision_auc_single(val.label, val.validation_pred,
                      mode='auc.sklearn')))
-        print >> f, " "
-        for i,val in enumerate(validation_info):
-            print >> f,('validation roc ' + str(i) + ': {}'.format(
+            print >> f, " "
+            print >> f,('validation roc : {}'.format(
                      roc_auc_single(val.label, val.validation_pred)))
-        print >> f, " "
-        for i,val in enumerate(validation_info):
-            print >> f,('validation bedroc ' + str(i) + ': {}'.format(
+            print >> f, " "
+            print >> f,('validation bedroc : {}'.format(
                      bedroc_auc_single(reshape_data_into_2_dim(val.label),
                      reshape_data_into_2_dim(val.validation_pred))))
-        print >> f, " "
-        print >> f,('test precision: {}'.format(precision_auc_single(
-                    y_test, y_pred_on_test,mode='auc.sklearn')))
-        print >> f,('test roc: {}'.format(roc_auc_single(
-                    y_test, y_pred_on_test)))
-        print >> f,('test bedroc: {}'.format(bedroc_auc_single(
-                    reshape_data_into_2_dim(y_test),
-                    reshape_data_into_2_dim(y_pred_on_test))))
-        print >> f, " "
+            print >> f, " "
+            print >> f,('test precision: {}'.format(precision_auc_single(
+                        y_test, y_pred_on_test,mode='auc.sklearn')))
+            print >> f,('test roc: {}'.format(roc_auc_single(
+                        y_test, y_pred_on_test)))
+            print >> f,('test bedroc: {}'.format(bedroc_auc_single(
+                        reshape_data_into_2_dim(y_test),
+                        reshape_data_into_2_dim(y_pred_on_test))))
+            print >> f, " "
 
-        EF_ratio_list = [0.02, 0.01, 0.0015, 0.001]
-        for EF_ratio in EF_ratio_list:
-            n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, EF_ratio)
-            print >> f,('ratio: {}, EF: {}, EF_max: {}\tactive: {}'.format(EF_ratio, ef, ef_max, n_actives))
+            EF_ratio_list = [0.02, 0.01, 0.0015, 0.001]
+            for EF_ratio in EF_ratio_list:
+                n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, EF_ratio)
+                print >> f,('ratio: {}, EF: {}, EF_max: {}\tactive: {}'.format(EF_ratio, ef, ef_max, n_actives))
 
-        end = time.time()
-        print >> f, 'time used: ', end - start
-        f.close()
+            end = time.time()
+            print >> f, 'time used: ', end - start
+            f.close()
 
         # Accumulate results for each set. ex: 5fold, 4fold, 3fold.
         train_roc.append(roc_auc_single(y_train, y_pred_on_train))
@@ -227,11 +228,14 @@ for fold_num in [5,3,4]:
         ef_curve_df = pd.DataFrame({'ef_values':ef_values,
                                     'ef_max_values':ef_max_values,
                                     'ef_ratio':EF_ratio_list})
-        base_dir = "./predictions/pred_" + start_date
-        directory = base_dir + "/test" + str(j) + "_" + str(fold_num) + 'fold'
+        directory = "./result/"
+        #directory = base_dir + "/test" + str(j) + "_" + str(fold_num) + 'fold'
         if not os.path.exists(directory):
             os.makedirs(directory)
-        ef_curve_df.to_csv(directory + "/EF_curve.csv", index = False)
+        str1 = directory + 'EF_curve_' + start_date + '_' + str(fold_num)
+        str2 = 'fold_test' + str(j) + '.csv'
+        ef_curve_df.to_csv(str1 + str2 , index = False)
+
 
     f = open('./result/summary_' + start_date + '.txt', 'a')
     print >> f, "########################################"
