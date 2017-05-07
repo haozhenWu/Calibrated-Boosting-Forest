@@ -23,6 +23,17 @@ import os
 start_date = time.strftime("%Y_%m_%d_%H")
 store_prediction = True
 
+# chemical descriptor
+descriptor = pd.read_csv("../vs_data/ChemicalDescriptors_LC1-4_VSKeckXing/lifechem123_cleaned_2017_03_10_desc.csv")
+descriptor.index = descriptor.MOLID
+# select only descriptor
+descriptor = descriptor.iloc[:,2:198]
+descriptor.columns = ['Feature_'+item for item in list(descriptor.columns)]
+descriptor = descriptor.fillna(-99999)
+
+extra_data = descriptor
+extra_data_name = list(descriptor.columns)
+
 #if __name__ == "__main__"
 for fold_num in [5,3,4]:
 
@@ -64,8 +75,14 @@ for fold_num in [5,3,4]:
         test_file = [output_file_list[j]]
         print train_file
         train_pd = read_merged_data(train_file)
+        # inner join train_pd with descriptors based on molecule id.
+        train_pd.index = train_pd.Molecule
+        train_pd = pd.merge(extra_data,train_pd,how='right',left_index=True,right_index=True)
+
         print test_file
         test_pd = read_merged_data(test_file)
+        test_pd.index = test_pd.Molecule
+        test_pd = pd.merge(extra_data,test_pd,how='right',left_index=True,right_index=True)
         my_fold_index = reverse_generate_fold_index(train_pd, train_file,
                                                      index, 'Molecule')
 
@@ -90,7 +107,9 @@ for fold_num in [5,3,4]:
         maccs_fp = fp.MACCSkeys()
         comb1 = (morgan_fp,label_name_list)
         comb2 = (maccs_fp,label_name_list)
-        training_info = [comb1,comb2]
+        # Descriptors
+        comb3 = (df,label_name_list)
+        training_info = [comb1,comb2,comb3]
 
         print 'Preparing testing data fingerprints'
         df_test = test_pd
@@ -102,7 +121,9 @@ for fold_num in [5,3,4]:
         maccs_fp = fp.MACCSkeys()
         comb1_test = (morgan_fp,None)# test data does not need label name
         comb2_test = (maccs_fp,None)
-        testing_info = [comb1_test,comb2_test]
+        # Descriptors
+        comb3_test = (df_test,None)
+        testing_info = [comb1_test,comb2_test,comb3_test]
 
         print 'Building and selecting best model'
         # Current VsEnsembleModel create test data by default
