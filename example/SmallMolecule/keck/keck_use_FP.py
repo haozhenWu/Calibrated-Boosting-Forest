@@ -98,10 +98,12 @@ for fold_num in [3,4,5]:
 
         print 'Building and selecting best model'
         # Current VsEnsembleModel create test data by default
-        model = VsEnsembleModel_keck(training_info,
+        model = VsEnsembleModel_keck_test(training_info,
                                      eval_name,
-                                     fold_info=my_fold_index)
+                                     fold_info = my_fold_index,
+                                     createTestset = False)
         model.train()
+        val_info = model.get_get_validation_info()
         cv_result = model.training_result()
         all_results = model.detail_result()
 
@@ -114,6 +116,8 @@ for fold_num in [3,4,5]:
         y_pred_on_train = model.predict(training_info)
         y_test = np.array(df_test['Keck_Pria_AS_Retest'])
         y_train = np.array(comb1[0]['Keck_Pria_AS_Retest'])
+        #TODO: add y_pred_on_val, length = num of train fold.
+        
         #---------- Use same evaluation functions
         f = open('./out.txt', 'a')
         print >> f, "########################################"
