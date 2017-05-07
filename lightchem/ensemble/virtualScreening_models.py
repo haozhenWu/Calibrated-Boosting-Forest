@@ -618,6 +618,7 @@ class VsEnsembleModel_keck(object):
 
 
 # Temp. testing
+# TODO: merge changing from this temp class to original class.
 class VsEnsembleModel_keck_test(object):
     """
     Wrapper class to build ensemble models structure for KECK dataset.
