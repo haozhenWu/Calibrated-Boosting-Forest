@@ -25,7 +25,7 @@ store_prediction = True
 
 #if __name__ == "__main__"
 for fold_num in [5,3,4]:
-    start = time.time()
+
     complete_df = pd.read_csv('./dataset/keck_complete.csv')
     k = fold_num
     #k = 5
@@ -55,6 +55,7 @@ for fold_num in [5,3,4]:
     test_ef001 = []
 
     for j in range(k):
+        start = time.time()
         index = list(set(range(k)) - set([j]))
         train_file = list(np.array(output_file_list)[index])
         test_file = [output_file_list[j]]
@@ -202,7 +203,7 @@ for fold_num in [5,3,4]:
         if not os.path.exists(directory):
             os.makedirs(directory)
         ef_curve_df.to_csv(directory + "/EF_curve.csv", index = False)
-                                    
+
     f = open('./result/summary_' + start_date + '.txt', 'a')
     print >> f, "########################################"
     print >> f, "Number of Fold: ", k
