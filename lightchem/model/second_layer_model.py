@@ -267,3 +267,23 @@ class secondLayerModel(object):
           Custom evaluation function based on xgboost's format.
         """
         self.__eval_function = function
+
+    def get_validation_info(self):
+        """
+        Return validation data info as a list, where the length is total number
+        of training fold, each item is a pd.DataFrame with two
+        columns(validation_pred, validation_label)
+        """
+        if not isinstance(self.__holdout,np.ndarray):
+            raise ValueError('You must call `generate_holdout_pred` ',
+                             'before `get_validation_info`')
+        train_folds = self.__xgbData.get_train_fold()
+        train_labels = self.__xgbData.get_holdoutLabel()
+        final = train_folds.copy(deep=True)
+        final.loc[:,'label'] = train_labels
+        final.loc[:,'validation_pred'] = self.__holdout
+        val_info = []
+        for fold in list(train_folds.columns):
+            temp = final.loc[final.loc[:,fold]==1,['label','validation_pred']]
+            val_info.append(temp)
+        return val_info

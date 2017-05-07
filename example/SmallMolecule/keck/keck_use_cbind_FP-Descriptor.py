@@ -1,12 +1,13 @@
 import sys
 #sys.path.remove('/usr/lib/python2.7/dist-packages')
-sys.path.append("./src/")
-from lightchem.ensemble import virtualScreening_models
+sys.path.append("../virtual-screening/virtual_screening")
+from lightchem.ensemble.virtualScreening_models import *
 from lightchem.featurize import fingerprint
 from lightchem.eval import defined_eval
+from lightchem.utility.util import reverse_generate_fold_index
 from function import *
-from data_preparation import *
-from evaluation import *
+#from data_preparation import *
+#from evaluation import *
 from openpyxl import Workbook
 import pandas as pd
 import numpy as np
@@ -78,6 +79,9 @@ for fold_num in [3,4,5]:#4
         test_pd = read_merged_data(test_file)
         test_pd.index = test_pd.Molecule
         test_pd = pd.merge(extra_data,test_pd,how='right',left_index=True,right_index=True)
+
+        my_fold_index = reverse_generate_fold_index(train_pd, train_file,
+                                                     index, 'Molecule')
 
         # Using lightchem
 
@@ -157,7 +161,7 @@ for fold_num in [3,4,5]:#4
         # Current VsEnsembleModel create test data by default
         model = VsEnsembleModel_keck(training_info,
                                      eval_name,
-                                     num_of_fold=4)
+                                     fold_info=my_fold_index)
         model.train()
         cv_result = model.training_result()
         all_results = model.detail_result()
