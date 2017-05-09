@@ -22,6 +22,7 @@ import os
 # Need to download prive datasets from Tony's lab.
 start_date = time.strftime("%Y_%m_%d_%H")
 store_prediction = True
+feature_used = 'FP_Descriptor'
 
 # chemical descriptor
 descriptor = pd.read_csv("../vs_data/ChemicalDescriptors_LC1-4_VSKeckXing/lifechem123_cleaned_2017_03_10_desc.csv")
@@ -153,6 +154,7 @@ for fold_num in [5,3,4]:
         print >> f, "Number of Fold: ", k
         print >> f, "Test file: ", j
         print >> f, "Stopping metric: ", eval_name
+        print >> f, "Features: ", feature_used
         print >> f, all_results
         print >> f, cv_result
         print >> f, " "
@@ -254,9 +256,11 @@ for fold_num in [5,3,4]:
             os.makedirs(directory)
         ef_curve_df.to_csv(directory + "/EF_curve.csv", index = False)
 
-    f = open('./result/summary_' + start_date + '.txt', 'a')
+    f = open('./result/summary_' + start_date + "_" + str(fold_num) + 'fold.txt', 'a')
     print >> f, "########################################"
     print >> f, "Number of Fold: ", k
+    print >> f, "Stopping metric: ", eval_name
+    print >> f, "Features: ", feature_used
     print >> f, 'Train ROC AUC mean: ', np.mean(train_roc)
     print >> f, 'Train ROC AUC std', np.std(train_roc)
     print >> f, 'Validatoin ROC AUC mean: ', np.mean(val_roc)

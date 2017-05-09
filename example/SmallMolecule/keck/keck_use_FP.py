@@ -22,6 +22,7 @@ import os
 # Need to download prive datasets from Tony's lab.
 start_date = time.strftime("%Y_%m_%d_%H")
 store_prediction = True
+feature_used = 'FP'
 
 #if __name__ == "__main__"
 for fold_num in [5,3,4]:
@@ -136,6 +137,7 @@ for fold_num in [5,3,4]:
             print >> f, "Number of Fold: ", k
             print >> f, "Test file: ", j
             print >> f, "Stopping metric: ", eval_name
+            print >> f, "Features: ", feature_used
             print >> f, all_results
             print >> f, cv_result
             print >> f, " "
@@ -240,6 +242,8 @@ for fold_num in [5,3,4]:
     f = open('./result/summary_' + start_date + "_" + str(fold_num) + 'fold.txt', 'a')
     print >> f, "########################################"
     print >> f, "Number of Fold: ", k
+    print >> f, "Stopping metric: ", eval_name
+    print >> f, "Features: ", feature_used
     print >> f, 'Train ROC AUC mean: ', np.mean(train_roc)
     print >> f, 'Train ROC AUC std', np.std(train_roc)
     print >> f, 'Validatoin ROC AUC mean: ', np.mean(val_roc)
