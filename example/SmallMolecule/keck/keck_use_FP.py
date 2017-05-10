@@ -53,6 +53,10 @@ for fold_num in [5,3,4]:
     train_bedroc = []
     val_bedroc = []
     test_bedroc = []
+    train_efr1 = []
+    val_efr1 = []
+    test_efr1 = []
+
     test_ef01 = []
     test_ef02 = []
     test_ef0015 = []
@@ -148,17 +152,21 @@ for fold_num in [5,3,4]:
             print >> f,('train bedroc: {}'.format(bedroc_auc_single(
                         reshape_data_into_2_dim(y_train),
                         reshape_data_into_2_dim(y_pred_on_train))))
+            n_actives, ef, ef_max = enrichment_factor_single(y_train, y_pred_on_train, 0.01)
+            print >> f,('train EFR1: {}'.format(ef))
+
             print >> f, " "
             print >> f,('validation precision : {}'.format(
                      precision_auc_single(val.label, val.validation_pred,
                      mode='auc.sklearn')))
-            print >> f, " "
             print >> f,('validation roc : {}'.format(
                      roc_auc_single(val.label, val.validation_pred)))
-            print >> f, " "
             print >> f,('validation bedroc : {}'.format(
                      bedroc_auc_single(reshape_data_into_2_dim(val.label),
                      reshape_data_into_2_dim(val.validation_pred))))
+            n_actives, ef, ef_max = enrichment_factor_single(val.label, val.validation_pred, 0.01)
+            print >> f,('validation EFR1: {}'.format(ef))
+
             print >> f, " "
             print >> f,('test precision: {}'.format(precision_auc_single(
                         y_test, y_pred_on_test,mode='auc.sklearn')))
@@ -167,6 +175,8 @@ for fold_num in [5,3,4]:
             print >> f,('test bedroc: {}'.format(bedroc_auc_single(
                         reshape_data_into_2_dim(y_test),
                         reshape_data_into_2_dim(y_pred_on_test))))
+            n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
+            print >> f,('test EFR1: {}'.format(ef))
             print >> f, " "
 
             EF_ratio_list = [0.02, 0.01, 0.0015, 0.001]
@@ -179,16 +189,17 @@ for fold_num in [5,3,4]:
             f.close()
 
         # Accumulate results for each set. ex: 5fold, 4fold, 3fold.
+        # ROCAUC
         train_roc.append(roc_auc_single(y_train, y_pred_on_train))
         for i,val in enumerate(validation_info):
             val_roc.append(roc_auc_single(val.label, val.validation_pred))
         test_roc.append(roc_auc_single(y_test, y_pred_on_test))
-
+        # PRAUC
         train_precision.append(precision_auc_single(y_train, y_pred_on_train, mode='auc.sklearn'))
         for i,val in enumerate(validation_info):
             val_precision.append(precision_auc_single(val.label, val.validation_pred,mode='auc.sklearn'))
         test_precision.append(precision_auc_single(y_test, y_pred_on_test, mode='auc.sklearn'))
-
+        # BEDROC
         train_bedroc.append(bedroc_auc_single(reshape_data_into_2_dim(y_train),
                                               reshape_data_into_2_dim(y_pred_on_train)))
         for i,val in enumerate(validation_info):
@@ -196,6 +207,14 @@ for fold_num in [5,3,4]:
                                                 reshape_data_into_2_dim(val.validation_pred)))
         test_bedroc.append(bedroc_auc_single(reshape_data_into_2_dim(y_test),
                                              reshape_data_into_2_dim(y_pred_on_test)))
+        # EFR1
+        n_actives, ef, ef_max = enrichment_factor_single(y_train, y_pred_on_train, 0.01)
+        train_efr1.append(ef)
+        for i,val in enumerate(validation_info):
+            n_actives, ef, ef_max = enrichment_factor_single(val.label, val.validation_pred, 0.01)
+            val_efr1.append(ef)
+        n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
+        test_efr1.append(ef)
 
         n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
         test_ef01.append(ef)
@@ -262,6 +281,12 @@ for fold_num in [5,3,4]:
     print >> f, 'Validation BEDROC AUC std', np.std(val_bedroc)
     print >> f, 'Test BEDROC AUC mean: ', np.mean(test_bedroc)
     print >> f, 'Test BEDROC AUC std', np.std(test_bedroc)
+    print >> f, 'Train ef@0.01 mean: ', np.mean(train_efr1)
+    print >> f, 'Train ef@0.01 std', np.std(train_efr1)
+    print >> f, 'Validatoin ef@0.01 mean: ', np.mean(val_efr1)
+    print >> f, 'Validation ef@0.01 std', np.std(val_efr1)
+    print >> f, 'Test ef@0.01 mean: ', np.mean(test_efr1)
+    print >> f, 'Test ef@0.01 std', np.std(test_efr1)
     print >> f, 'Test ef@0.01 mean: ', np.mean(test_ef01)
     print >> f, 'Test ef@0.01 std', np.std(test_ef01)
     print >> f, 'Test ef@0.02 mean: ', np.mean(test_ef02)
