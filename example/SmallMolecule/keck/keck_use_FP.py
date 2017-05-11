@@ -211,7 +211,9 @@ for fold_num in [5,3,4]:
         n_actives, ef, ef_max = enrichment_factor_single(y_train, y_pred_on_train, 0.01)
         train_efr1.append(ef)
         for i,val in enumerate(validation_info):
-            n_actives, ef, ef_max = enrichment_factor_single(val.label, val.validation_pred, 0.01)
+            n_actives, ef, ef_max = enrichment_factor_single(np.array(val.label),
+                                                             np.array(val.validation_pred),
+                                                             0.01)
             val_efr1.append(ef)
         n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
         test_efr1.append(ef)
