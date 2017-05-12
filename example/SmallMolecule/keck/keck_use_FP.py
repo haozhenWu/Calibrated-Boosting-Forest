@@ -164,7 +164,9 @@ for fold_num in [5,3,4]:
             print >> f,('validation bedroc : {}'.format(
                      bedroc_auc_single(reshape_data_into_2_dim(val.label),
                      reshape_data_into_2_dim(val.validation_pred))))
-            n_actives, ef, ef_max = enrichment_factor_single(val.label, val.validation_pred, 0.01)
+            n_actives, ef, ef_max = enrichment_factor_single(np.array(val.label),
+                                                             np.array(val.validation_pred),
+                                                             0.01)
             print >> f,('validation EFR1: {}'.format(ef))
 
             print >> f, " "
