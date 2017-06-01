@@ -9,14 +9,16 @@ class definedEvaluation(object):
     `ROCAUC`: Area under curve of ROC
     `PRAUC`: Area under curve of Precision-recall
     `EFR1`: Enrichment factor at 0.01
-    `EFR015`: Enrichment factor at 0.0015    
+    `EFR015`: Enrichment factor at 0.0015
+    `NEFAUC25`: Area under curve of Normalized Enrichment Factor, range between 0.0005 and 0.25
     """
     def __init__(self):
-        self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015']
+        self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015','NEFAUC25']
         self.__MATCH =  {'ROCAUC' : [xgb_eval.evalrocauc,True,100],
                         'PRAUC' :   [xgb_eval.evalprauc,True,300],
                         'EFR1' : [xgb_eval.evalefr1,True,50],
-                        'EFR015' : [xgb_eval.evalefr015,True,50]}
+                        'EFR015' : [xgb_eval.evalefr015,True,50],
+                        'NEFAUC25': [xgb_eval.evalNEFauc25,True,100]}
 
     def eval_list(self):
         return self.__DEFINED_EVAL

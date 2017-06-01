@@ -6,6 +6,7 @@ training process.
 from sklearn import metrics
 from sklearn.model_selection import StratifiedKFold
 import numpy as np
+from lightchem.utility import util
 
 def evalrocauc(preds, dtrain):
     '''
@@ -90,3 +91,19 @@ def evalefr015(preds, dtrain):
     else:
         ef = -1
     return 'EFR015', ef
+
+
+def evalNEFauc25(preds, dtrain):
+    '''
+    Return Normalized Enrichment Factor AUC ranging from 0.0005 to 0.25
+    '''
+    labels = dtrain.get_label()
+    unique = np.unique(labels)
+    if len(np.unique(labels)) > 2: # which means it is continuous label
+        cut = np.percentile(labels,99)
+        if cut == unique[0]:
+            cut = unique[1]
+        labels[np.where(dtrain.get_label()>cut)] = 1
+        labels[np.where(dtrain.get_label()<=cut)] = 0
+    nef = util.nef_auc(labels, preds, np.linspace(0.0005, .25, 15),['nefauc'])
+    return 'NEFAUC25', float(nef.nefauc)
