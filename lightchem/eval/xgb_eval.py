@@ -105,5 +105,5 @@ def evalNEFauc25(preds, dtrain):
             cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
-    nef = util.nef_auc(labels, preds, np.linspace(0.0005, .25, 15),['nefauc'])
+    nef = util.nef_auc(labels, preds, np.linspace(0.0005, .25, 10),['nefauc'])
     return 'NEFAUC25', float(nef.nefauc)
