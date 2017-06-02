@@ -152,7 +152,7 @@ def max_enrichment_factor(y_true, y_pred, perc_vec, label_names=None):
 def norm_enrichment_factor(y_true, y_pred, perc_vec, label_names=None):
     """
     Calculates normalized enrichment factor vector at the percentile vectors.
-    This returns three 2D panda matrices (norm_ef, ef, max_ef) where the rows
+    This returns one 2D panda matrices norm_ef where the rows
     are the percentile.
     """
     ef_pd = enrichment_factor(y_true, y_pred,
@@ -166,15 +166,15 @@ def norm_enrichment_factor(y_true, y_pred, perc_vec, label_names=None):
                          index=index_names,
                          columns=label_names)
     nef_pd.index.name = 'NEF'
-    return nef_pd, ef_pd, max_ef_pd
+    return nef_pd
 
 
 def nef_auc(y_true, y_pred, perc_vec, label_names=None):
     """
     Returns a pandas df of nef auc values.
     """
-    nef_mat, ef_mat, ef_max_mat  = norm_enrichment_factor(y_true, y_pred,
-                                                         perc_vec, label_names)
+    nef_mat  = norm_enrichment_factor(y_true, y_pred,
+                                     perc_vec, label_names)
     nef_mat = nef_mat.as_matrix()
     nb_classes = 1
     if label_names == None:
