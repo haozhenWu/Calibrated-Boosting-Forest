@@ -44,7 +44,7 @@ def reverse_generate_fold_index(whole_df, file_path, fold_num, join_on):
 # Modified by Haozhen Wu
 def enrichment_factor_single_perc(y_true, y_pred, percentile):
     """
-    Calculates enrichment factor vector at the given percentile for multiple labels.
+    Calculates enrichment factor vector at the given percentile for 1 label.
     This returns a 1D vector with the EF scores of the labels.
     """
     nb_classes = 1
@@ -53,10 +53,6 @@ def enrichment_factor_single_perc(y_true, y_pred, percentile):
     else:
         y_true = y_true.reshape((y_true.shape[0], 1))
         y_pred = y_pred.reshape((y_pred.shape[0], 1))
-
-    non_missing_indices = np.argwhere(y_true!=-1)[:, 0]
-    y_true = y_true[non_missing_indices,:]
-    y_pred = y_pred[non_missing_indices,:]
 
     ef = np.zeros(nb_classes)
     sample_size = int(y_true.shape[0] * percentile)
@@ -79,7 +75,7 @@ def enrichment_factor_single_perc(y_true, y_pred, percentile):
 
 def max_enrichment_factor_single_perc(y_true, y_pred, percentile):
     """
-    Calculates max enrichment factor vector at the given percentile for multiple labels.
+    Calculates max enrichment factor vector at the given percentile for 1 label.
     This returns a 1D vector with the EF scores of the labels.
     """
     nb_classes = 1
@@ -88,10 +84,6 @@ def max_enrichment_factor_single_perc(y_true, y_pred, percentile):
     else:
         y_true = y_true.reshape((y_true.shape[0], 1))
         y_pred = y_pred.reshape((y_pred.shape[0], 1))
-
-    non_missing_indices = np.argwhere(y_true!=-1)[:, 0]
-    y_true = y_true[non_missing_indices,:]
-    y_pred = y_pred[non_missing_indices,:]
 
     max_ef = np.zeros(nb_classes)
     sample_size = int(y_true.shape[0] * percentile)
@@ -115,9 +107,6 @@ def enrichment_factor(y_true, y_pred, perc_vec, label_names=None):
     """
     p_count = len(perc_vec)
     nb_classes = 1
-    if len(y_true.shape) == 2:
-        nb_classes = y_true.shape[1]
-
     ef_mat = np.zeros((p_count, nb_classes))
 
     for curr_perc in range(p_count):
@@ -128,11 +117,9 @@ def enrichment_factor(y_true, y_pred, perc_vec, label_names=None):
     Convert to pandas matrix row-col names
     """
     index_names = ['{:g}'.format(perc * 100) + ' %' for perc in perc_vec]
-    ef_pd = pd.DataFrame(data=np.concatenate((ef_mat,
-                                              np.mean(ef_mat,axis=1).reshape(len(perc_vec),1),
-                                              np.median(ef_mat,axis=1).reshape(len(perc_vec),1)),axis=1),
+    ef_pd = pd.DataFrame(data=ef_mat,
                          index=index_names,
-                         columns=label_names+['Mean','Median'])
+                         columns=label_names)
     ef_pd.index.name = 'EF'
     return ef_pd
 
@@ -144,9 +131,6 @@ def max_enrichment_factor(y_true, y_pred, perc_vec, label_names=None):
     """
     p_count = len(perc_vec)
     nb_classes = 1
-    if len(y_true.shape) == 2:
-        nb_classes = y_true.shape[1]
-
     max_ef_mat = np.zeros((p_count, nb_classes))
 
     for curr_perc in range(p_count):
@@ -158,11 +142,9 @@ def max_enrichment_factor(y_true, y_pred, perc_vec, label_names=None):
     """
 
     index_names = ['{:g}'.format(perc * 100) + ' %' for perc in perc_vec]
-    max_ef_pd = pd.DataFrame(data=np.concatenate((max_ef_mat,
-                                              np.mean(max_ef_mat,axis=1).reshape(len(perc_vec),1),
-                                              np.median(max_ef_mat,axis=1).reshape(len(perc_vec),1)),axis=1),
+    max_ef_pd = pd.DataFrame(data=max_ef_mat,
                          index=index_names,
-                         columns=label_names+['Mean','Median'])
+                         columns=label_names)
     max_ef_pd.index.name = 'Max_EF'
     return max_ef_pd
 
@@ -182,25 +164,19 @@ def norm_enrichment_factor(y_true, y_pred, perc_vec, label_names=None):
     index_names = ['{:g}'.format(perc * 100) + ' %' for perc in perc_vec]
     nef_pd = pd.DataFrame(data=nef_mat,
                          index=index_names,
-                         columns=label_names+['Mean','Median'])
+                         columns=label_names)
     nef_pd.index.name = 'NEF'
     return nef_pd, ef_pd, max_ef_pd
 
 
 def nef_auc(y_true, y_pred, perc_vec, label_names=None):
     """
-    Returns a pandas df of nef auc values, one for each label.
+    Returns a pandas df of nef auc values.
     """
     nef_mat, ef_mat, ef_max_mat  = norm_enrichment_factor(y_true, y_pred,
                                                          perc_vec, label_names)
     nef_mat = nef_mat.as_matrix()
-    ef_mat = ef_mat.as_matrix()
-    ef_max_mat = ef_max_mat.as_matrix()
-
     nb_classes = 1
-    if len(y_true.shape) == 2:
-        nb_classes = y_true.shape[1]
-
     if label_names == None:
         label_names = ['label ' + str(i) for i in range(nb_classes)]
 
