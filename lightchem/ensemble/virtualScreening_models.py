@@ -625,7 +625,7 @@ class VsEnsembleModel_keck_test(object):
     The difference compared to VsEnsembleModel is only the hyperparameters step.
     """
     def __init__(self,training_info,eval_name,fold_info = 4,
-                 createTestset = True, seed = 2016,verbose = False):
+                 createTestset = True, finalModel = None, seed = 2016,verbose = False):
         """
         Parameters:
         ----------
@@ -645,6 +645,19 @@ class VsEnsembleModel_keck_test(object):
         eval_name: str
          Name of evaluation metric used to monitor and stop training process.
          Must in eval.defined_eval
+        fold_info: int or DataFrame
+         either a DataFrame contains fold index or a single integer indicating
+         number of fold to create
+        createTestset: logic
+         Whether internally create a test set. Help selecting the best model
+        finalModel: str
+         Can be None, layer1, or layer2. Default is None
+         If set to None, it will select the best model from layer1 and layer2 models.
+         layer1: Only select best layer1 model as final model, even though it has
+                 layer2 model ready.
+         layer2: Only select best layer2 model as final model. Sometimes layer1
+                 models perform better than layer2 models.
+
         """
         self.__training_info = training_info
         self.__check_labelType()
@@ -661,6 +674,13 @@ class VsEnsembleModel_keck_test(object):
         self.__verbose = verbose
         self.__test_data = None
         self.__all_model_result = None
+        self.__finalModel = self.__set_final_model(finalModel)
+
+    def __set_final_model(self, finalModel):
+        if finalModel == None or finalModel == 'layer1' or finalModel == 'layer2':
+            return finalModel
+        else:
+            raise ValueError('finalModel should be `None`, `layer1` or `layer2`')
 
     def __determine_fold(self, fold_info):
         if isinstance(fold_info, pd.DataFrame):
@@ -895,15 +915,22 @@ class VsEnsembleModel_keck_test(object):
             cv_test = cv_result
             cv_test['weighted_score'] = cv_result.cv_result
 
+        # Based on user specific finalModel
+        if self.__finalModel == None:
+            final_cv_test = cv_test
+        else:
+            finalModel_names = [item for item in list(cv_test.index) if self.__finalModel in item]
+            final_cv_test = cv_test.loc[finalModel_names]
+
         # Determine does current evaluation metric need to maximize or minimize
         eval_info = defined_eval.definedEvaluation()
         is_max = eval_info.is_maximize(self.__eval_name)
         if is_max:
-            position = np.where(cv_test.weighted_score == cv_test.weighted_score.max())
-            best_model_name = cv_test.weighted_score.iloc[position].index[0]
+            position = np.where(final_cv_test.weighted_score == final_cv_test.weighted_score.max())
+            best_model_name = final_cv_test.weighted_score.iloc[position].index[0]
         else:
-            position = np.where(cv_test.weighted_score == cv_test.weighted_score.min())
-            best_model_name = cv_test.weighted_score.iloc[position].index[0]
+            position = np.where(final_cv_test.weighted_score == final_cv_test.weighted_score.min())
+            best_model_name = final_cv_test.weighted_score.iloc[position].index[0]
         # find best model
         all_model_name = [model.name for model in all_model]
         model_position = all_model_name.index(best_model_name)
