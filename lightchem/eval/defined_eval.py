@@ -14,7 +14,7 @@ class definedEvaluation(object):
     `NEFAUC5`: Area under curve of Normalized Enrichment Factor, range between 0.001 and 0.05
     """
     def __init__(self):
-        self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015','NEFAUC25']
+        self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015','NEFAUC25','NEFAUC5']
         self.__MATCH =  {'ROCAUC' : [xgb_eval.evalrocauc,True,100],
                         'PRAUC' :   [xgb_eval.evalprauc,True,300],
                         'EFR1' : [xgb_eval.evalefr1,True,50],
