@@ -22,7 +22,18 @@ import os
 # Need to download prive datasets from Tony's lab.
 start_date = time.strftime("%Y_%m_%d_%H")
 store_prediction = True
-feature_used = 'FP'
+feature_used = 'FP_Descriptor'
+
+# chemical descriptor
+descriptor = pd.read_csv("../vs_data/ChemicalDescriptors_LC1-4_VSKeckXing/lifechem123_cleaned_2017_03_10_desc.csv")
+descriptor.index = descriptor.MOLID
+# select only descriptor
+descriptor = descriptor.iloc[:,2:198]
+descriptor.columns = ['Feature_'+item for item in list(descriptor.columns)]
+descriptor = descriptor.fillna(-99999)
+
+extra_data = descriptor
+extra_data_name = list(descriptor.columns)
 
 #if __name__ == "__main__"
 for fold_num in [5,3,4]:
@@ -53,10 +64,6 @@ for fold_num in [5,3,4]:
     train_bedroc = []
     val_bedroc = []
     test_bedroc = []
-    train_efr1 = []
-    val_efr1 = []
-    test_efr1 = []
-
     test_ef01 = []
     test_ef02 = []
     test_ef0015 = []
@@ -69,8 +76,14 @@ for fold_num in [5,3,4]:
         test_file = [output_file_list[j]]
         print train_file
         train_pd = read_merged_data(train_file)
+        # inner join train_pd with descriptors based on molecule id.
+        train_pd.index = train_pd.Molecule
+        train_pd = pd.merge(extra_data,train_pd,how='right',left_index=True,right_index=True)
+
         print test_file
         test_pd = read_merged_data(test_file)
+        test_pd.index = test_pd.Molecule
+        test_pd = pd.merge(extra_data,test_pd,how='right',left_index=True,right_index=True)
         my_fold_index = reverse_generate_fold_index(train_pd, train_file,
                                                      index, 'Molecule')
 
@@ -95,7 +108,9 @@ for fold_num in [5,3,4]:
         maccs_fp = fp.MACCSkeys()
         comb1 = (morgan_fp,label_name_list)
         comb2 = (maccs_fp,label_name_list)
-        training_info = [comb1,comb2]
+        # Descriptors
+        comb3 = (df,label_name_list)
+        training_info = [comb1,comb2,comb3]
 
         print 'Preparing testing data fingerprints'
         df_test = test_pd
@@ -107,7 +122,9 @@ for fold_num in [5,3,4]:
         maccs_fp = fp.MACCSkeys()
         comb1_test = (morgan_fp,None)# test data does not need label name
         comb2_test = (maccs_fp,None)
-        testing_info = [comb1_test,comb2_test]
+        # Descriptors
+        comb3_test = (df_test,None)
+        testing_info = [comb1_test,comb2_test,comb3_test]
 
         print 'Building and selecting best model'
         # Current VsEnsembleModel create test data by default
@@ -132,76 +149,66 @@ for fold_num in [5,3,4]:
         #---------- Use same evaluation functions
         if not os.path.exists("./result"):
             os.makedirs("./result")
-
-        for z,val in enumerate(validation_info):
-            str1 = './result/result_' + start_date + "_" + str(fold_num)
-            str2 = 'fold_test' + str(j) + '_' + str(z) +'.txt'
-            f = open(str1 + str2 , 'a')
-            print >> f, "########################################"
-            print >> f, "Number of Fold: ", k
-            print >> f, "Test file: ", j
-            print >> f, "Stopping metric: ", eval_name
-            print >> f, "Features: ", feature_used
-            print >> f, all_results
-            print >> f, cv_result
-            print >> f, " "
-            print >> f,('train precision: {}'.format(precision_auc_single(
-                        y_train, y_pred_on_train, mode='auc.sklearn')))
-            print >> f,('train roc: {}'.format(roc_auc_single(
-                        y_train, y_pred_on_train)))
-            print >> f,('train bedroc: {}'.format(bedroc_auc_single(
-                        reshape_data_into_2_dim(y_train),
-                        reshape_data_into_2_dim(y_pred_on_train))))
-            n_actives, ef, ef_max = enrichment_factor_single(y_train, y_pred_on_train, 0.01)
-            print >> f,('train EFR1: {}'.format(ef))
-
-            print >> f, " "
-            print >> f,('validation precision : {}'.format(
+        f = open('./result/result_' + start_date + '.txt' , 'a')
+        print >> f, "########################################"
+        print >> f, "Number of Fold: ", k
+        print >> f, "Test file: ", j
+        print >> f, "Stopping metric: ", eval_name
+        print >> f, "Features: ", feature_used
+        print >> f, all_results
+        print >> f, cv_result
+        print >> f, " "
+        print >> f,('train precision: {}'.format(precision_auc_single(
+                    y_train, y_pred_on_train, mode='auc.sklearn')))
+        print >> f,('train roc: {}'.format(roc_auc_single(
+                    y_train, y_pred_on_train)))
+        print >> f,('train bedroc: {}'.format(bedroc_auc_single(
+                    reshape_data_into_2_dim(y_train),
+                    reshape_data_into_2_dim(y_pred_on_train))))
+        print >> f, " "
+        for i,val in enumerate(validation_info):
+            print >> f,('validation precision ' + str(i) + ': {}'.format(
                      precision_auc_single(val.label, val.validation_pred,
                      mode='auc.sklearn')))
-            print >> f,('validation roc : {}'.format(
+        print >> f, " "
+        for i,val in enumerate(validation_info):
+            print >> f,('validation roc ' + str(i) + ': {}'.format(
                      roc_auc_single(val.label, val.validation_pred)))
-            print >> f,('validation bedroc : {}'.format(
+        print >> f, " "
+        for i,val in enumerate(validation_info):
+            print >> f,('validation bedroc ' + str(i) + ': {}'.format(
                      bedroc_auc_single(reshape_data_into_2_dim(val.label),
                      reshape_data_into_2_dim(val.validation_pred))))
-            n_actives, ef, ef_max = enrichment_factor_single(np.array(val.label),
-                                                             np.array(val.validation_pred),
-                                                             0.01)
-            print >> f,('validation EFR1: {}'.format(ef))
+        print >> f, " "
+        print >> f,('test precision: {}'.format(precision_auc_single(
+                    y_test, y_pred_on_test,mode='auc.sklearn')))
+        print >> f,('test roc: {}'.format(roc_auc_single(
+                    y_test, y_pred_on_test)))
+        print >> f,('test bedroc: {}'.format(bedroc_auc_single(
+                    reshape_data_into_2_dim(y_test),
+                    reshape_data_into_2_dim(y_pred_on_test))))
+        print >> f, " "
 
-            print >> f, " "
-            print >> f,('test precision: {}'.format(precision_auc_single(
-                        y_test, y_pred_on_test,mode='auc.sklearn')))
-            print >> f,('test roc: {}'.format(roc_auc_single(
-                        y_test, y_pred_on_test)))
-            print >> f,('test bedroc: {}'.format(bedroc_auc_single(
-                        reshape_data_into_2_dim(y_test),
-                        reshape_data_into_2_dim(y_pred_on_test))))
-            n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
-            print >> f,('test EFR1: {}'.format(ef))
-            print >> f, " "
+        EF_ratio_list = [0.02, 0.01, 0.0015, 0.001]
+        for EF_ratio in EF_ratio_list:
+            n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, EF_ratio)
+            print >> f,('ratio: {}, EF: {}, EF_max: {}\tactive: {}'.format(EF_ratio, ef, ef_max, n_actives))
 
-            EF_ratio_list = [0.02, 0.01, 0.0015, 0.001]
-            for EF_ratio in EF_ratio_list:
-                n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, EF_ratio)
-                print >> f,('ratio: {}, EF: {}, EF_max: {}\tactive: {}'.format(EF_ratio, ef, ef_max, n_actives))
-
-            end = time.time()
-            print >> f, 'time used: ', end - start
-            f.close()
+        end = time.time()
+        print >> f, 'time used: ', end - start
+        f.close()
 
         # Accumulate results for each set. ex: 5fold, 4fold, 3fold.
-        # ROCAUC
         train_roc.append(roc_auc_single(y_train, y_pred_on_train))
         for i,val in enumerate(validation_info):
             val_roc.append(roc_auc_single(val.label, val.validation_pred))
         test_roc.append(roc_auc_single(y_test, y_pred_on_test))
-        # PRAUC
+
         train_precision.append(precision_auc_single(y_train, y_pred_on_train, mode='auc.sklearn'))
         for i,val in enumerate(validation_info):
             val_precision.append(precision_auc_single(val.label, val.validation_pred,mode='auc.sklearn'))
         test_precision.append(precision_auc_single(y_test, y_pred_on_test, mode='auc.sklearn'))
-        # BEDROC
+
         train_bedroc.append(bedroc_auc_single(reshape_data_into_2_dim(y_train),
                                               reshape_data_into_2_dim(y_pred_on_train)))
         for i,val in enumerate(validation_info):
@@ -209,16 +216,6 @@ for fold_num in [5,3,4]:
                                                 reshape_data_into_2_dim(val.validation_pred)))
         test_bedroc.append(bedroc_auc_single(reshape_data_into_2_dim(y_test),
                                              reshape_data_into_2_dim(y_pred_on_test)))
-        # EFR1
-        n_actives, ef, ef_max = enrichment_factor_single(y_train, y_pred_on_train, 0.01)
-        train_efr1.append(ef)
-        for i,val in enumerate(validation_info):
-            n_actives, ef, ef_max = enrichment_factor_single(np.array(val.label),
-                                                             np.array(val.validation_pred),
-                                                             0.01)
-            val_efr1.append(ef)
-        n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
-        test_efr1.append(ef)
 
         n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
         test_ef01.append(ef)
@@ -232,7 +229,7 @@ for fold_num in [5,3,4]:
         # Store prediction scores.
         if store_prediction:
             base_dir = "./predictions/pred_" + start_date
-            directory = base_dir + "/" + str(fold_num) + 'fold' + "_" +"test" + str(j)
+            directory = base_dir + "/test" + str(j) + "_" + str(fold_num) + 'fold'
             if not os.path.exists(directory):
                 os.makedirs(directory)
             train = pd.DataFrame({'label':y_train,'train_pred':y_pred_on_train})
@@ -253,14 +250,11 @@ for fold_num in [5,3,4]:
         ef_curve_df = pd.DataFrame({'ef_values':ef_values,
                                     'ef_max_values':ef_max_values,
                                     'ef_ratio':EF_ratio_list})
-        directory = "./result/"
-        #directory = base_dir + "/test" + str(j) + "_" + str(fold_num) + 'fold'
+        base_dir = "./predictions/pred_" + start_date
+        directory = base_dir + "/test" + str(j) + "_" + str(fold_num) + 'fold'
         if not os.path.exists(directory):
             os.makedirs(directory)
-        str1 = directory + 'EF_curve_' + start_date + '_' + str(fold_num)
-        str2 = 'fold_test' + str(j) + '.csv'
-        ef_curve_df.to_csv(str1 + str2 , index = False)
-
+        ef_curve_df.to_csv(directory + "/EF_curve.csv", index = False)
 
     f = open('./result/summary_' + start_date + "_" + str(fold_num) + 'fold.txt', 'a')
     print >> f, "########################################"
@@ -285,12 +279,6 @@ for fold_num in [5,3,4]:
     print >> f, 'Validation BEDROC AUC std', np.std(val_bedroc)
     print >> f, 'Test BEDROC AUC mean: ', np.mean(test_bedroc)
     print >> f, 'Test BEDROC AUC std', np.std(test_bedroc)
-    print >> f, 'Train ef@0.01 mean: ', np.mean(train_efr1)
-    print >> f, 'Train ef@0.01 std', np.std(train_efr1)
-    print >> f, 'Validatoin ef@0.01 mean: ', np.mean(val_efr1)
-    print >> f, 'Validation ef@0.01 std', np.std(val_efr1)
-    print >> f, 'Test ef@0.01 mean: ', np.mean(test_efr1)
-    print >> f, 'Test ef@0.01 std', np.std(test_efr1)
     print >> f, 'Test ef@0.01 mean: ', np.mean(test_ef01)
     print >> f, 'Test ef@0.01 std', np.std(test_ef01)
     print >> f, 'Test ef@0.02 mean: ', np.mean(test_ef02)
