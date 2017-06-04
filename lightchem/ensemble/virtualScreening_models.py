@@ -943,11 +943,11 @@ class VsEnsembleModel_keck_test(object):
         # Find model contains the final label
         if self.__final_labelType == 'binary':
             model_has_finalLabel = [item for item in list(cv_test.index) if 'Logistic' in item]
-            model_position = all_model_name.index(model_has_finalLabel)
+            model_position = all_model_name.index(model_has_finalLabel[0])
             self.__model_has_finalLabel = all_model[model_position]
         elif self.__final_labelType == 'continuous':
             model_has_finalLabel = [item for item in list(cv_test.index) if 'Regression' in item]
-            model_position = all_model_name.index(model_has_finalLabel)
+            model_position = all_model_name.index(model_has_finalLabel[0])
             self.__model_has_finalLabel = all_model[model_position]
 
 
