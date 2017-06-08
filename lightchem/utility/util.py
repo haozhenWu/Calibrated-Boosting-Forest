@@ -20,6 +20,20 @@ def fpString_to_array(fp_col):
     fp_array = fp_array.astype(np.float64)
     return fp_array
 
+def array_to_fpString(fp_array):
+    '''
+    Convert array back to original fingerprint string format
+    Reverse function of fpString_to_array.
+    '''
+    fpString_list = []
+    k = 0.0
+    for array_1d in fp_array:
+        fp = ""
+        for i in list(array_1d):
+            fp = fp + str(i)
+        fpString_list.append(fp)
+        k += 1
+    return fpString_list
 
 # Generate fold index based on each file.
 def reverse_generate_fold_index(whole_df, file_path, fold_num, join_on):
