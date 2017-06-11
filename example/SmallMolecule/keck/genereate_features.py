@@ -96,3 +96,13 @@ for split in split_methods:
         end = time.time()
         print 'Finish_' + split + "_" + featurizer
         print 'Time took: ' + str(end - start) + "s"
+
+root_dir = "/home/haozhen/Haozhen-data/Tonys_lab/working_session/dataset/keck_DCfeature/"
+train = pd.read_csv(os.path.join(root_dir,"index/GraphConv/train/train.csv"))
+valid = pd.read_csv(os.path.join(root_dir,"index/GraphConv/valid/valid.csv"))
+test = pd.read_csv(os.path.join(root_dir,"index/GraphConv/test/test.csv"))
+
+whole = train
+whole = whole.append(valid)
+whole = whole.append(test)
+whole.to_csv(os.path.join(root_dir,"keck_ConvGraph.csv"),index=None)
