@@ -84,7 +84,7 @@ def main(dataset_name, split, featurizer, root_dir, raw_pcba, reload=True):
         merge.to_csv(store_dir, index = None)
 
 # Start
-split_methods = ['random']#'index', 'scaffold', 'random'
+split_methods = ['index']#'index', 'scaffold', 'random'
 featurizer_methods = ['GraphConv']
 raw_pcba = None
 dataset_name = 'keck_DCfeature'
@@ -96,10 +96,3 @@ for split in split_methods:
         end = time.time()
         print 'Finish_' + split + "_" + featurizer
         print 'Time took: ' + str(end - start) + "s"
-
-# Current running: screen dc, random-ECFP,GraphConv
-# when screen-descriptor finish, check output and start index-descriptor.
-
-# log
-# index_ECFP took 5.7 hrs.
-# index_GraphConv took 0.72 hrs.
