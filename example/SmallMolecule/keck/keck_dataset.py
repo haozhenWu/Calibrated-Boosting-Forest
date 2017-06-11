@@ -71,4 +71,4 @@ def load_keck(featurizer='ECFP', split='random', reload=True):
     deepchem.utils.save.save_dataset_to_disk(save_dir, train, valid, test,
                                              transformers)
 
-  return PCBA_tasks, (train, valid, test), transformers
+  return KECK_tasks, (train, valid, test), transformers
