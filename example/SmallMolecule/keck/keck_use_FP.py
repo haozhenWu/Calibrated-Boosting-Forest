@@ -22,19 +22,15 @@ import os
 # Need to download prive datasets from Tony's lab.
 start_date = time.strftime("%Y_%m_%d_%H")
 store_prediction = True
-feature_used = 'FP'
 
 #if __name__ == "__main__"
-for fold_num in [5,3,4]:
+for fold_num in [5]:
 
-#    complete_df = pd.read_csv('./dataset/keck_complete.csv')
     k = fold_num
-    #k = 5
     directory = './dataset/fixed_dataset/fold_{}/'.format(k)
     file_list = []
     for i in range(k):
         file_list.append('file_{}.csv'.format(i))
-    #greedy_multi_splitting(complete_df, k, directory=directory, file_list=file_list)
 
     dtype_list = {'Molecule': np.str,
                 'SMILES':np.str,
@@ -56,11 +52,22 @@ for fold_num in [5,3,4]:
     train_efr1 = []
     val_efr1 = []
     test_efr1 = []
+    train_nefauc5 = []
+    val_nefauc5 = []
+    test_nefauc5 = []
 
     test_ef01 = []
     test_ef02 = []
     test_ef0015 = []
     test_ef001 = []
+
+    running_process = 0
+    EF_ratio_list_list = []
+    ef_values_list = []
+    ef_max_values_list = []
+    model_name_list = []
+    my_running_process_list = []
+
 
     for j in range(k):
         start = time.time()
@@ -75,46 +82,77 @@ for fold_num in [5,3,4]:
                                                      index, 'Molecule')
 
         # Using lightchem
-
         target_name = 'KECK_Pria'
         smile_colname = 'SMILES'
-        label_name_list = ['Keck_Pria_AS_Retest','Keck_Pria_Continuous']
+        label_name_list = ['Keck_Pria_AS_Retest','Keck_Pria_Continuous']#Keck_Pria_AS_Retest,Keck_Pria_Continuous
         eval_name = 'ROCAUC'
+        my_final_model = 'layer2' # Best model only chosed from layer2
         dir_to_store = './'
+        featurizer_list = ['ECFP'] # ECFP, MACCSkeys
 
         preDefined_eval = defined_eval.definedEvaluation()
         preDefined_eval.validate_eval_name(eval_name)
         df = train_pd
         #---------- Build Model
         print 'Preparing training data fingerprints'
-        # morgan(ecfp) fp
-        fp = fingerprint.smile_to_fps(df,smile_colname)
-        morgan_fp = fp.Morgan()
-        # MACCSkeys fp
-        fp = fingerprint.smile_to_fps(df,smile_colname)
-        maccs_fp = fp.MACCSkeys()
-        comb1 = (morgan_fp,label_name_list)
-        comb2 = (maccs_fp,label_name_list)
-        training_info = [comb1,comb2]
+        if all(['ECFP' in featurizer_list, 'MACCSkeys' in featurizer_list]):
+            # morgan(ecfp) fp
+            fp = fingerprint.smile_to_fps(df,smile_colname)
+            morgan_fp = fp.Morgan()
+            # MACCSkeys fp
+            fp = fingerprint.smile_to_fps(df,smile_colname)
+            maccs_fp = fp.MACCSkeys()
+            comb1 = (morgan_fp,label_name_list)
+            comb2 = (maccs_fp,label_name_list)
+            training_info = [comb1,comb2]
 
-        print 'Preparing testing data fingerprints'
-        df_test = test_pd
-        # morgan(ecfp) fp
-        fp = fingerprint.smile_to_fps(df_test,smile_colname)
-        morgan_fp = fp.Morgan()
-        # MACCSkeys fp
-        fp = fingerprint.smile_to_fps(df_test,smile_colname)
-        maccs_fp = fp.MACCSkeys()
-        comb1_test = (morgan_fp,None)# test data does not need label name
-        comb2_test = (maccs_fp,None)
-        testing_info = [comb1_test,comb2_test]
+            print 'Preparing testing data fingerprints'
+            df_test = test_pd
+            # morgan(ecfp) fp
+            fp = fingerprint.smile_to_fps(df_test,smile_colname)
+            morgan_fp = fp.Morgan()
+            # MACCSkeys fp
+            fp = fingerprint.smile_to_fps(df_test,smile_colname)
+            maccs_fp = fp.MACCSkeys()
+            comb1_test = (morgan_fp,None)# test data does not need label name
+            comb2_test = (maccs_fp,None)
+            testing_info = [comb1_test,comb2_test]
+        elif 'ECFP' in featurizer_list:
+            # morgan(ecfp) fp
+            fp = fingerprint.smile_to_fps(df,smile_colname)
+            morgan_fp = fp.Morgan()
+            comb1 = (morgan_fp,label_name_list)
+            training_info = [comb1]
+
+            print 'Preparing testing data fingerprints'
+            df_test = test_pd
+            # morgan(ecfp) fp
+            fp = fingerprint.smile_to_fps(df_test,smile_colname)
+            morgan_fp = fp.Morgan()
+            comb1_test = (morgan_fp,None)# test data does not need label name
+            testing_info = [comb1_test]
+        elif 'MACCSkeys' in featurizer_list:
+            # MACCSkeys fp
+            fp = fingerprint.smile_to_fps(df,smile_colname)
+            maccs_fp = fp.MACCSkeys()
+            comb2 = (maccs_fp,label_name_list)
+            training_info = [comb2]
+
+            print 'Preparing testing data fingerprints'
+            df_test = test_pd
+            # MACCSkeys fp
+            fp = fingerprint.smile_to_fps(df_test,smile_colname)
+            maccs_fp = fp.MACCSkeys()
+            comb2_test = (maccs_fp,None)
+            testing_info = [comb2_test]
 
         print 'Building and selecting best model'
         # Current VsEnsembleModel create test data by default
         model = VsEnsembleModel_keck_test(training_info,
                                      eval_name,
                                      fold_info = my_fold_index,
-                                     createTestset = False)
+                                     createTestset = False,
+                                     finalModel = my_final_model)
         model.train()
         cv_result = model.training_result()
         all_results = model.detail_result()
@@ -141,7 +179,9 @@ for fold_num in [5,3,4]:
             print >> f, "Number of Fold: ", k
             print >> f, "Test file: ", j
             print >> f, "Stopping metric: ", eval_name
-            print >> f, "Features: ", feature_used
+            print >> f, "Features: ", featurizer_list
+            print >> f, "Label used: ", label_name_list
+            print >> f, "Final model chosed from: ", my_final_model
             print >> f, all_results
             print >> f, cv_result
             print >> f, " "
@@ -154,6 +194,8 @@ for fold_num in [5,3,4]:
                         reshape_data_into_2_dim(y_pred_on_train))))
             n_actives, ef, ef_max = enrichment_factor_single(y_train, y_pred_on_train, 0.01)
             print >> f,('train EFR1: {}'.format(ef))
+            print >> f,('train nefauc5: {}'.format(
+            float(nef_auc(y_train,y_pred_on_train,np.linspace(0.001, .05, 10),['nefauc']).nefauc)))
 
             print >> f, " "
             print >> f,('validation precision : {}'.format(
@@ -168,6 +210,8 @@ for fold_num in [5,3,4]:
                                                              np.array(val.validation_pred),
                                                              0.01)
             print >> f,('validation EFR1: {}'.format(ef))
+            print >> f,('validation nefauc5 : {}'.format(
+                     float(nef_auc(val.label,val.validation_pred,np.linspace(0.001, .05, 10),['nefauc']).nefauc)))
 
             print >> f, " "
             print >> f,('test precision: {}'.format(precision_auc_single(
@@ -179,6 +223,8 @@ for fold_num in [5,3,4]:
                         reshape_data_into_2_dim(y_pred_on_test))))
             n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
             print >> f,('test EFR1: {}'.format(ef))
+            print >> f,('test nefauc5: {}'.format(
+            float(nef_auc(y_test,y_pred_on_test,np.linspace(0.001, .05, 10),['nefauc']).nefauc)))
             print >> f, " "
 
             EF_ratio_list = [0.02, 0.01, 0.0015, 0.001]
@@ -189,6 +235,26 @@ for fold_num in [5,3,4]:
             end = time.time()
             print >> f, 'time used: ', end - start
             f.close()
+
+            ### Accumulate ef curve info
+            EF_ratio_list = np.linspace(0.001, 0.15, 100)
+            ef_values = []
+            ef_max_values = []
+            model_name = []
+            my_running_process = []
+            for EF_ratio in EF_ratio_list:
+                n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, EF_ratio)
+                ef_values.append(ef)
+                ef_max_values.append(ef_max)
+                model_name.append("LightChem_" + eval_name)
+                my_running_process.append(running_process)
+            EF_ratio_list_list.extend(EF_ratio_list)
+            ef_values_list.extend(ef_values)
+            ef_max_values_list.extend(ef_max_values)
+            model_name_list.extend(model_name)
+            my_running_process_list.extend(my_running_process)
+            running_process += 1
+
 
         # Accumulate results for each set. ex: 5fold, 4fold, 3fold.
         # ROCAUC
@@ -219,6 +285,18 @@ for fold_num in [5,3,4]:
             val_efr1.append(ef)
         n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
         test_efr1.append(ef)
+        # NEFAUC5
+        train_nefauc5.append(
+        float(nef_auc(y_train,y_pred_on_train,np.linspace(0.001, .05, 10),['nefauc']).nefauc)
+        )
+        for i,val in enumerate(validation_info):
+            val_nefauc5.append(
+            float(nef_auc(val.label,val.validation_pred,np.linspace(0.001, .05, 10),['nefauc']).nefauc)
+            )
+        test_nefauc5.append(
+        float(nef_auc(y_test,y_pred_on_test,np.linspace(0.001, .05, 10),['nefauc']).nefauc)
+        )
+
 
         n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
         test_ef01.append(ef)
@@ -242,31 +320,14 @@ for fold_num in [5,3,4]:
             test = pd.DataFrame({'label':y_test,'train_pred':y_pred_on_test})
             test.to_csv(directory + "/test_pred.csv", index = False)
 
-        # Store ef curve info
-        EF_ratio_list = np.linspace(0.0001, 0.15, 200)
-        ef_values = []
-        ef_max_values = []
-        for EF_ratio in EF_ratio_list:
-            n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, EF_ratio)
-            ef_values.append(ef)
-            ef_max_values.append(ef_max)
-        ef_curve_df = pd.DataFrame({'ef_values':ef_values,
-                                    'ef_max_values':ef_max_values,
-                                    'ef_ratio':EF_ratio_list})
-        directory = "./result/"
-        #directory = base_dir + "/test" + str(j) + "_" + str(fold_num) + 'fold'
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        str1 = directory + 'EF_curve_' + start_date + '_' + str(fold_num)
-        str2 = 'fold_test' + str(j) + '.csv'
-        ef_curve_df.to_csv(str1 + str2 , index = False)
-
 
     f = open('./result/summary_' + start_date + "_" + str(fold_num) + 'fold.txt', 'a')
     print >> f, "########################################"
     print >> f, "Number of Fold: ", k
     print >> f, "Stopping metric: ", eval_name
-    print >> f, "Features: ", feature_used
+    print >> f, "Features: ", featurizer_list
+    print >> f, "Label used: ", label_name_list
+    print >> f, "Final model chosed from: ", my_final_model
     print >> f, 'Train ROC AUC mean: ', np.mean(train_roc)
     print >> f, 'Train ROC AUC std', np.std(train_roc)
     print >> f, 'Validatoin ROC AUC mean: ', np.mean(val_roc)
@@ -291,6 +352,12 @@ for fold_num in [5,3,4]:
     print >> f, 'Validation ef@0.01 std', np.std(val_efr1)
     print >> f, 'Test ef@0.01 mean: ', np.mean(test_efr1)
     print >> f, 'Test ef@0.01 std', np.std(test_efr1)
+    print >> f, 'Train NEFAUC5 mean: ', np.mean(train_nefauc5)
+    print >> f, 'Train NEFAUC5 std', np.std(train_nefauc5)
+    print >> f, 'Validatoin NEFAUC5 mean: ', np.mean(val_nefauc5)
+    print >> f, 'Validation NEFAUC5 std', np.std(val_nefauc5)
+    print >> f, 'Test NEFAUC5 mean: ', np.mean(test_nefauc5)
+    print >> f, 'Test NEFAUC5 std', np.std(test_nefauc5)
     print >> f, 'Test ef@0.01 mean: ', np.mean(test_ef01)
     print >> f, 'Test ef@0.01 std', np.std(test_ef01)
     print >> f, 'Test ef@0.02 mean: ', np.mean(test_ef02)
@@ -300,3 +367,16 @@ for fold_num in [5,3,4]:
     print >> f, 'Test ef@0.001 mean: ', np.mean(test_ef001)
     print >> f, 'Test ef@0.001 std', np.std(test_ef001)
     f.close()
+
+    # Store ef curve info
+    ef_curve_df = pd.DataFrame({'EF':ef_values_list,
+                                'EF max':ef_max_values_list,
+                                'EFR':EF_ratio_list_list,
+                                'model':model_name_list,
+                                'running process':my_running_process_list})
+    directory = "./result/"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    str1 = directory + 'EF_curve_' + start_date + '_' + str(fold_num)
+    str2 = 'fold.csv'
+    ef_curve_df.to_csv(str1 + str2 , index = False)
