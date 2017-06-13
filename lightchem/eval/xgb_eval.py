@@ -15,6 +15,7 @@ def evalrocauc(preds, dtrain):
     # Check infinite, NaN from preds. Convert to 0.
     index = np.where(np.logical_or(preds == np.Inf,preds == np.NaN,preds == np.NAN))
     preds[index] = 0
+    preds = np.float32(preds)
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(unique) > 2: # which means it is continuous label
