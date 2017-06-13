@@ -22,7 +22,7 @@ def fpString_to_array(fp_col, sep = ""):
         elif sep == "|":
             fp_array.append(np.array(re.split("\|",raw_fps)))
         else:
-            fp_array.append(np.array(re.split(sep,raw_fps)))            
+            fp_array.append(np.array(re.split(sep,raw_fps)))
     fp_array = np.array(fp_array)
     fp_array = fp_array.astype(np.float64)
     return fp_array
@@ -43,20 +43,28 @@ def array_to_fpString(fp_array, sep = ""):
         fpString_list.append(fp)
     return fpString_list
 
-
-# Generate fold index based on each file.
 def reverse_generate_fold_index(whole_df, file_path, fold_num, join_on):
     """
     Use to regenerate fold index from created individual fold.
     Enable lightchem to use user defined fold index.
+    Parameters:
+    -----------
+    whole_df: pd.DataFrame
+      Original DataFrame contains all the folds before split.
+    file_path: list
+      List contains the path to each fold file.
+    fold_num: list
+      List contains the fold index of each path in file_path
+    join_on: str
+      which column to join on between fold and original DataFrame.
     """
     fold_index = whole_df
     for i,path in enumerate(file_path):
         temp_fold = pd.read_csv(file_path[i])
         temp_name = 'fold'+ str(fold_num[i])
         temp_fold.loc[:,temp_name] = 1
-        temp_fold = temp_fold.loc[:,['Molecule',temp_name]]
-        fold_index = pd.merge(fold_index, temp_fold,on='Molecule',how='left')
+        temp_fold = temp_fold.loc[:,[join_on,temp_name]]
+        fold_index = pd.merge(fold_index, temp_fold,on=join_on,how='left')
         fold_index.loc[:,temp_name] = fold_index.loc[:,temp_name].fillna(0)
     fold_names = [item for item in fold_index.columns if 'fold' in item ]
     fold_index = fold_index.loc[:,fold_names]
