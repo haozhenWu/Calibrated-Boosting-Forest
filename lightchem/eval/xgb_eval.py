@@ -13,11 +13,8 @@ def evalrocauc(preds, dtrain):
     Return ROC AUC score
     '''
     # Check infinite, NaN from preds. Convert to 0.
-    index = np.where(np.logical_or(preds == np.Inf,preds == np.NaN,preds == np.NAN))
+    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
     preds[index] = 0
-    preds = np.float32(preds)
-    print index
-    print preds
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(unique) > 2: # which means it is continuous label
@@ -27,7 +24,6 @@ def evalrocauc(preds, dtrain):
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
     # use sklearn.metrics to compute rocauc
-    print labels
     return 'ROCAUC', metrics.roc_auc_score( labels, preds )
 
 def evalprauc(preds, dtrain):
