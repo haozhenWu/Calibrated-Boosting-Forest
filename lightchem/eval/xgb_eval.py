@@ -12,7 +12,7 @@ def evalrocauc(preds, dtrain):
     '''
     Return ROC AUC score
     '''
-    # Check infinite, NaN from preds. Convert to 0.
+    # Check infinite, NaN. Convert to 0.
     index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
     preds[index] = 0
     labels = dtrain.get_label()
@@ -30,6 +30,9 @@ def evalprauc(preds, dtrain):
     '''
     Return Precision Recall AUC score
     '''
+    # Check infinite, NaN. Convert to 0.
+    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
+    preds[index] = 0
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(unique) > 2: # which means it is continuous label
@@ -45,6 +48,9 @@ def evalefr1(preds, dtrain):
     '''
     Return enrichment factor at 0.01
     '''
+    # Check infinite, NaN. Convert to 0.
+    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
+    preds[index] = 0
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(unique) > 2: # which means it is continuous label
@@ -72,6 +78,9 @@ def evalefr015(preds, dtrain):
     '''
     Return enrichment factor at 0.0015
     '''
+    # Check infinite, NaN. Convert to 0.
+    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
+    preds[index] = 0
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(np.unique(labels)) > 2: # which means it is continuous label
@@ -100,6 +109,9 @@ def evalNEFauc25(preds, dtrain):
     '''
     Return Normalized Enrichment Factor AUC ranging from 0.001 to 0.25
     '''
+    # Check infinite, NaN. Convert to 0.
+    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
+    preds[index] = 0
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(np.unique(labels)) > 2: # which means it is continuous label
@@ -115,6 +127,9 @@ def evalNEFauc5(preds, dtrain):
     '''
     Return Normalized Enrichment Factor AUC ranging from 0.001 to 0.05
     '''
+    # Check infinite, NaN. Convert to 0.
+    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
+    preds[index] = 0
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(np.unique(labels)) > 2: # which means it is continuous label
