@@ -302,9 +302,9 @@ class VsEnsembleModel(object):
 class VsEnsembleModel_keck(object):
     """
     Wrapper class to build ensemble models structure for KECK dataset.
-    The difference compared to VsEnsembleModel is only the hyperparameters step.
     """
-    def __init__(self,training_info,eval_name,fold_info = 4,seed = 2016,verbose = False):
+    def __init__(self,training_info,eval_name,fold_info = 4,
+                 createTestset = True, finalModel = None, seed = 2016,verbose = False):
         """
         Parameters:
         ----------
@@ -324,13 +324,29 @@ class VsEnsembleModel_keck(object):
         eval_name: str
          Name of evaluation metric used to monitor and stop training process.
          Must in eval.defined_eval
+        fold_info: int or DataFrame
+         either a DataFrame contains fold index or a single integer indicating
+         number of fold to create
+        createTestset: logic
+         Whether internally create a test set. Help selecting the best model
+        finalModel: str
+         Can be None, layer1, or layer2. Default is None
+         If set to None, it will select the best model from layer1 and layer2 models.
+         layer1: Only select best layer1 model as final model, even though it has
+                 layer2 model ready.
+         layer2: Only select best layer2 model as final model. Sometimes layer1
+                 models perform better than layer2 models.
+
         """
         self.__training_info = training_info
         self.__check_labelType()
         self.__eval_name = eval_name
+        self.__createTestset = createTestset
         self.__setting_list = []
         self.seed  = seed
         self.__determine_fold(fold_info)
+        # If multiple labels present, first label type is the final one to use
+        self.__final_labelType = None
         self.__prepare_xgbdata_train()
         self.__layer1_model_list = []
         self.__layer2_model_list = []
@@ -339,6 +355,14 @@ class VsEnsembleModel_keck(object):
         self.__verbose = verbose
         self.__test_data = None
         self.__all_model_result = None
+        self.set_final_model(finalModel)
+        self.__model_has_finalLabel = None
+
+    def set_final_model(self, finalModel):
+        if finalModel == None or finalModel == 'layer1' or finalModel == 'layer2':
+            self.__finalModel = finalModel
+        else:
+            raise ValueError('finalModel should be `None`, `layer1` or `layer2`')
 
     def __determine_fold(self, fold_info):
         if isinstance(fold_info, pd.DataFrame):
@@ -371,7 +395,8 @@ class VsEnsembleModel_keck(object):
                 else:
                     model_type_to_use = ['GbtreeRegression','GblinearRegression']
                     temp_labelType = 'continuous'
-
+                if self.__final_labelType == None:
+                    self.__final_labelType = temp_labelType
                 temp_data = load.readData(temp_df,column_name)
                 temp_data.read()
                 X_data = temp_data.features()
@@ -381,7 +406,8 @@ class VsEnsembleModel_keck(object):
                     self.my_fold = fold.fold(X_data,y_data,self.__num_folds,self.seed)
                     self.my_fold = self.my_fold.generate_skfolds()
                     self.__has_fold = True
-                data = xgb_data.xgbData(self.my_fold,X_data,y_data)
+                data = xgb_data.xgbData(self.my_fold,X_data,y_data,
+                                        createTestset = self.__createTestset)
                 data.build()
                 temp_dataName = 'Number:' + str(num_xgbData) + " xgbData, " + 'labelType: ' + temp_labelType
                 self.__setting_list.append({'data_name':temp_dataName,
@@ -526,23 +552,7 @@ class VsEnsembleModel_keck(object):
                 self.__layer2_model_list.append(l2model)
 
 
-        #------------------------------------ evaluate model performance on test data
-        # prepare test data, retrive from layer1 data
-        list_TestData = []
-        for data_dict in self.__setting_list:
-            for model_type in data_dict['model_type']:
-                list_TestData.append(data_dict['data'].get_dtest())
-        test_label = layer2_label_data.get_testLabel()
-        test_result_list = []
-        i = 0
-        for evaluation_metric_name in layer2_evaluation_metric_name:
-            for model_type in layer2_modeltype:
-                test_result = eval_testset.eval_testset(self.__layer2_model_list[i],
-                                                        list_TestData,test_label,
-                                                        evaluation_metric_name)
-                test_result_list.append(test_result)
-                i += 1
-
+    def __prepare_result(self):
         # merge cv and test result together. Calcuate the weighted average of
         # cv and test result for each model(layer1, layer2 model). Then use the best
         # model to predict.
@@ -557,42 +567,82 @@ class VsEnsembleModel_keck(object):
         # create a dataframe
         cv_result = pd.DataFrame({'cv_result' : result},index = result_index)
 
-        test_result = pd.concat(test_result_list,axis = 0,ignore_index=False)
-        test_result = test_result.rename(columns = {self.__eval_name:'test_result'})
-        #selet distinct row.
-        test_result['temp_name'] = test_result.index
-        test_result = test_result.drop_duplicates(['temp_name'])
-        test_result = test_result.drop('temp_name',1)
-        cv_test = pd.merge(cv_result,test_result,how='left',left_index=True,right_index=True)
-        self.__num_folds = np.float64(self.__num_folds)
-        cv_test['weighted_score'] = cv_test.cv_result * (self.__num_folds-1)/self.__num_folds + cv_test.test_result * (1/self.__num_folds)
-        weighted_score = cv_test.cv_result * (self.__num_folds-1)/self.__num_folds + cv_test.test_result * (1/self.__num_folds)
+        #------------------------------------ evaluate model performance on test data
+        # prepare test data, retrive from layer1 data
+        if self.__createTestset:
+            list_TestData = []
+            for data_dict in self.__setting_list:
+                for model_type in data_dict['model_type']:
+                    list_TestData.append(data_dict['data'].get_dtest())
+            test_label = layer2_label_data.get_testLabel()
+            test_result_list = []
+            i = 0
+            for evaluation_metric_name in layer2_evaluation_metric_name:
+                for model_type in layer2_modeltype:
+                    test_result = eval_testset.eval_testset(self.__layer2_model_list[i],
+                                                            list_TestData,test_label,
+                                                            evaluation_metric_name)
+                    test_result_list.append(test_result)
+                    i += 1
+            test_result = pd.concat(test_result_list,axis = 0,ignore_index=False)
+            test_result = test_result.rename(columns = {self.__eval_name:'test_result'})
+            #selet distinct row.
+            test_result['temp_name'] = test_result.index
+            test_result = test_result.drop_duplicates(['temp_name'])
+            test_result = test_result.drop('temp_name',1)
+
+            cv_test = pd.merge(cv_result,test_result,how='left',left_index=True,right_index=True)
+            self.__num_folds = np.float64(self.__num_folds)
+            cv_test['weighted_score'] = cv_test.cv_result * (self.__num_folds-1)/self.__num_folds + cv_test.test_result * (1/self.__num_folds)
+            weighted_score = cv_test.cv_result * (self.__num_folds-1)/self.__num_folds + cv_test.test_result * (1/self.__num_folds)
+        else:
+            cv_test = cv_result
+            cv_test['weighted_score'] = cv_result.cv_result
+
+        # Based on user specific finalModel
+        if self.__finalModel == None:
+            final_cv_test = cv_test
+        else:
+            finalModel_names = [item for item in list(cv_test.index) if self.__finalModel in item]
+            final_cv_test = cv_test.loc[finalModel_names]
 
         # Determine does current evaluation metric need to maximize or minimize
         eval_info = defined_eval.definedEvaluation()
         is_max = eval_info.is_maximize(self.__eval_name)
         if is_max:
-            position = np.where(cv_test.weighted_score == cv_test.weighted_score.max())
-            best_model_name = cv_test.weighted_score.iloc[position].index[0]
+            position = np.where(final_cv_test.weighted_score == final_cv_test.weighted_score.max())
+            best_model_name = final_cv_test.weighted_score.iloc[position].index[0]
         else:
-            position = np.where(cv_test.weighted_score == cv_test.weighted_score.min())
-            best_model_name = cv_test.weighted_score.iloc[position].index[0]
+            position = np.where(final_cv_test.weighted_score == final_cv_test.weighted_score.min())
+            best_model_name = final_cv_test.weighted_score.iloc[position].index[0]
         # find best model
         all_model_name = [model.name for model in all_model]
         model_position = all_model_name.index(best_model_name)
         self.__best_model = all_model[model_position]
         self.__best_model_result = pd.DataFrame(cv_test.loc[self.__best_model.name])
         self.__all_model_result = cv_test
+        # Find model contains the final label
+        if self.__final_labelType == 'binary':
+            model_has_finalLabel = [item for item in list(cv_test.index) if 'Logistic' in item]
+            model_position = all_model_name.index(model_has_finalLabel[0])
+            self.__model_has_finalLabel = all_model[model_position]
+        elif self.__final_labelType == 'continuous':
+            model_has_finalLabel = [item for item in list(cv_test.index) if 'Regression' in item]
+            model_position = all_model_name.index(model_has_finalLabel[0])
+            self.__model_has_finalLabel = all_model[model_position]
+
 
     def training_result(self):
-        if not isinstance(self.__best_model_result,pd.DataFrame):
+        if len(self.__layer1_model_list) == 0:
             raise ValueError('You must call `train` before `training_result`')
+        self.__prepare_result()
         return self.__best_model_result
 
     def detail_result(self):
         """
         Get detail training and testing result for each models.
         """
+        self.__prepare_result()
         return self.__all_model_result
 
     def predict(self,list_test_x):
@@ -611,9 +661,21 @@ class VsEnsembleModel_keck(object):
     def get_validation_info(self):
         """
         Return validation info.
+        Because it has multiple models with different features and labels and the
+        ultimate task can be either binary or continuous, when return this
+        validation info, need to switch the label to the label of ultimate task.
+        EX. If ultimate task is to predict binary score, and the current best
+        model is trained based on continuous labe, change the label from binary
+        to continuous while keeping the predicted score the same.
         """
         self.__best_model.generate_holdout_pred()
-        return self.__best_model.get_validation_info()
+        self.__model_has_finalLabel.generate_holdout_pred()
+        validation_info = self.__best_model.get_validation_info()
+        temp = self.__model_has_finalLabel.get_validation_info()
+        # Change labels of each fold to the label of ultimate task.
+        for i,val in enumerate(validation_info):
+            validation_info[i].label = temp[i].label
+        return validation_info
 
 
 
