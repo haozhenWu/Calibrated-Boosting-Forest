@@ -72,152 +72,63 @@ def reverse_generate_fold_index(whole_df, file_path, fold_num, join_on):
 
 ###### Utilities for calculating Normalized Enrichment factor AUC.
 # Original codes of below Utilities come from Gitter's lab @UW-Madison
-# Modified by Haozhen Wu
-def enrichment_factor_single_perc(y_true, y_pred, percentile):
+# Modified by Haozhen Wu. Vectorized some codes to improve speed.
+def enrichment_factor(y_true, y_pred, perc_vec):
     """
-    Calculates enrichment factor vector at the given percentile for 1 label.
-    This returns a 1D vector with the EF scores of the labels.
+    Calculates enrichment factor vector for a vector of percentiles for 1 label.
+    This returns a 1D vector with the EF scores of the label.
     """
-    nb_classes = 1
-    if len(y_true.shape) == 2:
-        nb_classes = y_true.shape[1]
-    else:
-        y_true = y_true.reshape((y_true.shape[0], 1))
-        y_pred = y_pred.reshape((y_pred.shape[0], 1))
+    sample_size_vec = y_true.shape[0] * perc_vec
+    sample_size_vec = sample_size_vec.astype(np.int)
+    y_pred_argsort = np.argsort(y_pred,kind="mergesort")[::-1]
+    indices_vec = [y_pred_argsort[:size] for size in sample_size_vec]
+    pred_vec = [y_pred[indices] for indices in indices_vec]
+    n_actives = np.nansum(y_true)
+    if n_actives == 0:
+        ef_vec = np.repeat(np.nan, len(perc_vec))
+        return ef_vec
+    n_experimental_vec = [np.nansum( y_true[indices]  ) for indices in indices_vec]
+    n_experimental_vec = np.float32(n_experimental_vec)
+    ef_vec = ( n_experimental_vec /  n_actives ) / perc_vec
 
-    ef = np.zeros(nb_classes)
-    sample_size = int(y_true.shape[0] * percentile)
+    return ef_vec
 
-    for i in range(len(ef)):
-        true_labels = y_true[:, i]
-        pred = np.sort(y_pred[:, i], axis=0)[::-1][:sample_size]
-        indices = np.argsort(y_pred[:, i], axis=0)[::-1][:sample_size]
-
-        n_actives = np.nansum(true_labels)
-        n_experimental = np.nansum( true_labels[indices] )
-
-        try:
-            ef[i] = ( float(n_experimental) /  n_actives ) / percentile
-        except ValueError:
-            ef[i] = np.nan
-
-    return ef
-
-
-def max_enrichment_factor_single_perc(y_true, y_pred, percentile):
+def max_enrichment_factor(y_true, y_pred, perc_vec):
     """
-    Calculates max enrichment factor vector at the given percentile for 1 label.
-    This returns a 1D vector with the EF scores of the labels.
+    Calculates max enrichment factor vector for a vector of percentiles for 1 label.
+    This returns a 1D vector with the EF scores of the label.
     """
-    nb_classes = 1
-    if len(y_true.shape) == 2:
-        nb_classes = y_true.shape[1]
-    else:
-        y_true = y_true.reshape((y_true.shape[0], 1))
-        y_pred = y_pred.reshape((y_pred.shape[0], 1))
+    sample_size_vec = y_true.shape[0] * perc_vec
+    sample_size_vec = sample_size_vec.astype(np.int)
+    n_actives = np.nansum(y_true)
+    if n_actives == 0:
+        ef_vec = np.repeat(np.nan, len(perc_vec))
+        return max_ef_vec
 
-    max_ef = np.zeros(nb_classes)
-    sample_size = int(y_true.shape[0] * percentile)
+    minimum_vec = [float(min(n_actives, sample_size)) for sample_size in sample_size_vec]
+    max_ef_vec = ( minimum_vec /  n_actives ) / perc_vec
 
-    for i in range(len(max_ef)):
-        true_labels = y_true[:, i]
-        n_actives = np.nansum(true_labels)
+    return max_ef_vec
 
-        try:
-            max_ef[i] = ( float(min(n_actives, sample_size)) /  float(n_actives) ) / percentile
-        except ValueError:
-            max_ef[i] = np.nan
-
-    return max_ef
-
-
-def enrichment_factor(y_true, y_pred, perc_vec, label_names=None):
+def norm_enrichment_factor(y_true, y_pred, perc_vec):
     """
-    Calculates enrichment factor vector at the percentile vectors. This returns
-    2D panda matrix where the rows are the percentile.
+    Calculates normalized enrichment factor vector for a vector of percentiles.
+    This returns a 1D vector with norm_ef scores.
     """
-    p_count = len(perc_vec)
-    nb_classes = 1
-    ef_mat = np.zeros((p_count, nb_classes))
+    ef_mat = enrichment_factor(y_true, y_pred,
+                               perc_vec)
+    max_ef_mat = max_enrichment_factor(y_true, y_pred,
+                                       perc_vec)
 
-    for curr_perc in range(p_count):
-        ef_mat[curr_perc,:] = enrichment_factor_single_perc(y_true,
-                                        y_pred, perc_vec[curr_perc])
+    nef_mat = ef_mat / max_ef_mat
+    return nef_mat
 
+
+def nef_auc(y_true, y_pred, perc_vec):
     """
-    Convert to pandas matrix row-col names
+    Returns nef auc value.
     """
-    index_names = ['{:g}'.format(perc * 100) + ' %' for perc in perc_vec]
-    ef_pd = pd.DataFrame(data=ef_mat,
-                         index=index_names,
-                         columns=label_names)
-    ef_pd.index.name = 'EF'
-    return ef_pd
-
-
-def max_enrichment_factor(y_true, y_pred, perc_vec, label_names=None):
-    """
-    Calculates max enrichment factor vector at the percentile vectors. This returns
-    2D panda matrix where the rows are the percentile.
-    """
-    p_count = len(perc_vec)
-    nb_classes = 1
-    max_ef_mat = np.zeros((p_count, nb_classes))
-
-    for curr_perc in range(p_count):
-        max_ef_mat[curr_perc,:] = max_enrichment_factor_single_perc(y_true,
-                                        y_pred, perc_vec[curr_perc])
-
-    """
-    Convert to pandas matrix row-col names
-    """
-
-    index_names = ['{:g}'.format(perc * 100) + ' %' for perc in perc_vec]
-    max_ef_pd = pd.DataFrame(data=max_ef_mat,
-                         index=index_names,
-                         columns=label_names)
-    max_ef_pd.index.name = 'Max_EF'
-    return max_ef_pd
-
-
-def norm_enrichment_factor(y_true, y_pred, perc_vec, label_names=None):
-    """
-    Calculates normalized enrichment factor vector at the percentile vectors.
-    This returns one 2D panda matrices norm_ef where the rows
-    are the percentile.
-    """
-    ef_pd = enrichment_factor(y_true, y_pred,
-                               perc_vec, label_names)
-    max_ef_pd = max_enrichment_factor(y_true, y_pred,
-                                       perc_vec, label_names)
-
-    nef_mat = ef_pd.as_matrix() / max_ef_pd.as_matrix()
-    index_names = ['{:g}'.format(perc * 100) + ' %' for perc in perc_vec]
-    nef_pd = pd.DataFrame(data=nef_mat,
-                         index=index_names,
-                         columns=label_names)
-    nef_pd.index.name = 'NEF'
-    return nef_pd
-
-
-def nef_auc(y_true, y_pred, perc_vec, label_names=None):
-    """
-    Returns a pandas df of nef auc values.
-    """
-    nef_mat  = norm_enrichment_factor(y_true, y_pred,
-                                     perc_vec, label_names)
-    nef_mat = nef_mat.as_matrix()
-    nb_classes = 1
-    if label_names == None:
-        label_names = ['label ' + str(i) for i in range(nb_classes)]
-
-    nef_auc_arr = np.zeros(nb_classes)
-    for i in range(nb_classes):
-        nef_auc_arr[i] = auc(perc_vec, nef_mat[:,i])
-
-    nef_auc_pd = pd.DataFrame(data=nef_auc_arr.reshape(1,len(nef_auc_arr)) / max(perc_vec),
-                             index=['NEF_AUC'],
-                             columns=label_names)
-
-    return nef_auc_pd
+    nef_mat  = norm_enrichment_factor(y_true, y_pred, perc_vec)
+    nef_auc_arr = auc(perc_vec, nef_mat)
+    return nef_auc_arr / max(perc_vec)
 ###########

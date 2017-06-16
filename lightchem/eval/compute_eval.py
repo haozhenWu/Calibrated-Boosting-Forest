@@ -48,8 +48,7 @@ def compute_NEF_auc(labels_arr, scores_arr, max_percentile):
     '''
     if len(np.unique(labels_arr)) == 2:
         auc = util.nef_auc(labels_arr, scores_arr,
-                           np.linspace(0.001, max_percentile, 10),['nefauc'])
-        auc = float(auc.nefauc)
+                           np.linspace(0.001, max_percentile, 10))
     else:
         auc = 'ND'
     return auc
