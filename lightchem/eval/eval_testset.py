@@ -44,5 +44,9 @@ def eval_testset(model,list_data,label,eval_name):
             result.append(compute_eval.enrichment_factor(label,pred[i],0.01))
         elif eval_name == 'EFR015':
             result.append(compute_eval.enrichment_factor(label,pred[i],0.0015))
+        elif eval_name == 'NEFAUC25':
+            result.append(compute_eval.compute_NEF_auc(label,pred[i],0.25))
+        elif eval_name == 'NEFAUC5':
+            result.append(compute_eval.compute_NEF_auc(label,pred[i],0.05))
 
     return pd.DataFrame({eval_name : result}, index = [name])

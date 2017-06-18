@@ -20,7 +20,7 @@ before_install:
   - export PATH=$HOME/miniconda/bin:$PATH
   - conda update --yes conda
   # Install conda distribution of xgboost
-  - conda install --yes -c bioconda xgboost=0.6a2
+  - conda install --yes -c conda-forge xgboost=0.6a2
 
 # Install Python packages
 install:
@@ -37,4 +37,4 @@ install:
   - pip install -e .
 
 # Run the test functions
-script: travis_wait 20 pytest
+script: travis_wait 25 pytest

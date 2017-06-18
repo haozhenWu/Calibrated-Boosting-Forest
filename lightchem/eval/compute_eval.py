@@ -4,6 +4,8 @@ Self defined evaluation metrics.
 
 import numpy as np
 from sklearn import metrics
+from lightchem.utility import util
+
 # Custom eval metric to calculate holdout result
 def compute_roc_auc( labels_arr, scores_arr ):
     '''use an sklearn function to compute ROC AUC
@@ -38,3 +40,15 @@ def enrichment_factor( labels_arr, scores_arr, percentile ):
     else:
         ef = 'ND'
     return ef
+
+def compute_NEF_auc(labels_arr, scores_arr, max_percentile):
+    '''
+    Calculate the AUC of Normalized Enrichment Factor, where the upper bound of
+    percentile is max_percentile
+    '''
+    if len(np.unique(labels_arr)) == 2:
+        auc = util.nef_auc(labels_arr, scores_arr,
+                           np.linspace(0.001, max_percentile, 10))
+    else:
+        auc = 'ND'
+    return auc

@@ -5,6 +5,7 @@ from lightchem.ensemble.virtualScreening_models import *
 from lightchem.featurize import fingerprint
 from lightchem.eval import defined_eval
 from lightchem.utility.util import reverse_generate_fold_index
+from lightchem.utility.util import fpString_to_array
 from function import *
 #from data_preparation import *
 from evaluation import * # need to comment out rpy2* and croc.
@@ -22,6 +23,19 @@ import os
 # Need to download prive datasets from Tony's lab.
 start_date = time.strftime("%Y_%m_%d_%H")
 store_prediction = True
+feature_used = 'FP_ConvGraph'
+
+# chemical descriptor
+ConvGraph = pd.read_csv("dataset/keck_DCfeature/keck_ConvGraph.csv")
+ConvGraph.index = ConvGraph.mol_id
+# De-compress feature.
+ConvGraph_feat = fpString_to_array(ConvGraph.GraphConv, sep="|")
+ConvGraph_feat_df = pd.DataFrame(ConvGraph_feat)
+ConvGraph_feat_df.columns = ['Feature_'+ str(item) for item in list(ConvGraph_feat_df.columns)]
+ConvGraph_feat_df.index = ConvGraph.index
+
+extra_data = ConvGraph_feat_df
+extra_data_name = list(ConvGraph_feat_df.columns)
 
 #if __name__ == "__main__"
 for fold_num in [5]:
@@ -68,7 +82,6 @@ for fold_num in [5]:
     model_name_list = []
     my_running_process_list = []
 
-
     for j in range(k):
         start = time.time()
         index = list(set(range(k)) - set([j]))
@@ -76,75 +89,49 @@ for fold_num in [5]:
         test_file = [output_file_list[j]]
         print train_file
         train_pd = read_merged_data(train_file)
+        # inner join train_pd with descriptors based on molecule id.
+        train_pd.index = train_pd.Molecule
+        train_pd = pd.merge(extra_data,train_pd,how='right',left_index=True,right_index=True)
+
         print test_file
         test_pd = read_merged_data(test_file)
+        test_pd.index = test_pd.Molecule
+        test_pd = pd.merge(extra_data,test_pd,how='right',left_index=True,right_index=True)
         my_fold_index = reverse_generate_fold_index(train_pd, train_file,
                                                      index, 'Molecule')
 
         # Using lightchem
+        # Using lightchem
         target_name = 'KECK_Pria'
         smile_colname = 'SMILES'
         label_name_list = ['Keck_Pria_AS_Retest','Keck_Pria_Continuous']#Keck_Pria_AS_Retest,Keck_Pria_Continuous
-        eval_name = 'ROCAUC'
+        eval_name = 'NEFAUC5'
         my_final_model = 'layer2' # Best model only chosed from layer2
         dir_to_store = './'
-        featurizer_list = ['ECFP'] # ECFP, MACCSkeys
+        featurizer_list = ['ECFP', 'ConvGraph'] # ECFP, MACCSkeys
 
         preDefined_eval = defined_eval.definedEvaluation()
         preDefined_eval.validate_eval_name(eval_name)
         df = train_pd
         #---------- Build Model
         print 'Preparing training data fingerprints'
-        if all(['ECFP' in featurizer_list, 'MACCSkeys' in featurizer_list]):
-            # morgan(ecfp) fp
-            fp = fingerprint.smile_to_fps(df,smile_colname)
-            morgan_fp = fp.Morgan()
-            # MACCSkeys fp
-            fp = fingerprint.smile_to_fps(df,smile_colname)
-            maccs_fp = fp.MACCSkeys()
-            comb1 = (morgan_fp,label_name_list)
-            comb2 = (maccs_fp,label_name_list)
-            training_info = [comb1,comb2]
+        # morgan(ecfp) fp
+        fp = fingerprint.smile_to_fps(df,smile_colname)
+        morgan_fp = fp.Morgan()
+        comb1 = (morgan_fp,label_name_list)
+        # ConvGraph
+        comb2 = (df,label_name_list)
+        training_info = [comb1,comb2]
 
-            print 'Preparing testing data fingerprints'
-            df_test = test_pd
-            # morgan(ecfp) fp
-            fp = fingerprint.smile_to_fps(df_test,smile_colname)
-            morgan_fp = fp.Morgan()
-            # MACCSkeys fp
-            fp = fingerprint.smile_to_fps(df_test,smile_colname)
-            maccs_fp = fp.MACCSkeys()
-            comb1_test = (morgan_fp,None)# test data does not need label name
-            comb2_test = (maccs_fp,None)
-            testing_info = [comb1_test,comb2_test]
-        elif 'ECFP' in featurizer_list:
-            # morgan(ecfp) fp
-            fp = fingerprint.smile_to_fps(df,smile_colname)
-            morgan_fp = fp.Morgan()
-            comb1 = (morgan_fp,label_name_list)
-            training_info = [comb1]
-
-            print 'Preparing testing data fingerprints'
-            df_test = test_pd
-            # morgan(ecfp) fp
-            fp = fingerprint.smile_to_fps(df_test,smile_colname)
-            morgan_fp = fp.Morgan()
-            comb1_test = (morgan_fp,None)# test data does not need label name
-            testing_info = [comb1_test]
-        elif 'MACCSkeys' in featurizer_list:
-            # MACCSkeys fp
-            fp = fingerprint.smile_to_fps(df,smile_colname)
-            maccs_fp = fp.MACCSkeys()
-            comb2 = (maccs_fp,label_name_list)
-            training_info = [comb2]
-
-            print 'Preparing testing data fingerprints'
-            df_test = test_pd
-            # MACCSkeys fp
-            fp = fingerprint.smile_to_fps(df_test,smile_colname)
-            maccs_fp = fp.MACCSkeys()
-            comb2_test = (maccs_fp,None)
-            testing_info = [comb2_test]
+        print 'Preparing testing data fingerprints'
+        df_test = test_pd
+        # morgan(ecfp) fp
+        fp = fingerprint.smile_to_fps(df_test,smile_colname)
+        morgan_fp = fp.Morgan()
+        comb1_test = (morgan_fp,None)# test data does not need label name
+        # ConvGraph
+        comb2_test = (df_test,None)
+        testing_info = [comb1_test,comb2_test]
 
         print 'Building and selecting best model'
         # Current VsEnsembleModel create test data by default
