@@ -42,7 +42,7 @@ class definedEvaluation(object):
         return self.__DEFINED_EVAL
 
     def eval_function(self,eval_name):
-        evaluation_cut = __check_cut_value(eval_name)
+        evaluation_cut = self.__check_cut_value(eval_name)
         name = evaluation_cut[0]
         self.validate_eval_name(name)
         func = self.__MATCH[name][0]
@@ -52,19 +52,19 @@ class definedEvaluation(object):
         return new_func
 
     def is_maximize(self,eval_name):
-        evaluation_cut = __check_cut_value(eval_name)
+        evaluation_cut = self.__check_cut_value(eval_name)
         name = evaluation_cut[0]
         self.validate_eval_name(name)
         return self.__MATCH[name][1]
 
     def stopping_round(self,eval_name):
-        evaluation_cut = __check_cut_value(eval_name)
+        evaluation_cut = self.__check_cut_value(eval_name)
         name = evaluation_cut[0]
         self.validate_eval_name(name)
         return self.__MATCH[name][2]
 
     def validate_eval_name(self,eval_name):
-        evaluation_cut = __check_cut_value(eval_name)
+        evaluation_cut = self.__check_cut_value(eval_name)
         name = evaluation_cut[0]
         if not name in self.__DEFINED_EVAL:
             raise ValueError('Defined evaluation metric names are: ' + ', '.join(self.__DEFINED_EVAL))
