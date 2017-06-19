@@ -32,7 +32,7 @@ class definedEvaluation(object):
 
     def __check_cut_value(name):
         eval_cut = re.split("_", name)
-        if len(eval_cut) > 2
+        if len(eval_cut) > 2:
             raise ValueError('In order to pass threshold to evaluation metric, '
                                 'must follow evalname_X format where X is the '
                                 'threshold value.')
