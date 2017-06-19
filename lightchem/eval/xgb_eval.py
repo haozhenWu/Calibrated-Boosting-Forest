@@ -8,7 +8,7 @@ from sklearn.model_selection import StratifiedKFold
 import numpy as np
 from lightchem.utility import util
 
-def evalrocauc(preds, dtrain):
+def evalrocauc(preds, dtrain, cut=None):
     '''
     Return ROC AUC score
     '''
@@ -18,15 +18,16 @@ def evalrocauc(preds, dtrain):
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(unique) > 2: # which means it is continuous label
-        cut = np.percentile(labels,99)
-        if cut == unique[0]:
-            cut = unique[1]
+        if cut == None:
+            cut = np.percentile(labels,99)
+            if cut == unique[0]:
+                cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
     # use sklearn.metrics to compute rocauc
     return 'ROCAUC', metrics.roc_auc_score( labels, preds )
 
-def evalprauc(preds, dtrain):
+def evalprauc(preds, dtrain, cut=None):
     '''
     Return Precision Recall AUC score
     '''
@@ -36,15 +37,16 @@ def evalprauc(preds, dtrain):
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(unique) > 2: # which means it is continuous label
-        cut = np.percentile(labels,99)
-        if cut == unique[0]:
-            cut = unique[1]
+        if cut == None:
+            cut = np.percentile(labels,99)
+            if cut == unique[0]:
+                cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
     # use sklearn.metrics to compute prauc
     return 'PRAUC', metrics.average_precision_score( labels, preds )
 
-def evalefr1(preds, dtrain):
+def evalefr1(preds, dtrain, cut=None):
     '''
     Return enrichment factor at 0.01
     '''
@@ -54,9 +56,10 @@ def evalefr1(preds, dtrain):
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(unique) > 2: # which means it is continuous label
-        cut = np.percentile(labels,99)
-        if cut == unique[0]:
-            cut = unique[1]
+        if cut == None:
+            cut = np.percentile(labels,99)
+            if cut == unique[0]:
+                cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
 
@@ -74,7 +77,7 @@ def evalefr1(preds, dtrain):
         ef = -1
     return 'EFR1', ef
 
-def evalefr015(preds, dtrain):
+def evalefr015(preds, dtrain, cut=None):
     '''
     Return enrichment factor at 0.0015
     '''
@@ -83,10 +86,11 @@ def evalefr015(preds, dtrain):
     preds[index] = 0
     labels = dtrain.get_label()
     unique = np.unique(labels)
-    if len(np.unique(labels)) > 2: # which means it is continuous label
-        cut = np.percentile(labels,99)
-        if cut == unique[0]:
-            cut = unique[1]
+    if len(unique) > 2: # which means it is continuous label
+        if cut == None:
+            cut = np.percentile(labels,99)
+            if cut == unique[0]:
+                cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
 
@@ -105,7 +109,7 @@ def evalefr015(preds, dtrain):
     return 'EFR015', ef
 
 
-def evalNEFauc25(preds, dtrain):
+def evalNEFauc25(preds, dtrain, cut=None):
     '''
     Return Normalized Enrichment Factor AUC ranging from 0.001 to 0.25
     '''
@@ -114,16 +118,17 @@ def evalNEFauc25(preds, dtrain):
     preds[index] = 0
     labels = dtrain.get_label()
     unique = np.unique(labels)
-    if len(np.unique(labels)) > 2: # which means it is continuous label
-        cut = np.percentile(labels,99)
-        if cut == unique[0]:
-            cut = unique[1]
+    if len(unique) > 2: # which means it is continuous label
+        if cut == None:
+            cut = np.percentile(labels,99)
+            if cut == unique[0]:
+                cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
     nef = util.nef_auc(labels, preds, np.linspace(0.001, .25, 10),['nefauc'])
     return 'NEFAUC25', float(nef.nefauc)
 
-def evalNEFauc5(preds, dtrain):
+def evalNEFauc5(preds, dtrain, cut=None):
     '''
     Return Normalized Enrichment Factor AUC ranging from 0.001 to 0.05
     '''
@@ -132,10 +137,11 @@ def evalNEFauc5(preds, dtrain):
     preds[index] = 0
     labels = dtrain.get_label()
     unique = np.unique(labels)
-    if len(np.unique(labels)) > 2: # which means it is continuous label
-        cut = np.percentile(labels,99)
-        if cut == unique[0]:
-            cut = unique[1]
+    if len(unique) > 2: # which means it is continuous label
+        if cut == None:
+            cut = np.percentile(labels,99)
+            if cut == unique[0]:
+                cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
     nef = util.nef_auc(labels, preds, np.linspace(0.001, .05, 10))
