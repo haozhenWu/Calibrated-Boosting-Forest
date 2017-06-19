@@ -48,8 +48,8 @@ class definedEvaluation(object):
         func = self.__MATCH[name][0]
         if len(evaluation_cut) == 2: # means user pass additional threshold.
             new_cut = float(evaluation_cut[1])
-            new_func = functools.partial(func, cut=new_cut)
-        return new_func
+            func = functools.partial(func, cut=new_cut)
+        return func
 
     def is_maximize(self,eval_name):
         evaluation_cut = self.__check_cut_value(eval_name)
