@@ -27,7 +27,8 @@ store_prediction = True
 for fold_num in [5]:
 
     k = fold_num
-    directory = './dataset/fixed_dataset/fold_{}/'.format(k)
+    #directory = './dataset/fixed_dataset/fold_{}/'.format(k)
+    directory = './dataset/keck_extended/fold_{}/'.format(k)
     file_list = []
     for i in range(k):
         file_list.append('file_{}.csv'.format(i))
@@ -84,8 +85,9 @@ for fold_num in [5]:
         # Using lightchem
         target_name = 'KECK_Pria'
         smile_colname = 'SMILES'
-        label_name_list = ['Keck_Pria_AS_Retest','Keck_Pria_Continuous']#Keck_Pria_AS_Retest,Keck_Pria_Continuous
-        eval_name = 'ROCAUC'
+        label_name_list = ['Keck_Pria_Hard_Thresholded','Keck_Pria_Continuous']#Keck_Pria_AS_Retest,Keck_Pria_Continuous
+        #threshold = train_pd.loc[train_pd.loc[:,label_name_list[0]]==1,label_name_list[1]].min()
+        eval_name = 'ROCAUC' + "_" + str(35)
         my_final_model = 'layer2' # Best model only chosed from layer2
         dir_to_store = './'
         featurizer_list = ['ECFP'] # ECFP, MACCSkeys
@@ -148,7 +150,7 @@ for fold_num in [5]:
 
         print 'Building and selecting best model'
         # Current VsEnsembleModel create test data by default
-        model = VsEnsembleModel_keck_test(training_info,
+        model = VsEnsembleModel_keck(training_info,
                                      eval_name,
                                      fold_info = my_fold_index,
                                      createTestset = False,
