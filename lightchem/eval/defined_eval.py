@@ -30,7 +30,7 @@ class definedEvaluation(object):
                         'NEFAUC25': [xgb_eval.evalNEFauc25,True,100],
                         'NEFAUC5': [xgb_eval.evalNEFauc5,True,100]}
 
-    def __check_cut_value(name):
+    def __check_cut_value(self,name):
         eval_cut = re.split("_", name)
         if len(eval_cut) > 2:
             raise ValueError('In order to pass threshold to evaluation metric, '
