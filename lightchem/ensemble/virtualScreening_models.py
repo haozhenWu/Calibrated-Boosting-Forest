@@ -365,7 +365,7 @@ class VsEnsembleModel_keck(object):
         self.set_final_model(finalModel)
         self.__model_has_finalLabel = None
         self.__num_gblinear = num_gblinear
-        self.__num_gbtree - num_gbtree
+        self.__num_gbtree = num_gbtree
 
     def set_final_model(self, finalModel):
         if finalModel == None or finalModel == 'layer1' or finalModel == 'layer2':
