@@ -11,6 +11,7 @@ from lightchem.eval import xgb_eval
 from lightchem.eval import eval_testset
 from lightchem.model import first_layer_model
 from lightchem.model import second_layer_model
+from lightchem.model import hyper_parameter
 from lightchem.eval import defined_eval
 from lightchem.utility import util
 # For this specific model object, REQUIRED first label name always represent
@@ -303,40 +304,46 @@ class VsEnsembleModel_keck(object):
     """
     Wrapper class to build ensemble models structure for KECK dataset.
     """
-    def __init__(self,training_info,eval_name,fold_info = 4,
-                 createTestset = True, finalModel = None, seed = 2016,verbose = False):
+    def __init__(self,training_info,eval_name,fold_info = 4,createTestset = True,
+                    finalModel = None, num_gblinear = 1, num_gbtree = 1,
+                    seed = 2016,verbose = False):
         """
         Parameters:
         ----------
         training_info: list
-         List of tuple, where each tuple contains 2 items, first item is dataframe
-         containing training data(required to have fingerprint column named 'fingerprint',
-         and concatanate fingerprint in a string),
-         second item is a list containing the one or more label name.
-         The first label name of first tuple is the default label that will be
-         used for both layer models.
-         If multiple label names present, VsEnsembleModel will automatically build
-         model based on each label and ensemble them together.
-         EX: [(my_dataframe,['binary_label','continuous_label']),
-                (my_dataframe2,['binary_label','continuous_label'])]
-         For this specific model object, REQUIRED first label name always be
-         Binary label name.
+          List of tuple, where each tuple contains 2 items, first item is dataframe
+          containing training data(required to have fingerprint column named 'fingerprint',
+          and concatanate fingerprint in a string),
+          second item is a list containing the one or more label name.
+          The first label name of first tuple is the default label that will be
+          used for both layer models.
+          If multiple label names present, VsEnsembleModel will automatically build
+          model based on each label and ensemble them together.
+          EX: [(my_dataframe,['binary_label','continuous_label']),
+                    (my_dataframe2,['binary_label','continuous_label'])]
+          For this specific model object, REQUIRED first label name always be
+            Binary label name.
         eval_name: str
-         Name of evaluation metric used to monitor and stop training process.
-         Must in eval.defined_eval
+          Name of evaluation metric used to monitor and stop training process.
+           Must in eval.defined_eval
         fold_info: int or DataFrame
-         either a DataFrame contains fold index or a single integer indicating
-         number of fold to create
+          either a DataFrame contains fold index or a single integer indicating
+          number of fold to create
         createTestset: logic
-         Whether internally create a test set. Help selecting the best model
+          Whether internally create a test set. Help selecting the best model
         finalModel: str
-         Can be None, layer1, or layer2. Default is None
-         If set to None, it will select the best model from layer1 and layer2 models.
-         layer1: Only select best layer1 model as final model, even though it has
-                 layer2 model ready.
-         layer2: Only select best layer2 model as final model. Sometimes layer1
-                 models perform better than layer2 models.
-
+          Can be None, layer1, or layer2. Default is None
+          If set to None, it will select the best model from layer1 and layer2 models.
+          layer1: Only select best layer1 model as final model, even though it has
+                  layer2 model ready.
+          layer2: Only select best layer2 model as final model. Sometimes layer1
+                  models perform better than layer2 models.
+        num_gblinear: integer
+          Number of hyper-parameter sets to generate for each first layer
+            gblinear model.
+        num_gbtree: integer
+          Number of hyper-parameter sets to generate for each first layer
+            gbtree model.
         """
         self.__training_info = training_info
         self.__check_labelType()
@@ -357,6 +364,8 @@ class VsEnsembleModel_keck(object):
         self.__all_model_result = None
         self.set_final_model(finalModel)
         self.__model_has_finalLabel = None
+        self.__num_gblinear = num_gblinear
+        self.__num_gbtree - num_gbtree
 
     def set_final_model(self, finalModel):
         if finalModel == None or finalModel == 'layer1' or finalModel == 'layer2':
@@ -480,37 +489,33 @@ class VsEnsembleModel_keck(object):
         #---------------------------------first layer models ----------
         for data_dict in self.__setting_list:
             for model_type in data_dict['model_type']:
-                unique_name = 'layer1_' + data_dict['data_name'] + '_' + model_type + '_' + evaluation_metric_name
-                model = first_layer_model.firstLayerModel(data_dict['data'],
-                        evaluation_metric_name,model_type,unique_name)
-                # Retrieve default parameter and change default seed.
-                default_param,default_MAXIMIZE,default_STOPPING_ROUND = model.get_param()
-                default_param['seed'] = self.seed
-                if self.__verbose == True:
-                    default_param['silent'] = 1
-                elif self.__verbose == False:
-                    default_param['verbose_eval'] = False
-
-                if model_type == 'GbtreeLogistic':
-                    default_param['eta'] = 0.03
-                    default_STOPPING_ROUND = 200
-                    #default_param['max_depth'] = 5
-                    #default_param['colsample_bytree'] = 0.5
-                    #default_param['min_child_weight'] = 2
-                elif model_type == 'GblinearLogistic':
-                    default_param['eta'] = 0.1
-                    default_STOPPING_ROUND = 200
-                elif model_type == 'GbtreeRegression':
-                    default_param['eta'] = 0.1
-                    default_STOPPING_ROUND = 200
-                elif model_type == 'GblinearRegression':
-                    default_param['eta'] = 0.1
-                    default_STOPPING_ROUND = 200
-
-                model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
-                model.xgb_cv()
-                model.generate_holdout_pred()
-                self.__layer1_model_list.append(model)
+                num_sets = 1
+                param_sets = {}
+                if 'tree' in model_type:
+                    num_sets = self.__num_gbtree
+                    param_sets = hyper_parameter.paramGenerator(model_type,
+                                                                num_sets, self.seed)
+                elif 'linear' in model_type:
+                    num_sets = self.__num_gblinear
+                    param_sets = hyper_parameter.paramGenerator(model_type,
+                                                                num_sets, self.seed)
+                # Build model based on each hyper-parameter set
+                for i in range(num_sets):
+                    unique_name_p1 = 'layer1_' + data_dict['data_name'] + '_'
+                    unique_name_p2 = model_type + '_' + evaluation_metric_name
+                    unique_name_p3 = '_' + str(i)
+                    unique_name = unique_name_p1 + unique_name_p2 + unique_name_p3
+                    params = param_sets[i]
+                    model = first_layer_model.firstLayerModel(data_dict['data'],
+                            evaluation_metric_name,model_type,unique_name)
+                    # Retrieve default parameter and change default seed.
+                    default_param,default_MAXIMIZE,default_STOPPING_ROUND = model.get_param()
+                    params['seed'] = self.seed
+                    stopping_round = 200
+                    model.update_param(params,default_MAXIMIZE,stopping_round)
+                    model.xgb_cv()
+                    model.generate_holdout_pred()
+                    self.__layer1_model_list.append(model)
 
         #------------------------------------second layer models
         layer2_label_data = self.__setting_list[0]['data'] # layer1 data object containing the label for layer2 model
@@ -534,14 +539,11 @@ class VsEnsembleModel_keck(object):
                 if model_type == 'GbtreeLogistic':
                     default_param['eta'] = 0.06
                     default_STOPPING_ROUND = 200
-                    #default_param['max_depth'] = 5
-                    #default_param['colsample_bytree'] = 0.5
-                    #default_param['min_child_weight'] = 2
                 elif model_type == 'GblinearLogistic':
                     default_param['eta'] = 0.1
                     default_STOPPING_ROUND = 200
                 elif model_type == 'GbtreeRegression':
-                    default_param['eta'] = 0.1
+                    default_param['eta'] = 0.06
                     default_STOPPING_ROUND = 200
                 elif model_type == 'GblinearRegression':
                     default_param['eta'] = 0.1
