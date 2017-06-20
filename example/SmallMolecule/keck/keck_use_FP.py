@@ -87,10 +87,12 @@ for fold_num in [5]:
         smile_colname = 'SMILES'
         label_name_list = ['Keck_Pria_Hard_Thresholded','Keck_Pria_Continuous']#Keck_Pria_AS_Retest,Keck_Pria_Continuous
         #threshold = train_pd.loc[train_pd.loc[:,label_name_list[0]]==1,label_name_list[1]].min()
-        eval_name = 'ROCAUC' + "_" + str(35)
+        eval_name = 'NEFAUC5' + "_" + str(35)
         my_final_model = 'layer2' # Best model only chosed from layer2
         dir_to_store = './'
         featurizer_list = ['ECFP'] # ECFP, MACCSkeys
+        num_gblinear = 5
+        num_gbtree = 10
 
         preDefined_eval = defined_eval.definedEvaluation()
         preDefined_eval.validate_eval_name(eval_name)
@@ -154,7 +156,9 @@ for fold_num in [5]:
                                      eval_name,
                                      fold_info = my_fold_index,
                                      createTestset = False,
-                                     finalModel = my_final_model)
+                                     finalModel = my_final_model,
+                                     num_gblinear = num_gblinear,
+                                     num_gbtree = num_gbtree)
         model.train()
         cv_result = model.training_result()
         all_results = model.detail_result()
