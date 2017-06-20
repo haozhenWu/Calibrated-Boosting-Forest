@@ -445,16 +445,23 @@ class VsEnsembleModel_keck(object):
         self.__test_data = []
         if 'layer2' in name:
             temp = []
-            # retrive all the data
+            # retrive all the data. Use same loop logic as __prepare_xgbdata_train
             for i,item in enumerate(self.__training_info):
                 temp_data = list_test_x_array[i]
                 for column_name in item[1]:
                     temp.append(temp_data)
             assert len(temp) == len(self.__setting_list)
+            # Use same loop logic as train
             for i,data_dict in enumerate(self.__setting_list):
                 temp_data = temp[i]
                 for model_type in data_dict['model_type']:
-                    self.__test_data.append(temp_data)
+                    num_sets = 1
+                    if 'tree' in model_type:
+                        num_sets = self.__num_gbtree
+                    elif 'linear' in model_type:
+                        num_sets = self.__num_gblinear
+                    for k in range(num_sets):
+                        self.__test_data.append(temp_data)
             assert len(self.__test_data) == len(self.__layer1_model_list)
 
         else: # find specific data for layer1 model
