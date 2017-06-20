@@ -9,8 +9,8 @@ def fpString_to_array(fp_col, sep = ""):
     Parameters:
     -----------
     fp_col: Pandas.Series, each item is a fingerprint string. Ex: 000101,110100
-    return fingerprint array.
     sep: Value used to seperate original value.
+    Return fingerprint array.
     """
     fp_array = []
     for raw_fps in fp_col:
