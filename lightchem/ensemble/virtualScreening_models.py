@@ -306,7 +306,7 @@ class VsEnsembleModel_keck(object):
     """
     def __init__(self,training_info,eval_name,fold_info = 4,createTestset = True,
                     finalModel = None, num_gblinear = 1, num_gbtree = 1,
-                    seed = 2016,verbose = False):
+                    nthread = -1, seed = 2016,verbose = False):
         """
         Parameters:
         ----------
@@ -366,6 +366,7 @@ class VsEnsembleModel_keck(object):
         self.__model_has_finalLabel = None
         self.__num_gblinear = num_gblinear
         self.__num_gbtree = num_gbtree
+        self.nthread = nthread
 
     def set_final_model(self, finalModel):
         if finalModel == None or finalModel == 'layer1' or finalModel == 'layer2':
@@ -518,6 +519,7 @@ class VsEnsembleModel_keck(object):
                     # Retrieve default parameter and change default seed.
                     default_param,default_MAXIMIZE,default_STOPPING_ROUND = model.get_param()
                     params['seed'] = self.seed
+                    params['nthread'] = self.nthread
                     stopping_round = 200
                     model.update_param(params,default_MAXIMIZE,stopping_round)
                     model.xgb_cv()
@@ -538,11 +540,7 @@ class VsEnsembleModel_keck(object):
                 # Retrieve default parameter and change default seed.
                 default_param,default_MAXIMIZE,default_STOPPING_ROUND = l2model.get_param()
                 default_param['seed'] = self.seed
-                if self.__verbose == True:
-                    default_param['silent'] = 0
-                elif self.__verbose == False:
-                    default_param['verbose_eval'] = False
-
+                default_param['nthread'] = self.nthread
                 if model_type == 'GbtreeLogistic':
                     default_param['eta'] = 0.06
                     default_STOPPING_ROUND = 200

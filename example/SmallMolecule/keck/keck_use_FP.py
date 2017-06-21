@@ -158,7 +158,8 @@ for fold_num in [5]:
                                      createTestset = False,
                                      finalModel = my_final_model,
                                      num_gblinear = num_gblinear,
-                                     num_gbtree = num_gbtree)
+                                     num_gbtree = num_gbtree,
+                                     nthread = 22)
         model.train()
         cv_result = model.training_result()
         all_results = model.detail_result()
