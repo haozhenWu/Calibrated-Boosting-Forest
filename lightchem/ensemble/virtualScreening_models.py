@@ -306,6 +306,7 @@ class VsEnsembleModel_keck(object):
     """
     def __init__(self,training_info,eval_name,fold_info = 4,createTestset = True,
                     finalModel = None, num_gblinear = 1, num_gbtree = 1,
+                    layer2_modeltype = ['GbtreeLogistic','GblinearLogistic'],
                     nthread = -1, seed = 2016,verbose = False):
         """
         Parameters:
@@ -366,6 +367,7 @@ class VsEnsembleModel_keck(object):
         self.__model_has_finalLabel = None
         self.__num_gblinear = num_gblinear
         self.__num_gbtree = num_gbtree
+        self.__layer2_modeltype = layer2_modeltype
         self.nthread = nthread
 
     def set_final_model(self, finalModel):
@@ -528,7 +530,7 @@ class VsEnsembleModel_keck(object):
 
         #------------------------------------second layer models
         layer2_label_data = self.__setting_list[0]['data'] # layer1 data object containing the label for layer2 model
-        layer2_modeltype = ['GbtreeLogistic','GblinearLogistic']
+        layer2_modeltype = self.__layer2_modeltype
         layer2_evaluation_metric_name = [self.__eval_name]
         print 'Building second layer models'
         for evaluation_metric_name in layer2_evaluation_metric_name:
@@ -593,6 +595,7 @@ class VsEnsembleModel_keck(object):
         # prepare test data, retrive from layer1 data
         if self.__createTestset:
             list_TestData = []
+            layer2_modeltype = self.__layer2_modeltype
             for data_dict in self.__setting_list:
                 for model_type in data_dict['model_type']:
                     list_TestData.append(data_dict['data'].get_dtest())
