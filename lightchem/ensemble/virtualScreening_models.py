@@ -533,30 +533,45 @@ class VsEnsembleModel_keck(object):
         print 'Building second layer models'
         for evaluation_metric_name in layer2_evaluation_metric_name:
             for model_type in layer2_modeltype:
-                unique_name = 'layer2' + '_' + model_type + '_' + evaluation_metric_name
-                l2model = second_layer_model.secondLayerModel(layer2_label_data,self.__layer1_model_list,
-                            evaluation_metric_name,model_type,unique_name)
-                l2model.second_layer_data()
-                # Retrieve default parameter and change default seed.
-                default_param,default_MAXIMIZE,default_STOPPING_ROUND = l2model.get_param()
-                default_param['seed'] = self.seed
-                default_param['nthread'] = self.nthread
-                if model_type == 'GbtreeLogistic':
-                    default_param['eta'] = 0.06
-                    default_STOPPING_ROUND = 200
-                elif model_type == 'GblinearLogistic':
-                    default_param['eta'] = 0.1
-                    default_STOPPING_ROUND = 200
-                elif model_type == 'GbtreeRegression':
-                    default_param['eta'] = 0.06
-                    default_STOPPING_ROUND = 200
-                elif model_type == 'GblinearRegression':
-                    default_param['eta'] = 0.1
-                    default_STOPPING_ROUND = 200
+                num_sets = 1
+                param_sets = {}
+                if 'tree' in model_type:
+                    num_sets = self.__num_gbtree
+                    param_sets = hyper_parameter.paramGenerator(model_type,
+                                                                num_sets, self.seed)
+                elif 'linear' in model_type:
+                    num_sets = self.__num_gblinear
+                    param_sets = hyper_parameter.paramGenerator(model_type,
+                                                                num_sets, self.seed)
+                # Build model based on each hyper-parameter set
+                for i in range(num_sets):
+                    unique_name_p1 = 'layer2' + '_' + model_type + '_' + evaluation_metric_name
+                    unique_name_p2 = "_" + str(i)
+                    unique_name = unique_name_p1 + unique_name_p2
+                    params = param_sets[i]
+                    l2model = second_layer_model.secondLayerModel(layer2_label_data,self.__layer1_model_list,
+                                evaluation_metric_name,model_type,unique_name)
+                    l2model.second_layer_data()
+                    # Retrieve default parameter and change default seed.
+                    default_param,default_MAXIMIZE,default_STOPPING_ROUND = l2model.get_param()
+                    params['seed'] = self.seed
+                    params['nthread'] = self.nthread
+                    if model_type == 'GbtreeLogistic':
+                        params['eta'] = 0.06
+                        default_STOPPING_ROUND = 500
+                    elif model_type == 'GblinearLogistic':
+                        params['eta'] = 0.1
+                        default_STOPPING_ROUND = 300
+                    elif model_type == 'GbtreeRegression':
+                        params['eta'] = 0.06
+                        default_STOPPING_ROUND = 500
+                    elif model_type == 'GblinearRegression':
+                        params['eta'] = 0.1
+                        default_STOPPING_ROUND = 300
 
-                l2model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
-                l2model.xgb_cv()
-                self.__layer2_model_list.append(l2model)
+                    l2model.update_param(params,default_MAXIMIZE,default_STOPPING_ROUND)
+                    l2model.xgb_cv()
+                    self.__layer2_model_list.append(l2model)
 
 
     def __prepare_result(self):
