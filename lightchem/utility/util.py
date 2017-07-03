@@ -102,7 +102,7 @@ def max_enrichment_factor(y_true, y_pred, perc_vec):
     sample_size_vec = sample_size_vec.astype(np.int)
     n_actives = np.nansum(y_true)
     if n_actives == 0:
-        ef_vec = np.repeat(np.nan, len(perc_vec))
+        max_ef_vec = np.repeat(np.nan, len(perc_vec))
         return max_ef_vec
 
     minimum_vec = [float(min(n_actives, sample_size)) for sample_size in sample_size_vec]
