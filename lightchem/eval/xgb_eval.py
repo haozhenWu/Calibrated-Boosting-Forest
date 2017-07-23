@@ -125,8 +125,13 @@ def evalNEFauc25(preds, dtrain, cut=None):
                 cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
-    nef = util.nef_auc(labels, preds, np.linspace(0.001, .25, 10),['nefauc'])
-    return 'NEFAUC25', float(nef.nefauc)
+    nef = util.nef_auc(labels, preds, np.linspace(0.001, .25, 10))
+    # EF calculation for first several rounds are wrong when trees are small and
+    # unique predictions are low.
+    # Mannually set to zero. 2^7 = 128 -> Tree with depth 7
+    if len(np.unique(preds)) <= 128:
+        nef = 0
+    return 'NEFAUC25', nef
 
 def evalNEFauc5(preds, dtrain, cut=None):
     '''
@@ -145,4 +150,37 @@ def evalNEFauc5(preds, dtrain, cut=None):
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
     nef = util.nef_auc(labels, preds, np.linspace(0.001, .05, 10))
+    # EF calculation for first several rounds are wrong when trees are small and
+    # unique predictions are low.
+    # Mannually set to zero. 2^7 = 128 -> Tree with depth 7
+    if len(np.unique(preds)) <= 128:
+        nef = 0
     return 'NEFAUC5', nef
+
+def evalAEF5(preds, dtrain, cut=None):
+    '''
+    Return average enrichment factor at multiple threshold where max threshold is 5%.
+    '''
+    # Check infinite, NaN. Convert to 0.
+    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
+    preds[index] = 0
+    labels = dtrain.get_label()
+    unique = np.unique(labels)
+    if len(unique) > 2: # which means it is continuous label
+        if cut == None:
+            cut = np.percentile(labels,99)
+            if cut == unique[0]:
+                cut = unique[1]
+        labels[np.where(dtrain.get_label()>cut)] = 1
+        labels[np.where(dtrain.get_label()<=cut)] = 0
+
+    labels_arr = labels
+    scores_arr = preds
+    percentile_list = np.linspace(0,0.05,10)
+    aef = util.enrichment_factor(labels_arr, scores_arr, percentile_list)
+    aef = np.nanmean(aef)
+    # EF calculation for first 2 round is wrong when trees are small.
+    # Mannually set to zero. 2^7 = 128 -> Tree with depth 7
+    if len(np.unique(preds)) <= 128:
+        aef = 0
+    return 'AEF', aef

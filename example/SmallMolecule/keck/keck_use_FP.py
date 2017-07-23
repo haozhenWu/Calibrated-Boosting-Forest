@@ -17,12 +17,235 @@ from rdkit.Chem import AllChem
 import time
 import os
 
+def accumulate_result(all_metrics_list, y_train, y_pred_on_train,
+                        y_test, y_pred_on_test, validation_info):
+    train_roc = all_metrics_list[0]
+    val_roc = all_metrics_list[1]
+    test_roc = all_metrics_list[2]
+    train_precision = all_metrics_list[3]
+    val_precision = all_metrics_list[4]
+    test_precision = all_metrics_list[5]
+    train_bedroc = all_metrics_list[6]
+    val_bedroc = all_metrics_list[7]
+    test_bedroc = all_metrics_list[8]
+    train_efr1 = all_metrics_list[9]
+    val_efr1 = all_metrics_list[10]
+    test_efr1 = all_metrics_list[11]
+    train_nefauc5 = all_metrics_list[12]
+    val_nefauc5 = all_metrics_list[13]
+    test_nefauc5 = all_metrics_list[14]
+    test_ef01 = all_metrics_list[15]
+    test_ef02 = all_metrics_list[16]
+    test_ef0015 = all_metrics_list[17]
+    test_ef001 = all_metrics_list[18]
+    # Accumulate results for each PCBA_task
+    # ROCAUC
+    train_roc.append(roc_auc_single(y_train, y_pred_on_train))
+    val_oneTask = []
+    for i,val in enumerate(validation_info):
+        val_oneTask.append(roc_auc_single(val.label, val.validation_pred))
+    val_roc.append(np.mean(val_oneTask))
+    test_roc.append(roc_auc_single(y_test, y_pred_on_test))
+    # PRAUC
+    train_precision.append(precision_auc_single(y_train, y_pred_on_train, mode='auc.sklearn'))
+    val_oneTask = []
+    for i,val in enumerate(validation_info):
+        val_oneTask.append(precision_auc_single(val.label, val.validation_pred,mode='auc.sklearn'))
+    val_precision.append(np.mean(val_oneTask))
+    test_precision.append(precision_auc_single(y_test, y_pred_on_test, mode='auc.sklearn'))
+    # BEDROC
+    train_bedroc.append(bedroc_auc_single(reshape_data_into_2_dim(y_train),
+                                          reshape_data_into_2_dim(y_pred_on_train)))
+    val_oneTask = []
+    for i,val in enumerate(validation_info):
+        val_oneTask.append(bedroc_auc_single(reshape_data_into_2_dim(val.label),
+                                            reshape_data_into_2_dim(val.validation_pred)))
+    val_bedroc.append(np.mean(val_oneTask))
+    test_bedroc.append(bedroc_auc_single(reshape_data_into_2_dim(y_test),
+                                         reshape_data_into_2_dim(y_pred_on_test)))
+    # EFR1
+    n_actives, ef, ef_max = enrichment_factor_single(y_train, y_pred_on_train, 0.01)
+    train_efr1.append(ef)
+    val_oneTask = []
+    for i,val in enumerate(validation_info):
+        n_actives, ef, ef_max = enrichment_factor_single(np.array(val.label),
+                                                         np.array(val.validation_pred),
+                                                         0.01)
+        val_oneTask.append(ef)
+    val_efr1.append(np.mean(val_oneTask))
+    n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
+    test_efr1.append(ef)
+    # NEFAUC5
+    train_nefauc5.append(
+    float(nef_auc(y_train,y_pred_on_train,np.linspace(0.001, .05, 10),['nefauc']).nefauc)
+    )
+    val_oneTask = []
+    for i,val in enumerate(validation_info):
+        val_oneTask.append(
+        float(nef_auc(val.label,val.validation_pred,np.linspace(0.001, .05, 10),['nefauc']).nefauc)
+        )
+    val_nefauc5.append(np.mean(val_oneTask))
+    test_nefauc5.append(
+    float(nef_auc(y_test,y_pred_on_test,np.linspace(0.001, .05, 10),['nefauc']).nefauc)
+    )
+
+    n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
+    test_ef01.append(ef)
+    n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.02)
+    test_ef02.append(ef)
+    n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.0015)
+    test_ef0015.append(ef)
+    n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.001)
+    test_ef001.append(ef)
+
+    result_list = [train_roc,
+                    val_roc,
+                    test_roc,
+                    train_precision,
+                    val_precision,
+                    test_precision,
+                    train_bedroc,
+                    val_bedroc,
+                    test_bedroc,
+                    train_efr1,
+                    val_efr1,
+                    test_efr1,
+                    train_nefauc5,
+                    val_nefauc5,
+                    test_nefauc5,
+                    test_ef01,
+                    test_ef02,
+                    test_ef0015,
+                    test_ef001]
+    return result_list
+def print_result(all_metrics_list, start_date, fold_num, k, which_splitter, eval_name,
+                    featurizer_list, label_name_list, my_final_model, num_gbtree,
+                    num_gblinear):
+    train_roc = all_metrics_list[0]
+    val_roc = all_metrics_list[1]
+    test_roc = all_metrics_list[2]
+    train_precision = all_metrics_list[3]
+    val_precision = all_metrics_list[4]
+    test_precision = all_metrics_list[5]
+    train_bedroc = all_metrics_list[6]
+    val_bedroc = all_metrics_list[7]
+    test_bedroc = all_metrics_list[8]
+    train_efr1 = all_metrics_list[9]
+    val_efr1 = all_metrics_list[10]
+    test_efr1 = all_metrics_list[11]
+    train_nefauc5 = all_metrics_list[12]
+    val_nefauc5 = all_metrics_list[13]
+    test_nefauc5 = all_metrics_list[14]
+    test_ef01 = all_metrics_list[15]
+    test_ef02 = all_metrics_list[16]
+    test_ef0015 = all_metrics_list[17]
+    test_ef001 = all_metrics_list[18]
+
+    f = open('./result/summary_' + start_date + "_" + my_final_model + "_" + str(fold_num) + 'fold.txt', 'a')
+    print >> f, "########################################"
+    print >> f, "Number of Fold: ", k
+    print >> f, "DC Splitter: ", which_splitter
+    print >> f, "Stopping metric: ", eval_name
+    print >> f, "Features: ", featurizer_list
+    print >> f, "Label used: ", label_name_list
+    print >> f, "Number of layer1 gbtree: ", num_gbtree
+    print >> f, "Number of layer1 gblinear: ", num_gblinear
+    print >> f, "Final model chosed from: ", my_final_model
+    print >> f, 'Train ROC AUC mean: ', np.mean(train_roc)
+    print >> f, 'Train ROC AUC std', np.std(train_roc)
+    print >> f, 'Validatoin ROC AUC mean: ', np.mean(val_roc)
+    print >> f, 'Validation ROC AUC std', np.std(val_roc)
+    print >> f, 'Test ROC AUC mean: ', np.mean(test_roc)
+    print >> f, 'Test ROC AUC std', np.std(test_roc)
+    print >> f, 'Train Precision mean: ', np.mean(train_precision)
+    print >> f, 'Train Precision std', np.std(train_precision)
+    print >> f, 'Validation Precision mean: ', np.mean(val_precision)
+    print >> f, 'Validation Precision std', np.std(val_precision)
+    print >> f, 'Test Precision mean: ', np.mean(test_precision)
+    print >> f, 'Test Precision std', np.std(test_precision)
+    print >> f, 'Train BEDROC AUC mean: ', np.mean(train_bedroc)
+    print >> f, 'Train BEDROC AUC std', np.std(train_bedroc)
+    print >> f, 'Validatoin BEDROC AUC mean: ', np.mean(val_bedroc)
+    print >> f, 'Validation BEDROC AUC std', np.std(val_bedroc)
+    print >> f, 'Test BEDROC AUC mean: ', np.mean(test_bedroc)
+    print >> f, 'Test BEDROC AUC std', np.std(test_bedroc)
+    print >> f, 'Train ef@0.01 mean: ', np.mean(train_efr1)
+    print >> f, 'Train ef@0.01 std', np.std(train_efr1)
+    print >> f, 'Validatoin ef@0.01 mean: ', np.mean(val_efr1)
+    print >> f, 'Validation ef@0.01 std', np.std(val_efr1)
+    print >> f, 'Test ef@0.01 mean: ', np.mean(test_efr1)
+    print >> f, 'Test ef@0.01 std', np.std(test_efr1)
+    print >> f, 'Train NEFAUC5 mean: ', np.mean(train_nefauc5)
+    print >> f, 'Train NEFAUC5 std', np.std(train_nefauc5)
+    print >> f, 'Validatoin NEFAUC5 mean: ', np.mean(val_nefauc5)
+    print >> f, 'Validation NEFAUC5 std', np.std(val_nefauc5)
+    print >> f, 'Test NEFAUC5 mean: ', np.mean(test_nefauc5)
+    print >> f, 'Test NEFAUC5 std', np.std(test_nefauc5)
+    print >> f, 'Test ef@0.01 mean: ', np.mean(test_ef01)
+    print >> f, 'Test ef@0.01 std', np.std(test_ef01)
+    print >> f, 'Test ef@0.02 mean: ', np.mean(test_ef02)
+    print >> f, 'Test ef@0.02 std', np.std(test_ef02)
+    print >> f, 'Test ef@0.0015 mean: ', np.mean(test_ef0015)
+    print >> f, 'Test ef@0.0015 std', np.std(test_ef0015)
+    print >> f, 'Test ef@0.001 mean: ', np.mean(test_ef001)
+    print >> f, 'Test ef@0.001 std', np.std(test_ef001)
+    f.close()
+
+def accumulate_result_EF(ef_metrics_list, y_test, y_pred_on_test, running_process):
+    EF_ratio_list = np.linspace(0.001, 0.15, 100)
+    ef_values = []
+    ef_max_values = []
+    model_name = []
+    my_running_process = []
+    EF_ratio_list_list = ef_metrics_list[0]
+    ef_values_list = ef_metrics_list[1]
+    ef_max_values_list = ef_metrics_list[2]
+    model_name_list = ef_metrics_list[3]
+    my_running_process_list = ef_metrics_list[4]
+    for EF_ratio in EF_ratio_list:
+        n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, EF_ratio)
+        ef_values.append(ef)
+        ef_max_values.append(ef_max)
+        model_name.append("LightChem_" + eval_name)
+        my_running_process.append(running_process)
+    EF_ratio_list_list.extend(EF_ratio_list)
+    ef_values_list.extend(ef_values)
+    ef_max_values_list.extend(ef_max_values)
+    model_name_list.extend(model_name)
+    my_running_process_list.extend(my_running_process)
+    running_process += 1
+    result_list = [EF_ratio_list_list,
+                    ef_values_list,
+                    ef_max_values_list,
+                    model_name_list,
+                    my_running_process_list]
+    return result_list, running_process
+
+def store_ef(ef_metrics_list, which_layer):
+    EF_ratio_list_list = ef_metrics_list[0]
+    ef_values_list = ef_metrics_list[1]
+    ef_max_values_list = ef_metrics_list[2]
+    model_name_list = ef_metrics_list[3]
+    my_running_process_list = ef_metrics_list[4]
+
+    # Store ef curve info
+    ef_curve_df = pd.DataFrame({'EF':ef_values_list,
+                                'EF max':ef_max_values_list,
+                                'EFR':EF_ratio_list_list,
+                                'model':model_name_list,
+                                'running process':my_running_process_list})
+    directory = "./result/"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    str1 = directory + 'EF_curve_' + start_date + '_' + which_layer + "_" + str(fold_num)
+    str2 = 'fold.csv'
+    ef_curve_df.to_csv(str1 + str2 , index = False)
 
 # Need to make sure relative directory has required datasets.
 # Need to download prive datasets from Tony's lab.
 start_date = time.strftime("%Y_%m_%d_%H")
 store_prediction = True
-
+which_splitter = "Tony's lab"
 #if __name__ == "__main__"
 for fold_num in [5]:
 
@@ -62,13 +285,19 @@ for fold_num in [5]:
     test_ef0015 = []
     test_ef001 = []
 
-    running_process = 0
-    EF_ratio_list_list = []
-    ef_values_list = []
-    ef_max_values_list = []
-    model_name_list = []
-    my_running_process_list = []
+    layer1_running_process = 0
+    layer2_running_process = 0
+    layer1_result_list = []
+    layer2_result_list = []
+    for i in range(19): # 19 = sum of eval metrics. See begining of accumulate_result()
+        layer1_result_list.append([])
+        layer2_result_list.append([])
 
+    layer1_result_ef_list = []
+    layer2_result_ef_list = []
+    for i in range(5):
+        layer1_result_ef_list.append([])
+        layer2_result_ef_list.append([])
 
     for j in range(k):
         start = time.time()
@@ -88,9 +317,11 @@ for fold_num in [5]:
         label_name_list = ['Keck_Pria_Hard_Thresholded','Keck_Pria_Continuous']#Keck_Pria_AS_Retest,Keck_Pria_Continuous
         #threshold = train_pd.loc[train_pd.loc[:,label_name_list[0]]==1,label_name_list[1]].min()
         eval_name = 'ROCAUC' + "_" + str(35)
-        my_final_model = 'layer2' # Best model only chosed from layer2
+        my_final_model_list = ['layer2','layer1']
         dir_to_store = './'
         featurizer_list = ['ECFP'] # ECFP, MACCSkeys
+        num_gblinear = 10
+        num_gbtree = 5
 
         preDefined_eval = defined_eval.definedEvaluation()
         preDefined_eval.validate_eval_name(eval_name)
@@ -149,236 +380,137 @@ for fold_num in [5]:
             testing_info = [comb2_test]
 
         print 'Building and selecting best model'
-        # Current VsEnsembleModel create test data by default
         model = VsEnsembleModel_keck(training_info,
                                      eval_name,
                                      fold_info = my_fold_index,
                                      createTestset = False,
-                                     finalModel = my_final_model)
+                                     num_gblinear = num_gblinear,
+                                     num_gbtree = num_gbtree,
+                                     nthread = 22)
         model.train()
-        cv_result = model.training_result()
-        all_results = model.detail_result()
+        for my_final_model in my_final_model_list:
+            model.set_final_model(my_final_model)
+            cv_result = model.training_result()
+            all_results = model.detail_result()
 
-        #cv_result.to_csv(dir_to_store + target_name + "_result.csv")
-        #all_results.to_csv(dir_to_store + target_name + "_result_allModels.csv")
+            #----------- Predict testset
+            print 'Predict test data'
+            y_pred_on_test = model.predict(testing_info)
+            y_pred_on_train = model.predict(training_info)
+            y_test = np.array(df_test['Keck_Pria_AS_Retest'])
+            y_train = np.array(comb1[0]['Keck_Pria_AS_Retest'])
+            validation_info = model.get_validation_info()
+            #---------- Use same evaluation functions
+            if not os.path.exists("./result"):
+                os.makedirs("./result")
 
-        #----------- Predict testset
-        print 'Predict test data'
-        y_pred_on_test = model.predict(testing_info)
-        y_pred_on_train = model.predict(training_info)
-        y_test = np.array(df_test['Keck_Pria_AS_Retest'])
-        y_train = np.array(comb1[0]['Keck_Pria_AS_Retest'])
-        validation_info = model.get_validation_info()
-        #---------- Use same evaluation functions
-        if not os.path.exists("./result"):
-            os.makedirs("./result")
+            for z,val in enumerate(validation_info):
+                str1 = './result/result_' + start_date + "_" + my_final_model + "_"
+                str2 = str(fold_num) + 'fold_test' + str(j) + '_' + str(z) +'.txt'
+                f = open(str1 + str2 , 'a')
+                print >> f, "########################################"
+                print >> f, "Number of Fold: ", k
+                print >> f, "Test file: ", j
+                print >> f, "Stopping metric: ", eval_name
+                print >> f, "Features: ", featurizer_list
+                print >> f, "Label used: ", label_name_list
+                print >> f, "Number of layer1 gbtree: ", num_gbtree
+                print >> f, "Number of layer1 gblinear: ", num_gblinear
+                print >> f, "Final model chosed from: ", my_final_model
+                print >> f, all_results
+                print >> f, cv_result
+                print >> f, " "
+                print >> f,('train precision: {}'.format(precision_auc_single(
+                            y_train, y_pred_on_train, mode='auc.sklearn')))
+                print >> f,('train roc: {}'.format(roc_auc_single(
+                            y_train, y_pred_on_train)))
+                print >> f,('train bedroc: {}'.format(bedroc_auc_single(
+                            reshape_data_into_2_dim(y_train),
+                            reshape_data_into_2_dim(y_pred_on_train))))
+                n_actives, ef, ef_max = enrichment_factor_single(y_train, y_pred_on_train, 0.01)
+                print >> f,('train EFR1: {}'.format(ef))
+                print >> f,('train nefauc5: {}'.format(
+                float(nef_auc(y_train,y_pred_on_train,np.linspace(0.001, .05, 10),['nefauc']).nefauc)))
 
-        for z,val in enumerate(validation_info):
-            str1 = './result/result_' + start_date + "_" + str(fold_num)
-            str2 = 'fold_test' + str(j) + '_' + str(z) +'.txt'
-            f = open(str1 + str2 , 'a')
-            print >> f, "########################################"
-            print >> f, "Number of Fold: ", k
-            print >> f, "Test file: ", j
-            print >> f, "Stopping metric: ", eval_name
-            print >> f, "Features: ", featurizer_list
-            print >> f, "Label used: ", label_name_list
-            print >> f, "Final model chosed from: ", my_final_model
-            print >> f, all_results
-            print >> f, cv_result
-            print >> f, " "
-            print >> f,('train precision: {}'.format(precision_auc_single(
-                        y_train, y_pred_on_train, mode='auc.sklearn')))
-            print >> f,('train roc: {}'.format(roc_auc_single(
-                        y_train, y_pred_on_train)))
-            print >> f,('train bedroc: {}'.format(bedroc_auc_single(
-                        reshape_data_into_2_dim(y_train),
-                        reshape_data_into_2_dim(y_pred_on_train))))
-            n_actives, ef, ef_max = enrichment_factor_single(y_train, y_pred_on_train, 0.01)
-            print >> f,('train EFR1: {}'.format(ef))
-            print >> f,('train nefauc5: {}'.format(
-            float(nef_auc(y_train,y_pred_on_train,np.linspace(0.001, .05, 10),['nefauc']).nefauc)))
+                print >> f, " "
+                print >> f,('validation precision : {}'.format(
+                         precision_auc_single(val.label, val.validation_pred,
+                         mode='auc.sklearn')))
+                print >> f,('validation roc : {}'.format(
+                         roc_auc_single(val.label, val.validation_pred)))
+                print >> f,('validation bedroc : {}'.format(
+                         bedroc_auc_single(reshape_data_into_2_dim(val.label),
+                         reshape_data_into_2_dim(val.validation_pred))))
+                n_actives, ef, ef_max = enrichment_factor_single(np.array(val.label),
+                                                                 np.array(val.validation_pred),
+                                                                 0.01)
+                print >> f,('validation EFR1: {}'.format(ef))
+                print >> f,('validation nefauc5 : {}'.format(
+                         float(nef_auc(val.label,val.validation_pred,np.linspace(0.001, .05, 10),['nefauc']).nefauc)))
 
-            print >> f, " "
-            print >> f,('validation precision : {}'.format(
-                     precision_auc_single(val.label, val.validation_pred,
-                     mode='auc.sklearn')))
-            print >> f,('validation roc : {}'.format(
-                     roc_auc_single(val.label, val.validation_pred)))
-            print >> f,('validation bedroc : {}'.format(
-                     bedroc_auc_single(reshape_data_into_2_dim(val.label),
-                     reshape_data_into_2_dim(val.validation_pred))))
-            n_actives, ef, ef_max = enrichment_factor_single(np.array(val.label),
-                                                             np.array(val.validation_pred),
-                                                             0.01)
-            print >> f,('validation EFR1: {}'.format(ef))
-            print >> f,('validation nefauc5 : {}'.format(
-                     float(nef_auc(val.label,val.validation_pred,np.linspace(0.001, .05, 10),['nefauc']).nefauc)))
+                print >> f, " "
+                print >> f,('test precision: {}'.format(precision_auc_single(
+                            y_test, y_pred_on_test,mode='auc.sklearn')))
+                print >> f,('test roc: {}'.format(roc_auc_single(
+                            y_test, y_pred_on_test)))
+                print >> f,('test bedroc: {}'.format(bedroc_auc_single(
+                            reshape_data_into_2_dim(y_test),
+                            reshape_data_into_2_dim(y_pred_on_test))))
+                n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
+                print >> f,('test EFR1: {}'.format(ef))
+                print >> f,('test nefauc5: {}'.format(
+                float(nef_auc(y_test,y_pred_on_test,np.linspace(0.001, .05, 10),['nefauc']).nefauc)))
+                print >> f, " "
 
-            print >> f, " "
-            print >> f,('test precision: {}'.format(precision_auc_single(
-                        y_test, y_pred_on_test,mode='auc.sklearn')))
-            print >> f,('test roc: {}'.format(roc_auc_single(
-                        y_test, y_pred_on_test)))
-            print >> f,('test bedroc: {}'.format(bedroc_auc_single(
-                        reshape_data_into_2_dim(y_test),
-                        reshape_data_into_2_dim(y_pred_on_test))))
-            n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
-            print >> f,('test EFR1: {}'.format(ef))
-            print >> f,('test nefauc5: {}'.format(
-            float(nef_auc(y_test,y_pred_on_test,np.linspace(0.001, .05, 10),['nefauc']).nefauc)))
-            print >> f, " "
+                EF_ratio_list = [0.02, 0.01, 0.0015, 0.001]
+                for EF_ratio in EF_ratio_list:
+                    n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, EF_ratio)
+                    print >> f,('ratio: {}, EF: {}, EF_max: {}\tactive: {}'.format(EF_ratio, ef, ef_max, n_actives))
 
-            EF_ratio_list = [0.02, 0.01, 0.0015, 0.001]
-            for EF_ratio in EF_ratio_list:
-                n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, EF_ratio)
-                print >> f,('ratio: {}, EF: {}, EF_max: {}\tactive: {}'.format(EF_ratio, ef, ef_max, n_actives))
+                end = time.time()
+                print >> f, 'time used: ', end - start
+                f.close()
 
-            end = time.time()
-            print >> f, 'time used: ', end - start
-            f.close()
+                if my_final_model == 'layer2':
+                    layer2_result_ef_list,layer2_running_process = accumulate_result_EF(layer2_result_ef_list,
+                                                                y_test, y_pred_on_test, layer2_running_process)
+                elif my_final_model == 'layer1':
+                    layer1_result_ef_list,layer1_running_process = accumulate_result_EF(layer1_result_ef_list,
+                                                                y_test, y_pred_on_test, layer1_running_process)
 
-            ### Accumulate ef curve info
-            EF_ratio_list = np.linspace(0.001, 0.15, 100)
-            ef_values = []
-            ef_max_values = []
-            model_name = []
-            my_running_process = []
-            for EF_ratio in EF_ratio_list:
-                n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, EF_ratio)
-                ef_values.append(ef)
-                ef_max_values.append(ef_max)
-                model_name.append("LightChem_" + eval_name)
-                my_running_process.append(running_process)
-            EF_ratio_list_list.extend(EF_ratio_list)
-            ef_values_list.extend(ef_values)
-            ef_max_values_list.extend(ef_max_values)
-            model_name_list.extend(model_name)
-            my_running_process_list.extend(my_running_process)
-            running_process += 1
-
-
-        # Accumulate results for each set. ex: 5fold, 4fold, 3fold.
-        # ROCAUC
-        train_roc.append(roc_auc_single(y_train, y_pred_on_train))
-        for i,val in enumerate(validation_info):
-            val_roc.append(roc_auc_single(val.label, val.validation_pred))
-        test_roc.append(roc_auc_single(y_test, y_pred_on_test))
-        # PRAUC
-        train_precision.append(precision_auc_single(y_train, y_pred_on_train, mode='auc.sklearn'))
-        for i,val in enumerate(validation_info):
-            val_precision.append(precision_auc_single(val.label, val.validation_pred,mode='auc.sklearn'))
-        test_precision.append(precision_auc_single(y_test, y_pred_on_test, mode='auc.sklearn'))
-        # BEDROC
-        train_bedroc.append(bedroc_auc_single(reshape_data_into_2_dim(y_train),
-                                              reshape_data_into_2_dim(y_pred_on_train)))
-        for i,val in enumerate(validation_info):
-            val_bedroc.append(bedroc_auc_single(reshape_data_into_2_dim(val.label),
-                                                reshape_data_into_2_dim(val.validation_pred)))
-        test_bedroc.append(bedroc_auc_single(reshape_data_into_2_dim(y_test),
-                                             reshape_data_into_2_dim(y_pred_on_test)))
-        # EFR1
-        n_actives, ef, ef_max = enrichment_factor_single(y_train, y_pred_on_train, 0.01)
-        train_efr1.append(ef)
-        for i,val in enumerate(validation_info):
-            n_actives, ef, ef_max = enrichment_factor_single(np.array(val.label),
-                                                             np.array(val.validation_pred),
-                                                             0.01)
-            val_efr1.append(ef)
-        n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
-        test_efr1.append(ef)
-        # NEFAUC5
-        train_nefauc5.append(
-        float(nef_auc(y_train,y_pred_on_train,np.linspace(0.001, .05, 10),['nefauc']).nefauc)
-        )
-        for i,val in enumerate(validation_info):
-            val_nefauc5.append(
-            float(nef_auc(val.label,val.validation_pred,np.linspace(0.001, .05, 10),['nefauc']).nefauc)
-            )
-        test_nefauc5.append(
-        float(nef_auc(y_test,y_pred_on_test,np.linspace(0.001, .05, 10),['nefauc']).nefauc)
-        )
+            # Store prediction scores.
+            if store_prediction:
+                base_dir = "./predictions/pred_" + start_date
+                directory = base_dir + "/" + my_final_model + "_" + str(fold_num) + 'fold' + "_" + "test" + str(j)
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                train = pd.DataFrame({'label':y_train,'train_pred':y_pred_on_train})
+                train.to_csv(directory + "/train_pred.csv", index = False)
+                for i,val in enumerate(validation_info):
+                    val.to_csv(directory + "/val_pred" + str(i) + ".csv", index = False)
+                test = pd.DataFrame({'label':y_test,'train_pred':y_pred_on_test})
+                test.to_csv(directory + "/test_pred.csv", index = False)
 
 
-        n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.01)
-        test_ef01.append(ef)
-        n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.02)
-        test_ef02.append(ef)
-        n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.0015)
-        test_ef0015.append(ef)
-        n_actives, ef, ef_max = enrichment_factor_single(y_test, y_pred_on_test, 0.001)
-        test_ef001.append(ef)
+            if my_final_model == 'layer2':
+                layer2_result_list = accumulate_result(layer2_result_list,
+                                                        y_train, y_pred_on_train,
+                                                        y_test, y_pred_on_test,
+                                                        validation_info)
+            elif my_final_model == 'layer1':
+                layer1_result_list = accumulate_result(layer1_result_list,
+                                                        y_train, y_pred_on_train,
+                                                        y_test, y_pred_on_test,
+                                                        validation_info)
 
-        # Store prediction scores.
-        if store_prediction:
-            base_dir = "./predictions/pred_" + start_date
-            directory = base_dir + "/" + str(fold_num) + 'fold' + "_" +"test" + str(j)
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            train = pd.DataFrame({'label':y_train,'train_pred':y_pred_on_train})
-            train.to_csv(directory + "/train_pred.csv", index = False)
-            for i,val in enumerate(validation_info):
-                val.to_csv(directory + "/val_pred" + str(i) + ".csv", index = False)
-            test = pd.DataFrame({'label':y_test,'train_pred':y_pred_on_test})
-            test.to_csv(directory + "/test_pred.csv", index = False)
-
-
-    f = open('./result/summary_' + start_date + "_" + str(fold_num) + 'fold.txt', 'a')
-    print >> f, "########################################"
-    print >> f, "Number of Fold: ", k
-    print >> f, "Stopping metric: ", eval_name
-    print >> f, "Features: ", featurizer_list
-    print >> f, "Label used: ", label_name_list
-    print >> f, "Final model chosed from: ", my_final_model
-    print >> f, 'Train ROC AUC mean: ', np.mean(train_roc)
-    print >> f, 'Train ROC AUC std', np.std(train_roc)
-    print >> f, 'Validatoin ROC AUC mean: ', np.mean(val_roc)
-    print >> f, 'Validation ROC AUC std', np.std(val_roc)
-    print >> f, 'Test ROC AUC mean: ', np.mean(test_roc)
-    print >> f, 'Test ROC AUC std', np.std(test_roc)
-    print >> f, 'Train Precision mean: ', np.mean(train_precision)
-    print >> f, 'Train Precision std', np.std(train_precision)
-    print >> f, 'Validation Precision mean: ', np.mean(val_precision)
-    print >> f, 'Validation Precision std', np.std(val_precision)
-    print >> f, 'Test Precision mean: ', np.mean(test_precision)
-    print >> f, 'Test Precision std', np.std(test_precision)
-    print >> f, 'Train BEDROC AUC mean: ', np.mean(train_bedroc)
-    print >> f, 'Train BEDROC AUC std', np.std(train_bedroc)
-    print >> f, 'Validatoin BEDROC AUC mean: ', np.mean(val_bedroc)
-    print >> f, 'Validation BEDROC AUC std', np.std(val_bedroc)
-    print >> f, 'Test BEDROC AUC mean: ', np.mean(test_bedroc)
-    print >> f, 'Test BEDROC AUC std', np.std(test_bedroc)
-    print >> f, 'Train ef@0.01 mean: ', np.mean(train_efr1)
-    print >> f, 'Train ef@0.01 std', np.std(train_efr1)
-    print >> f, 'Validatoin ef@0.01 mean: ', np.mean(val_efr1)
-    print >> f, 'Validation ef@0.01 std', np.std(val_efr1)
-    print >> f, 'Test ef@0.01 mean: ', np.mean(test_efr1)
-    print >> f, 'Test ef@0.01 std', np.std(test_efr1)
-    print >> f, 'Train NEFAUC5 mean: ', np.mean(train_nefauc5)
-    print >> f, 'Train NEFAUC5 std', np.std(train_nefauc5)
-    print >> f, 'Validatoin NEFAUC5 mean: ', np.mean(val_nefauc5)
-    print >> f, 'Validation NEFAUC5 std', np.std(val_nefauc5)
-    print >> f, 'Test NEFAUC5 mean: ', np.mean(test_nefauc5)
-    print >> f, 'Test NEFAUC5 std', np.std(test_nefauc5)
-    print >> f, 'Test ef@0.01 mean: ', np.mean(test_ef01)
-    print >> f, 'Test ef@0.01 std', np.std(test_ef01)
-    print >> f, 'Test ef@0.02 mean: ', np.mean(test_ef02)
-    print >> f, 'Test ef@0.02 std', np.std(test_ef02)
-    print >> f, 'Test ef@0.0015 mean: ', np.mean(test_ef0015)
-    print >> f, 'Test ef@0.0015 std', np.std(test_ef0015)
-    print >> f, 'Test ef@0.001 mean: ', np.mean(test_ef001)
-    print >> f, 'Test ef@0.001 std', np.std(test_ef001)
-    f.close()
-
-    # Store ef curve info
-    ef_curve_df = pd.DataFrame({'EF':ef_values_list,
-                                'EF max':ef_max_values_list,
-                                'EFR':EF_ratio_list_list,
-                                'model':model_name_list,
-                                'running process':my_running_process_list})
-    directory = "./result/"
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-    str1 = directory + 'EF_curve_' + start_date + '_' + str(fold_num)
-    str2 = 'fold.csv'
-    ef_curve_df.to_csv(str1 + str2 , index = False)
+    for my_final_model in my_final_model_list:
+        if my_final_model == 'layer1':
+            print_result(layer1_result_list, start_date, fold_num, k, which_splitter, eval_name,
+                            featurizer_list, label_name_list, my_final_model,
+                            num_gbtree, num_gblinear)
+            store_ef(layer1_result_ef_list, 'layer1')
+        elif my_final_model == 'layer2':
+            print_result(layer2_result_list, start_date, fold_num, k, which_splitter, eval_name,
+                            featurizer_list, label_name_list, my_final_model,
+                            num_gbtree, num_gblinear)
+            store_ef(layer2_result_ef_list, 'layer2')
