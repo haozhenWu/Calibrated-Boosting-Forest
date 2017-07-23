@@ -246,3 +246,46 @@ class firstLayerModel(object):
             temp = final.loc[final.loc[:,fold]==1,['label','validation_pred']]
             val_info.append(temp)
         return val_info
+
+    def variable_importance(self, feature_names=None):
+        """
+        Return average variable importance based on `gain`, `cover`, `weight`
+        as a pd.DataFrame. Sort by 'weight'.
+        Parameters:
+        -----------
+        feature_names: list
+            Original feature names before converting into array. Default `None`
+        """
+        n_feat = self.__xgbData.num_feature()
+        if feature_names == None:
+            feature_names = ["f_" + str(item) for item in range(n_feat)]
+        if not isinstance(self.__collect_model, list):
+            raise ValueError('You must call `xgb_cv` ',
+                             'before `variable_importance`')
+        if len(feature_names) != n_feat:
+            raise ValueError('Feature name length not equal')
+        if self.__param['booster'] == 'gblinear':
+            # Currently can only get feature importance from tree booster.
+            imp_all = pd.DataFrame()
+        elif self.__param['booster'] == 'gbtree':
+            name = feature_names
+            nfold = len(self.__collect_model)
+            has_imp = False
+            for i, model in enumerate(self.__collect_model):
+                imp = pd.DataFrame({"name":name,
+                                    "weight":np.repeat(0, len(name)),
+                                    "gain":np.repeat(0, len(name)),
+                                    "cover":np.repeat(0, len(name))})
+                for importance_type in ["weight", "gain", "cover"]:
+                    imp_score = model.get_score(importance_type=importance_type)
+                    for key in imp_score.iterkeys():
+                        pos = np.int(re.split("f", key)[1])
+                        imp.loc[pos, importance_type] = imp_score[key]
+                if has_imp:
+                    imp_all = pd.concat([imp_all, imp], axis=0)
+                else:
+                    imp_all = imp
+                    has_imp = True
+            imp_all = imp_all.groupby("name").mean()
+            imp_all = imp_all.sort_values("weight", ascending=False)
+        return imp_all
