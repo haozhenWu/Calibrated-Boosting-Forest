@@ -375,7 +375,10 @@ class VsEnsembleModel_keck(object):
             self.__finalModel = finalModel
         else:
             raise ValueError('finalModel should be `None`, `layer1` or `layer2`')
-        self.__prepare_result()
+        # This if is used prevent calling self.__prepare_result when first
+        # call __init__.
+        if len(self.__layer2_model_list) >= 1:
+            self.__prepare_result()
 
     def __determine_fold(self, fold_info):
         if isinstance(fold_info, pd.DataFrame):
