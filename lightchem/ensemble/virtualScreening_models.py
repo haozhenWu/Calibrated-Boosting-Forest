@@ -706,5 +706,5 @@ class VsEnsembleModel_keck(object):
         """
         Return variable importance
         """
+        self.__prepare_result()
         return self.__best_model.variable_importance()
-        
