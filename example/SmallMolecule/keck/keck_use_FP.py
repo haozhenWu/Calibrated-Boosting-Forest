@@ -241,11 +241,6 @@ def store_ef(ef_metrics_list, which_layer):
     str2 = 'fold.csv'
     ef_curve_df.to_csv(str1 + str2 , index = False)
 
-def print_full(df):
-    pd.set_option('display.max_rows', df.shape[0])
-    print(df)
-    pd.reset_option('display.max_rows')
-
 # Need to make sure relative directory has required datasets.
 # Need to download prive datasets from Tony's lab.
 start_date = time.strftime("%Y_%m_%d_%H")
