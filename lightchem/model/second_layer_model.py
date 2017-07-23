@@ -300,7 +300,7 @@ class secondLayerModel(object):
         if self.__param['booster'] == 'gblinear':
             # Currently can only get feature importance from tree booster.
             imp_all = pd.DataFrame()
-        else if self.__param['booster'] == 'gbtree':                
+        elif self.__param['booster'] == 'gbtree':                
             name = firstLayerModel_names
             nfold = len(self.__collect_model)
             has_imp = False
