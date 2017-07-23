@@ -375,6 +375,7 @@ class VsEnsembleModel_keck(object):
             self.__finalModel = finalModel
         else:
             raise ValueError('finalModel should be `None`, `layer1` or `layer2`')
+        self.__prepare_result()
 
     def __determine_fold(self, fold_info):
         if isinstance(fold_info, pd.DataFrame):
@@ -660,14 +661,12 @@ class VsEnsembleModel_keck(object):
     def training_result(self):
         if len(self.__layer1_model_list) == 0:
             raise ValueError('You must call `train` before `training_result`')
-        self.__prepare_result()
         return self.__best_model_result
 
     def detail_result(self):
         """
         Get detail training and testing result for each models.
         """
-        self.__prepare_result()
         return self.__all_model_result
 
     def predict(self,list_test_x):
@@ -706,5 +705,4 @@ class VsEnsembleModel_keck(object):
         """
         Return variable importance
         """
-        self.__prepare_result()
         return self.__best_model.variable_importance()
