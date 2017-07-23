@@ -701,3 +701,10 @@ class VsEnsembleModel_keck(object):
         for i,val in enumerate(validation_info):
             validation_info[i].label = temp[i].label
         return validation_info
+
+    def variable_importance(self):
+        """
+        Return variable importance
+        """
+        return self.__best_model.variable_importance()
+        

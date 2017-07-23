@@ -294,13 +294,13 @@ class secondLayerModel(object):
         as a pd.DataFrame. Sort by 'weight'.
         """
         firstLayerModel_names = [model.name for model in self.__list_firstLayerModel]
-        if not ininstance(self.__collect_model, list):
+        if not isinstance(self.__collect_model, list):
             raise ValueError('You must call `xgb_cv` ',
                              'before `variable_importance`')
         if self.__param['booster'] == 'gblinear':
             # Currently can only get feature importance from tree booster.
             imp_all = pd.DataFrame()
-        elif self.__param['booster'] == 'gbtree':                
+        elif self.__param['booster'] == 'gbtree':
             name = firstLayerModel_names
             nfold = len(self.__collect_model)
             has_imp = False
