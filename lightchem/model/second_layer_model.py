@@ -320,5 +320,5 @@ class secondLayerModel(object):
                     imp_all = imp
                     has_imp = True
             imp_all = imp_all.groupby("name").mean()
-            imp_all = imp_all.sort_values("weight", ascending=True)
+            imp_all = imp_all.sort_values("weight", ascending=False)
         return imp_all
