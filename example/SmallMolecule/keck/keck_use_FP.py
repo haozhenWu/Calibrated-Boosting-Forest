@@ -241,6 +241,11 @@ def store_ef(ef_metrics_list, which_layer):
     str2 = 'fold.csv'
     ef_curve_df.to_csv(str1 + str2 , index = False)
 
+def print_full(df):
+    pd.set_option('display.max_rows', df.shape[0])
+    print(df)
+    pd.reset_option('display.max_rows')
+
 # Need to make sure relative directory has required datasets.
 # Need to download prive datasets from Tony's lab.
 start_date = time.strftime("%Y_%m_%d_%H")
@@ -314,14 +319,27 @@ for fold_num in [5]:
         # Using lightchem
         target_name = 'KECK_Pria'
         smile_colname = 'SMILES'
-        label_name_list = ['Keck_Pria_Hard_Thresholded','Keck_Pria_Continuous']#Keck_Pria_AS_Retest,Keck_Pria_Continuous
-        #threshold = train_pd.loc[train_pd.loc[:,label_name_list[0]]==1,label_name_list[1]].min()
-        eval_name = 'ROCAUC' + "_" + str(35)
+
+        if target_name == 'KECK_Pria':
+            label_name_list = ['Keck_Pria_FP_data','Keck_Pria_Continuous']#Keck_Pria_Hard_Thresholded,Keck_Pria_Continuous
+            #label_name_list = ['Keck_Pria_AS_Retest', 'Keck_Pria_Continuous']
+            #threshold = train_pd.loc[train_pd.loc[:,label_name_list[0]]==1,label_name_list[1]].min()
+            eval_name = 'ROCAUC' + "_" + str(35)
+        elif target_name == 'KECK_RMI':
+            label_name_list = ['Keck_RMI_cdd', 'FP counts % inhibition']
+            #threshold = train_pd.loc[train_pd.loc[:,label_name_list[0]]==1,label_name_list[1]].min()
+            eval_name = 'ROCAUC' + "_" + str(9)
+            #na_index = np.array(np.isnan(train_pd.Keck_RMI_cdd))
+            #train_pd = train_pd.loc[~na_index]
+            #my_fold_index = my_fold_index.loc[~na_index]
+            train_pd = train_pd.fillna(0)
+            test_pd = test_pd.fillna(0)
+
         my_final_model_list = ['layer2','layer1']
         dir_to_store = './'
         featurizer_list = ['ECFP'] # ECFP, MACCSkeys
-        num_gblinear = 10
-        num_gbtree = 5
+        num_gbtree = 50
+        num_gblinear = 7
 
         preDefined_eval = defined_eval.definedEvaluation()
         preDefined_eval.validate_eval_name(eval_name)
@@ -386,7 +404,8 @@ for fold_num in [5]:
                                      createTestset = False,
                                      num_gblinear = num_gblinear,
                                      num_gbtree = num_gbtree,
-                                     nthread = 22)
+                                     layer2_modeltype = ['GblinearLogistic', 'GbtreeLogistic'],
+                                     nthread = 20)
         model.train()
         for my_final_model in my_final_model_list:
             model.set_final_model(my_final_model)
@@ -397,13 +416,13 @@ for fold_num in [5]:
             print 'Predict test data'
             y_pred_on_test = model.predict(testing_info)
             y_pred_on_train = model.predict(training_info)
-            y_test = np.array(df_test['Keck_Pria_AS_Retest'])
-            y_train = np.array(comb1[0]['Keck_Pria_AS_Retest'])
+            y_test = np.array(df_test[label_name_list[0]])
+            y_train = np.array(comb1[0][label_name_list[0]])
             validation_info = model.get_validation_info()
             #---------- Use same evaluation functions
             if not os.path.exists("./result"):
                 os.makedirs("./result")
-
+            pd.set_option('display.max_rows', all_results.shape[0])
             for z,val in enumerate(validation_info):
                 str1 = './result/result_' + start_date + "_" + my_final_model + "_"
                 str2 = str(fold_num) + 'fold_test' + str(j) + '_' + str(z) +'.txt'
@@ -470,7 +489,7 @@ for fold_num in [5]:
                 end = time.time()
                 print >> f, 'time used: ', end - start
                 f.close()
-
+                pd.reset_option('display.max_rows')
                 if my_final_model == 'layer2':
                     layer2_result_ef_list,layer2_running_process = accumulate_result_EF(layer2_result_ef_list,
                                                                 y_test, y_pred_on_test, layer2_running_process)
@@ -488,7 +507,7 @@ for fold_num in [5]:
                 train.to_csv(directory + "/train_pred.csv", index = False)
                 for i,val in enumerate(validation_info):
                     val.to_csv(directory + "/val_pred" + str(i) + ".csv", index = False)
-                test = pd.DataFrame({'label':y_test,'train_pred':y_pred_on_test})
+                test = pd.DataFrame({'label':y_test,'test_pred':y_pred_on_test})
                 test.to_csv(directory + "/test_pred.csv", index = False)
 
 
