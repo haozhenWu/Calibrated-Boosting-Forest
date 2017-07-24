@@ -138,3 +138,9 @@ class xgbData(object):
         if not isinstance(self.__train_label,np.ndarray):
             raise ValueError('You must call `build` before `get_holdoutLabel`')
         return self.__train_label
+
+    def num_feature(self):
+        """
+        Return number of features
+        """
+        return self.__all_x.shape[1]
