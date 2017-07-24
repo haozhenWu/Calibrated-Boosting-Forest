@@ -305,7 +305,7 @@ class VsEnsembleModel_keck(object):
     Wrapper class to build ensemble models structure for KECK dataset.
     """
     def __init__(self,training_info,eval_name,fold_info = 4,createTestset = True,
-                    finalModel = None, num_gblinear = 1, num_gbtree = 1,
+                    finalModel = None, num_gblinear = [1,1], num_gbtree = [1,1],
                     layer2_modeltype = ['GbtreeLogistic','GblinearLogistic'],
                     nthread = -1, seed = 2016,verbose = False):
         """
@@ -339,12 +339,12 @@ class VsEnsembleModel_keck(object):
                   layer2 model ready.
           layer2: Only select best layer2 model as final model. Sometimes layer1
                   models perform better than layer2 models.
-        num_gblinear: integer
-          Number of hyper-parameter sets to generate for each first layer
-            gblinear model.
-        num_gbtree: integer
-          Number of hyper-parameter sets to generate for each first layer
-            gbtree model.
+        num_gblinear: list
+          List contains two integer, corresponds to number of hyper-parameter
+            sets to generate for layer1 and layer2 gblinear model.
+        num_gbtree: list
+          List contains two integer, corresponds to number of hyper-parameter
+            sets to generate for layer1 and layer2 gbtree model.
         """
         self.__training_info = training_info
         self.__check_labelType()
@@ -464,9 +464,9 @@ class VsEnsembleModel_keck(object):
                 for model_type in data_dict['model_type']:
                     num_sets = 1
                     if 'tree' in model_type:
-                        num_sets = self.__num_gbtree
+                        num_sets = self.__num_gbtree[0]
                     elif 'linear' in model_type:
-                        num_sets = self.__num_gblinear
+                        num_sets = self.__num_gblinear[0]
                     for k in range(num_sets):
                         self.__test_data.append(temp_data)
             assert len(self.__test_data) == len(self.__layer1_model_list)
@@ -506,11 +506,11 @@ class VsEnsembleModel_keck(object):
                 num_sets = 1
                 param_sets = {}
                 if 'tree' in model_type:
-                    num_sets = self.__num_gbtree
+                    num_sets = self.__num_gbtree[0]
                     param_sets = hyper_parameter.paramGenerator(model_type,
                                                                 num_sets, self.seed)
                 elif 'linear' in model_type:
-                    num_sets = self.__num_gblinear
+                    num_sets = self.__num_gblinear[0]
                     param_sets = hyper_parameter.paramGenerator(model_type,
                                                                 num_sets, self.seed)
                 # Build model based on each hyper-parameter set
@@ -542,11 +542,11 @@ class VsEnsembleModel_keck(object):
                 num_sets = 1
                 param_sets = {}
                 if 'tree' in model_type:
-                    num_sets = self.__num_gbtree
+                    num_sets = self.__num_gbtree[1]
                     param_sets = hyper_parameter.paramGenerator(model_type,
                                                                 num_sets, self.seed)
                 elif 'linear' in model_type:
-                    num_sets = self.__num_gblinear
+                    num_sets = self.__num_gblinear[1]
                     param_sets = hyper_parameter.paramGenerator(model_type,
                                                                 num_sets, self.seed)
                 # Build model based on each hyper-parameter set
