@@ -333,8 +333,8 @@ for fold_num in [5]:
         my_final_model_list = ['layer2','layer1']
         dir_to_store = './'
         featurizer_list = ['ECFP'] # ECFP, MACCSkeys
-        num_gbtree = [15, 450]
-        num_gblinear = [7, 100]
+        num_gbtree = [15, 225]
+        num_gblinear = [7, 50]
 
         preDefined_eval = defined_eval.definedEvaluation()
         preDefined_eval.validate_eval_name(eval_name)
