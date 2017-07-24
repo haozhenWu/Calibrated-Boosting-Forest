@@ -507,12 +507,12 @@ class VsEnsembleModel_keck(object):
                 param_sets = {}
                 if 'tree' in model_type:
                     num_sets = self.__num_gbtree[0]
-                    param_sets = hyper_parameter.paramGenerator(model_type,
-                                                                num_sets, self.seed)
+                    param_sets = hyper_parameter.paramGenerator(model_type, num_sets,
+                                                                'layer1', self.seed)
                 elif 'linear' in model_type:
                     num_sets = self.__num_gblinear[0]
-                    param_sets = hyper_parameter.paramGenerator(model_type,
-                                                                num_sets, self.seed)
+                    param_sets = hyper_parameter.paramGenerator(model_type, num_sets,
+                                                                'layer1', self.seed)
                 # Build model based on each hyper-parameter set
                 for i in range(num_sets):
                     unique_name_p1 = 'layer1_' + data_dict['data_name'] + '_'
@@ -543,12 +543,12 @@ class VsEnsembleModel_keck(object):
                 param_sets = {}
                 if 'tree' in model_type:
                     num_sets = self.__num_gbtree[1]
-                    param_sets = hyper_parameter.paramGenerator(model_type,
-                                                                num_sets, self.seed)
+                    param_sets = hyper_parameter.paramGenerator(model_type, num_sets,
+                                                                'layer2', self.seed)
                 elif 'linear' in model_type:
                     num_sets = self.__num_gblinear[1]
-                    param_sets = hyper_parameter.paramGenerator(model_type,
-                                                                num_sets, self.seed)
+                    param_sets = hyper_parameter.paramGenerator(model_type, num_sets,
+                                                                'layer2', self.seed)
                 # Build model based on each hyper-parameter set
                 for i in range(num_sets):
                     unique_name_p1 = 'layer2' + '_' + model_type + '_' + evaluation_metric_name
