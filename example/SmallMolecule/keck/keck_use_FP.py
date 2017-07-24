@@ -333,8 +333,8 @@ for fold_num in [5]:
         my_final_model_list = ['layer2','layer1']
         dir_to_store = './'
         featurizer_list = ['ECFP'] # ECFP, MACCSkeys
-        num_gbtree = 50
-        num_gblinear = 7
+        num_gbtree = [15, 450]
+        num_gblinear = [7, 100]
 
         preDefined_eval = defined_eval.definedEvaluation()
         preDefined_eval.validate_eval_name(eval_name)
@@ -399,7 +399,7 @@ for fold_num in [5]:
                                      createTestset = False,
                                      num_gblinear = num_gblinear,
                                      num_gbtree = num_gbtree,
-                                     layer2_modeltype = ['GblinearLogistic', 'GbtreeLogistic'],
+                                     layer2_modeltype = ['GbtreeLogistic', 'GblinearLogistic'],
                                      nthread = 20)
         model.train()
         for my_final_model in my_final_model_list:
