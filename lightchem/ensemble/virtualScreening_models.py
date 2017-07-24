@@ -578,6 +578,7 @@ class VsEnsembleModel_keck(object):
                     l2model.update_param(params,default_MAXIMIZE,default_STOPPING_ROUND)
                     l2model.xgb_cv()
                     self.__layer2_model_list.append(l2model)
+        self.__prepare_result()
 
 
     def __prepare_result(self):
