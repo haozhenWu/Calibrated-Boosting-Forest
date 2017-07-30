@@ -64,4 +64,4 @@ def compute_AEF(labels_arr, scores_arr, max_percentile):
         aef = np.nanmean(aef)
     else:
         aef = 'ND'
-    return 'AEF', aef
+    return aef
