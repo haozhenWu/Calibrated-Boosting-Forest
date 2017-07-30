@@ -59,9 +59,6 @@ def compute_AEF(labels_arr, scores_arr, max_percentile):
     is max_percentile
     '''
     if len(np.unique(labels_arr)) == 2:
-        # Check infinite, NaN. Convert to 0.
-        index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
-        preds[index] = 0
         percentile_list = np.linspace(0, max_percentile, 10)
         aef = util.enrichment_factor(labels_arr, scores_arr, percentile_list)
         aef = np.nanmean(aef)
