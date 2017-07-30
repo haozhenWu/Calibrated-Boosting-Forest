@@ -52,3 +52,19 @@ def compute_NEF_auc(labels_arr, scores_arr, max_percentile):
     else:
         auc = 'ND'
     return auc
+
+def compute_AEF(labels_arr, scores_arr, max_percentile):
+    '''
+    Return average enrichment factor at multiple threshold where max threshold
+    is max_percentile
+    '''
+    if len(np.unique(labels_arr)) == 2:
+        # Check infinite, NaN. Convert to 0.
+        index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
+        preds[index] = 0
+        percentile_list = np.linspace(0, max_percentile, 10)
+        aef = util.enrichment_factor(labels_arr, scores_arr, percentile_list)
+        aef = np.nanmean(aef)
+    else:
+        aef = 'ND'
+    return 'AEF', aef

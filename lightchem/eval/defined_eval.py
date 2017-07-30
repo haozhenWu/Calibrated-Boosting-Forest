@@ -24,7 +24,8 @@ class definedEvaluation(object):
         pre-defined evaluation metric name and X is the threshold to cut.
     """
     def __init__(self):
-        self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015','NEFAUC25','NEFAUC5']
+        self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015','NEFAUC25',
+                                'NEFAUC5','AEF5']
         self.__MATCH =  {'ROCAUC' : [xgb_eval.evalrocauc,True,100],
                         'PRAUC' :   [xgb_eval.evalprauc,True,300],
                         'EFR1' : [xgb_eval.evalefr1,True,50],
