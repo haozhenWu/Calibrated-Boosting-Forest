@@ -19,20 +19,22 @@ class definedEvaluation(object):
             range between 0.001 and 0.05
         `AEF5`: Average Enrichement factor at multiple threshold,
             max(threshold) = 0.05
+        `Logloss`: Logistic loss for binary label
     If passing user-specific threshold to intervally convert continuous label
         into binary label, use the format evalname_X where evalname is a
         pre-defined evaluation metric name and X is the threshold to cut.
     """
     def __init__(self):
         self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015','NEFAUC25',
-                                'NEFAUC5','AEF5']
+                                'NEFAUC5','AEF5', 'Logloss']
         self.__MATCH =  {'ROCAUC' : [xgb_eval.evalrocauc,True,100],
                         'PRAUC' :   [xgb_eval.evalprauc,True,300],
                         'EFR1' : [xgb_eval.evalefr1,True,50],
                         'EFR015' : [xgb_eval.evalefr015,True,50],
                         'NEFAUC25': [xgb_eval.evalNEFauc25,True,100],
                         'NEFAUC5': [xgb_eval.evalNEFauc5,True,100],
-                        'AEF5': [xgb_eval.evalAEF5,True,100]}
+                        'AEF5': [xgb_eval.evalAEF5,True,100],
+                        'Logloss': [xgb_eval.evalLogloss,False,100]}
 
     def __check_cut_value(self,name):
         eval_cut = re.split("_", name)

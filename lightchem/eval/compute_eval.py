@@ -65,3 +65,10 @@ def compute_AEF(labels_arr, scores_arr, max_percentile):
     else:
         aef = 'ND'
     return aef
+
+def compute_Logloss(labels_arr, scores_arr):
+    '''
+    Calculate the logistic loss for binary label
+    '''
+    logloss = np.sum(-(labels_arr*np.log(scores_arr) + (1-labels_arr)*np.log(1-scores_arr)))
+    return logloss
