@@ -199,9 +199,9 @@ def evalLogloss(preds, dtrain, cut=None):
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
         # normalize prediction into 0 and 1
-        preds_new = (preds - min(preds)) / (max(preds) - min(preds))
+        preds = (preds - min(preds)) / (max(preds) - min(preds))
 
     labels_arr = labels
-    scores_arr = preds_new
+    scores_arr = preds
     logloss = np.sum(-(labels_arr*np.log(scores_arr) + (1-labels_arr)*np.log(1-scores_arr)))
     return 'Logloss', logloss
