@@ -70,5 +70,8 @@ def compute_Logloss(labels_arr, scores_arr):
     '''
     Calculate the logistic loss for binary label
     '''
+    if max(scores_arr) - min(scores_arr) > 1:
+        # normalize prediction into 0 and 1
+        scores_arr = (scores_arr - min(scores_arr)) / (max(scores_arr) - min(scores_arr))
     logloss = np.sum(-(labels_arr*np.log(scores_arr) + (1-labels_arr)*np.log(1-scores_arr)))
     return logloss
