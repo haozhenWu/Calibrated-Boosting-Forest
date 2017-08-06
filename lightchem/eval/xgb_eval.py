@@ -43,8 +43,11 @@ def evalprauc(preds, dtrain, cut=None):
                 cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
+    prauc = metrics.average_precision_score(labels, preds)
+    if len(np.unique(preds)) <= 128:
+        prauc = 0
     # use sklearn.metrics to compute prauc
-    return 'PRAUC', metrics.average_precision_score( labels, preds )
+    return 'PRAUC', prauc
 
 def evalefr1(preds, dtrain, cut=None):
     '''
