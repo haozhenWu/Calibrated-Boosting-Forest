@@ -34,8 +34,7 @@ def test_muv_function():
     SEED = 2016
     #----------------------------------- Build first layer data
     print '{}: loading data'.format(target_name)
-    #current_dir = os.path.dirname(os.path.realpath(__file__))
-    current_dir = "./"
+    current_dir = os.path.dirname(os.path.realpath(__file__))
     setting_list = []
     # binary ecfp1024
     file_dir = os.path.join(current_dir,
