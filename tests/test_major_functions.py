@@ -62,6 +62,10 @@ def test_muv_function():
     myfold = myfold.generate_skfolds()
     result_dir = tempfile.mkdtemp()
     myfold.to_csv(os.path.join(result_dir,'fold_all.csv'))
+    # debug
+    print myfold.shape
+    print head(myfold)
+    #
     # check whether stratified 4 folds are the same
     assert filecmp.cmp(os.path.join(result_dir,'fold_all.csv'),
     os.path.join(current_dir,"./test_datasets/muv_sample/muv466_folds_all.csv"))
