@@ -200,11 +200,11 @@ def test_muv_function():
     # rocauc
     temp_combine = pd.DataFrame({'old' : old.ROCAUC,'new':cv_result.reset_index().ROCAUC})
     print rmse(temp_combine.new - temp_combine.old)
-    assert rmse(temp_combine.new - temp_combine.old) < 0.01
+    assert rmse(temp_combine.new - temp_combine.old) < 0.05
     # EFR1
     temp_combine = pd.DataFrame({'old' : old.EFR1,'new':cv_result.reset_index().EFR1})
     print rmse(temp_combine.new - temp_combine.old)
-    assert rmse(temp_combine.new - temp_combine.old) < 1
+    assert rmse(temp_combine.new - temp_combine.old) < 3
 
     #------------------------------------ evaluate model performance on test data
     # prepare test data, retrive from layer1 data
@@ -234,8 +234,8 @@ def test_muv_function():
     # rocauc
     temp_combine = pd.DataFrame({'old' : old.ROCAUC,'new':result.reset_index().ROCAUC})
     print rmse(temp_combine.new - temp_combine.old)
-    assert rmse(temp_combine.new - temp_combine.old) < 0.1
+    assert rmse(temp_combine.new - temp_combine.old) < 0.05
     # EFR1
     temp_combine = pd.DataFrame({'old' : old.EFR1,'new':result.reset_index().EFR1})
     print rmse(temp_combine.new - temp_combine.old)
-    assert rmse(temp_combine.new - temp_combine.old) < 10
+    assert rmse(temp_combine.new - temp_combine.old) < 1
