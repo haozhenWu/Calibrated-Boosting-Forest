@@ -52,3 +52,36 @@ def compute_NEF_auc(labels_arr, scores_arr, max_percentile):
     else:
         auc = 'ND'
     return auc
+
+def compute_AEF(labels_arr, scores_arr, max_percentile):
+    '''
+    Return average enrichment factor at multiple threshold where max threshold
+    is max_percentile
+    '''
+    if len(np.unique(labels_arr)) == 2:
+        percentile_list = np.linspace(0, max_percentile, 10)
+        aef = util.enrichment_factor(labels_arr, scores_arr, percentile_list)
+        aef = np.nanmean(aef)
+    else:
+        aef = 'ND'
+    return aef
+
+def compute_Logloss(labels_arr, scores_arr):
+    '''
+    Calculate the logistic loss for binary label
+    '''
+    if max(scores_arr) - min(scores_arr) > 1:
+        # normalize prediction into 0 and 1
+        scores_arr = (scores_arr - min(scores_arr)) / (max(scores_arr) - min(scores_arr))
+    logloss = np.sum(-(labels_arr*np.log(scores_arr) + (1-labels_arr)*np.log(1-scores_arr)))
+    return logloss
+
+def compute_ReliabilityScore(labels_arr, scores_arr):
+    '''
+    Calculate the Reliability Scores for binary label
+    '''
+    if max(scores_arr) - min(scores_arr) > 1:
+        # normalize prediction into 0 and 1
+        scores_arr = (scores_arr - min(scores_arr)) / (max(scores_arr) - min(scores_arr))
+    rs = util.reliability_score(labels_arr, scores_arr, n_bin=20)
+    return rs

@@ -21,7 +21,6 @@ import filecmp
 import xgboost
 
 target_name = 'MUV-466'
-#dir_to_store_result
 dataset_name = 'muv'
 
 def rmse(series):
@@ -53,6 +52,12 @@ def test_muv_function():
     assert y_data.shape == (93127,)
     # check label positive number
     assert y_data.sum() == 27
+    # Only use portion of data to build model
+    index = list(np.where(y_data==1)[0])
+    index = index + range(1000)
+    X_data = X_data[index]
+    y_data = y_data[index]
+
     myfold = fold.fold(X_data,y_data,4,SEED)
     myfold = myfold.generate_skfolds()
     result_dir = tempfile.mkdtemp()
@@ -77,7 +82,6 @@ def test_muv_function():
     setting_list.append({'data_name':data_name,'model_type':model_name_to_use,
                         'data':data})
 
-
     # binary MACCSkeys
     file_dir = os.path.join(current_dir,
                             "./test_datasets/muv_sample/muv466_macckey.csv.zip")
@@ -88,6 +92,8 @@ def test_muv_function():
     temp_data.read()
     X_data = temp_data.features()
     y_data = temp_data.label()
+    X_data = X_data[index]
+    y_data = y_data[index]
     data = xgb_data.xgbData(myfold,X_data,y_data)
     data.build()
     setting_list.append({'data_name':data_name,'model_type':model_name_to_use,
@@ -109,13 +115,13 @@ def test_muv_function():
             default_param['seed'] = SEED
             # Default parameters overfit muv dataset, use more conservative param.
             if model_type == 'GbtreeLogistic':
-                default_param['eta'] = 0.03
+                default_param['eta'] = 0.3
                 default_param['max_depth'] = 5
                 default_param['colsample_bytree'] = 0.5
                 default_param['min_child_weight'] = 2
             elif model_type == 'GblinearLogistic':
-                default_param['eta'] = 0.1
-
+                default_param['eta'] = 0.3
+            default_STOPPING_ROUND = 10
             model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
             model.xgb_cv()
             model.generate_holdout_pred()
@@ -134,10 +140,6 @@ def test_muv_function():
     temp_combine = pd.DataFrame({'old' : old.ROCAUC,'new':cv_result.reset_index().ROCAUC})
     print rmse(temp_combine.new - temp_combine.old)
     assert rmse(temp_combine.new - temp_combine.old) < 0.05
-#    assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_cvScore.csv'),
-#    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_cvScore.csv"),
-#                      shallow=False)
-
     # check whether holdout results of first layer model are same, round to THIRD decimal.
     holdout_result = pd.DataFrame({layer1_model_list[0].name : layer1_model_list[0].get_holdout(),
                                     layer1_model_list[1].name : layer1_model_list[1].get_holdout(),
@@ -146,15 +148,11 @@ def test_muv_function():
     holdout_result = np.round(holdout_result,3)
     old = pd.read_csv(os.path.join(current_dir,
     "./test_datasets/muv_sample/muv466_firstlayerModel_holdout.csv"))
-    #holdout_result.to_csv(os.path.join(result_dir,'firstlayerModel_holdout.csv'))
     # check each model's holdout prediction.
     for colname in holdout_result.columns:
         print colname
         print rmse(old[colname]-holdout_result[colname])
-        assert rmse(old[colname]-holdout_result[colname]) <0.01
-#    assert filecmp.cmp(os.path.join(result_dir,'firstlayerModel_holdout.csv'),
-#    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_firstlayerModel_holdout.csv"))
-
+        assert rmse(old[colname]-holdout_result[colname]) <0.15
 
     #------------------------------------second layer models
     # use label from binary data to train layer2 models
@@ -175,13 +173,13 @@ def test_muv_function():
             default_param['seed'] = SEED
             # Default parameters overfit muv dataset, use more conservative param.
             if model_type == 'GbtreeLogistic':
-                default_param['eta'] = 0.06
+                default_param['eta'] = 0.3
                 default_param['max_depth'] = 5
                 default_param['colsample_bytree'] = 0.5
                 default_param['min_child_weight'] = 2
             elif model_type == 'GblinearLogistic':
-                default_param['eta'] = 0.12
-
+                default_param['eta'] = 0.3
+            default_STOPPING_ROUND = 10
             l2model.update_param(default_param,default_MAXIMIZE,default_STOPPING_ROUND)
             l2model.xgb_cv()
             layer2_model_list.append(l2model)
@@ -198,16 +196,11 @@ def test_muv_function():
     # rocauc
     temp_combine = pd.DataFrame({'old' : old.ROCAUC,'new':cv_result.reset_index().ROCAUC})
     print rmse(temp_combine.new - temp_combine.old)
-    assert rmse(temp_combine.new - temp_combine.old) < 0.1
+    assert rmse(temp_combine.new - temp_combine.old) < 0.05
     # EFR1
     temp_combine = pd.DataFrame({'old' : old.EFR1,'new':cv_result.reset_index().EFR1})
     print rmse(temp_combine.new - temp_combine.old)
-    assert rmse(temp_combine.new - temp_combine.old) < 10
-
-#    cv_result.to_csv(os.path.join(result_dir,'secondlayerModel_cvScore.csv'))
-#    assert filecmp.cmp(os.path.join(result_dir,'secondlayerModel_cvScore.csv'),
-#    os.path.join(current_dir,"./test_datasets/muv_sample/muv466_secondlayerModel_cvScore.csv"))
-
+    assert rmse(temp_combine.new - temp_combine.old) < 5
 
     #------------------------------------ evaluate model performance on test data
     # prepare test data, retrive from layer1 data
@@ -218,7 +211,6 @@ def test_muv_function():
             list_TestData.append(data_dict['data'].get_dtest())
 
     test_label = layer2_label_data.get_testLabel()
-
     test_result_list = []
     i = 0
     for evaluation_metric_name in layer2_evaluation_metric_name:
@@ -228,7 +220,6 @@ def test_muv_function():
                                                     evaluation_metric_name)
             test_result_list.append(test_result)
             i += 1
-
     # collect test result
     result = pd.concat(test_result_list,axis = 0,ignore_index=False)
     result = np.round(result,3)
@@ -239,12 +230,8 @@ def test_muv_function():
     # rocauc
     temp_combine = pd.DataFrame({'old' : old.ROCAUC,'new':result.reset_index().ROCAUC})
     print rmse(temp_combine.new - temp_combine.old)
-    assert rmse(temp_combine.new - temp_combine.old) < 0.1
+    assert rmse(temp_combine.new - temp_combine.old) < 0.05
     # EFR1
     temp_combine = pd.DataFrame({'old' : old.EFR1,'new':result.reset_index().EFR1})
     print rmse(temp_combine.new - temp_combine.old)
-    assert rmse(temp_combine.new - temp_combine.old) < 10
-
-    #result.to_csv(os.path.join(result_dir,'testResult_all.csv'))
-    #assert filecmp.cmp(os.path.join(result_dir,'testResult_all.csv'),
-    #os.path.join(current_dir,"./test_datasets/muv_sample/muv466_testResult_all.csv"))
+    assert rmse(temp_combine.new - temp_combine.old) < 1

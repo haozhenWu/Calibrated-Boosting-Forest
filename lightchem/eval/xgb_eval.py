@@ -43,8 +43,11 @@ def evalprauc(preds, dtrain, cut=None):
                 cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
+    prauc = metrics.average_precision_score(labels, preds)
+    if len(np.unique(preds)) <= 128:
+        prauc = 0
     # use sklearn.metrics to compute prauc
-    return 'PRAUC', metrics.average_precision_score( labels, preds )
+    return 'PRAUC', prauc
 
 def evalefr1(preds, dtrain, cut=None):
     '''
@@ -184,3 +187,43 @@ def evalAEF5(preds, dtrain, cut=None):
     if len(np.unique(preds)) <= 128:
         aef = 0
     return 'AEF', aef
+
+def evalLogloss(preds, dtrain, cut=None):
+    # Check infinite, NaN. Convert to 0.
+    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
+    preds[index] = 0
+    labels = dtrain.get_label()
+    unique = np.unique(labels)
+    if len(unique) > 2: # which means it is continuous label
+        if cut == None:
+            cut = np.percentile(labels,99)
+            if cut == unique[0]:
+                cut = unique[1]
+        labels[np.where(dtrain.get_label()>cut)] = 1
+        labels[np.where(dtrain.get_label()<=cut)] = 0
+        # normalize prediction into 0 and 1
+        preds = (preds - min(preds)) / (max(preds) - min(preds))
+
+    labels_arr = labels
+    scores_arr = preds
+    logloss = np.sum(-(labels_arr*np.log(scores_arr) + (1-labels_arr)*np.log(1-scores_arr)))
+    return 'Logloss', logloss
+
+def evalReliabilityScore(preds, dtrain, cut=None):
+    # Check infinite, NaN. Convert to 0.
+    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
+    preds[index] = 0
+    labels = dtrain.get_label()
+    unique = np.unique(labels)
+    if len(unique) > 2: # which means it is continuous label
+        if cut == None:
+            cut = np.percentile(labels,99)
+            if cut == unique[0]:
+                cut = unique[1]
+        labels[np.where(dtrain.get_label()>cut)] = 1
+        labels[np.where(dtrain.get_label()<=cut)] = 0
+        # normalize prediction into 0 and 1
+        preds = (preds - min(preds)) / (max(preds) - min(preds))
+
+    rs = util.reliability_score(labels, preds, n_bin=20)
+    return "ReliabilityScore", rs

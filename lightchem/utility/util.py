@@ -70,6 +70,23 @@ def reverse_generate_fold_index(whole_df, file_path, fold_num, join_on):
     fold_index = fold_index.loc[:,fold_names]
     return fold_index
 
+def reliability_score(y_true, y_pred, n_bin=20):
+    """
+    Implementation of Reliability score that measure the quality of predicted
+    probabilities.
+    """
+    df = pd.DataFrame({"label":y_true, "prediction":y_pred})
+    df = df.loc[:, ["label", "prediction"]]
+    df = df.sort_values("prediction")
+    length = df.shape[0] / n_bin
+    reminder = df.shape[0] % n_bin
+    bins = list(np.repeat(range(1,n_bin+1),length))
+    bins = bins + list(np.repeat(n_bin, reminder))
+    df['categories'] = bins
+    df = df.groupby('categories').mean() / df.loc[:,"label"].mean()
+    diff = np.nanmean(abs(df.loc[:, "prediction"] - df.loc[:, "label"]))
+    return diff
+
 ###### Utilities for calculating Normalized Enrichment factor AUC.
 # Original codes of below Utilities come from Gitter's lab @UW-Madison
 # Modified by Haozhen Wu. Vectorized some codes to improve speed.
