@@ -54,7 +54,7 @@ def test_muv_function():
     assert y_data.sum() == 27
     # Only use portion of data to build model
     index = list(np.where(y_data==1)[0])
-    index = index + range(500)
+    index = index + range(1000)
     X_data = X_data[index]
     y_data = y_data[index]
 
@@ -62,10 +62,6 @@ def test_muv_function():
     myfold = myfold.generate_skfolds()
     result_dir = tempfile.mkdtemp()
     myfold.to_csv(os.path.join(result_dir,'fold_all.csv'))
-    # debug
-    print myfold.shape
-    print myfold.head()
-    #
     # check whether stratified 4 folds are the same
     assert filecmp.cmp(os.path.join(result_dir,'fold_all.csv'),
     os.path.join(current_dir,"./test_datasets/muv_sample/muv466_folds_all.csv"))
