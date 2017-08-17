@@ -145,7 +145,7 @@ def nef_auc(y_true, y_pred, perc_vec):
     """
     Returns nef auc value.
     """
-    nef_mat  = norm_enrichment_factor(y_true, y_pred, perc_vec)
+    nef_mat = norm_enrichment_factor(y_true, y_pred, perc_vec)
     nef_auc_arr = auc(perc_vec, nef_mat)
     return nef_auc_arr / max(perc_vec)
 ###########
