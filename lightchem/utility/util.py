@@ -149,3 +149,18 @@ def nef_auc(y_true, y_pred, perc_vec):
     nef_auc_arr = auc(perc_vec, nef_mat)
     return nef_auc_arr / max(perc_vec)
 ###########
+
+def __normalize_Logloss(input_arr):
+    if max(input_arr) - min(input_arr) > 1:
+        # normalize prediction into (0,1)
+        input_arr = (input_arr - min(input_arr)) / (max(input_arr) - min(input_arr))
+        input_arr[np.where(input_arr==0)] = 0.000001
+        input_arr[np.where(input_arr==1)] = 0.999999
+    return input_arr
+
+def __normalize_minMax(input_arr):
+    if max(input_arr) - min(input_arr) > 1:
+        # normalize prediction into [0,1]
+        input_arr = (input_arr - min(input_arr)) / (max(input_arr) - min(input_arr))
+    return input_arr
+    
