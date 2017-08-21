@@ -1,11 +1,6 @@
 from lightchem.eval.defined_eval import definedEvaluation
 import numpy as np
 
-np.random.seed(2017)
-bin_pred = np.random.normal(0.5,0.2,2000)
-dtrain_cont = pseudo_dtrain("continuous")
-dtrain_bin = pseudo_dtrain("bin")
-
 # Testing pass contious label into evalutaion functions that required binary labels.
 class pseudo_dtrain(object):
     def __init__(self, type):
@@ -19,6 +14,12 @@ class pseudo_dtrain(object):
             self.bin_labels[index[range(len(index)/3, len(index)*2/3)]] = 10
     def get_label(self):
         return self.bin_labels
+
+np.random.seed(2017)
+bin_pred = np.random.normal(0.5,0.2,2000)
+dtrain_cont = pseudo_dtrain("continuous")
+dtrain_bin = pseudo_dtrain("bin")
+
 # If passing threshold to classification metric, eval function should internally
 # convert label > threshold to 1.
 def test_evalrocauc():
