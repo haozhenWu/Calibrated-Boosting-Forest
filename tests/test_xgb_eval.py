@@ -30,6 +30,7 @@ def test_evalrocauc():
     e = evaluation.eval_function("ROCAUC")
     value1 = e(bin_pred, dtrain_bin)
     assert value0 == value1
+    assert np.round([value0[1]],2) == 0.51
 
 def test_evalprauc():
     evaluation = definedEvaluation()
@@ -39,6 +40,7 @@ def test_evalprauc():
     e = evaluation.eval_function("PRAUC")
     value1 = e(bin_pred, dtrain_bin)
     assert value0 == value1
+    assert np.round([value0[1]],2) == 0.51
 
 def test_evalefr1():
     evaluation = definedEvaluation()
@@ -48,6 +50,7 @@ def test_evalefr1():
     e = evaluation.eval_function("EFR1")
     value1 = e(bin_pred, dtrain_bin)
     assert value0 == value1
+    assert np.round([value0[1]],2) == 1.1
 
 def test_evalefr015():
     evaluation = definedEvaluation()
@@ -57,6 +60,7 @@ def test_evalefr015():
     e = evaluation.eval_function("EFR015")
     value1 = e(bin_pred, dtrain_bin)
     assert value0 == value1
+    assert np.round([value0[1]],2) == 1.34
 
 def test_evalNEFauc25():
     evaluation = definedEvaluation()
@@ -66,6 +70,7 @@ def test_evalNEFauc25():
     e = evaluation.eval_function("NEFAUC25")
     value1 = e(bin_pred, dtrain_bin)
     assert value0 == value1
+    assert np.round([value0[1]],2) == 0.55
 
 def test_evalNEFauc5():
     evaluation = definedEvaluation()
@@ -75,6 +80,7 @@ def test_evalNEFauc5():
     e = evaluation.eval_function("NEFAUC5")
     value1 = e(bin_pred, dtrain_bin)
     assert value0 == value1
+    assert np.round([value0[1]],2) == 0.52
 
 def test_evalAEF5():
     evaluation = definedEvaluation()
@@ -84,5 +90,24 @@ def test_evalAEF5():
     e = evaluation.eval_function("AEF5")
     value1 = e(bin_pred, dtrain_bin)
     assert value0 == value1
+    assert np.round([value0[1]],2) == 0.99
 
-# TODO: Logloss, RS. Convet pred = 1,0 into 0.99, 0.0001
+def test_evalLogloss():
+    evaluation = definedEvaluation()
+    e = evaluation.eval_function("Logloss_0")
+    value0 = e(bin_pred, dtrain_cont)
+    evaluation = definedEvaluation()
+    e = evaluation.eval_function("Logloss")
+    value1 = e(bin_pred, dtrain_bin)
+    assert value0 == value1
+    assert np.round([value0[1]],2) == 1504.69
+
+def test_evalReliabilityScore():
+    evaluation = definedEvaluation()
+    e = evaluation.eval_function("ReliabilityScore_0")
+    value0 = e(bin_pred, dtrain_cont)
+    evaluation = definedEvaluation()
+    e = evaluation.eval_function("ReliabilityScore")
+    value1 = e(bin_pred, dtrain_bin)
+    assert value0 == value1
+    assert np.round([value0[1]],2) == 0.25
