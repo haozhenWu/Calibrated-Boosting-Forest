@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics import auc
+from sklearn import metrics
 import re
 
 def fpString_to_array(fp_col, sep = ""):
@@ -163,4 +164,17 @@ def __normalize_minMax(input_arr):
         # normalize prediction into [0,1]
         input_arr = (input_arr - min(input_arr)) / (max(input_arr) - min(input_arr))
     return input_arr
-    
+
+def logloss(y_ture, y_pred):
+    loss = np.sum(-(y_ture*np.log(y_pred) + (1-y_ture)*np.log(1-y_pred)))
+    return loss
+
+def ROC_auc(y_ture, y_pred):
+    '''Use sklearn function to compute ROC AUC'''
+    score = metrics.roc_auc_score(y_ture, y_pred)
+    return score
+
+def avg_precision(y_true, y_pred):
+    '''Use sklearn function to compute average precision'''
+    score = metrics.average_precision_score(y_true, y_pred)
+    return score
