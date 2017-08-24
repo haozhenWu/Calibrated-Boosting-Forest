@@ -14,6 +14,13 @@ import filecmp
 target_name = 'MUV-466'
 dataset_name = 'muv'
 
+def rmse(series):
+    '''
+    Root mean square error
+    series: pandas.core.series.Series
+    '''
+    return np.sqrt(np.sum(np.square(series))/len(series))
+
 def test_VsEnsembleModel_keck():
     SEED = 2016
     current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -63,10 +70,18 @@ def test_VsEnsembleModel_keck():
         all_results = model.detail_result()
         cv_result.to_csv(os.path.join(result_dir, my_final_model + '_CBF_cv_result.csv'))
         all_results.to_csv(os.path.join(result_dir, my_final_model + '_CBF_all_result.csv'))
-        assert filecmp.cmp(os.path.join(result_dir, my_final_model + '_CBF_cv_result.csv'),
-        os.path.join(current_dir,"./test_datasets/muv_sample/" + my_final_model + "_CBF_cv_result.csv"))
-        assert filecmp.cmp(os.path.join(all_results, my_final_model + '_CBF_all_result.csv'),
-        os.path.join(current_dir,"./test_datasets/muv_sample/" + my_final_model + "_CBF_all_result.csv"))
+
+        old = pd.read_csv(os.path.join(current_dir,
+        "./test_datasets/muv_sample/" + my_final_model + "_CBF_cv_result.csv"), index_col=0)
+        temp_combine = pd.DataFrame({'old' : old.iloc[:,0],'new':cv_result.iloc[:,0]})
+        print rmse(temp_combine.new - temp_combine.old)
+        assert rmse(temp_combine.new - temp_combine.old) < 0.05
+
+        old = pd.read_csv(os.path.join(current_dir,
+        "./test_datasets/muv_sample/" + my_final_model + "_CBF_all_result.csv"), index_col=0)
+        temp_combine = pd.DataFrame({'old' : old.iloc[:,0],'new':all_results.iloc[:,0]})
+        print rmse(temp_combine.new - temp_combine.old)
+        assert rmse(temp_combine.new - temp_combine.old) < 0.07
 
         #----------- Predict testset
         print 'Predict test data'
