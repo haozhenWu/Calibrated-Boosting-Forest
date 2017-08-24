@@ -1,0 +1,11 @@
+,cv_result,weighted_score
+"layer1_Number:0 xgbData, labelType: binary_GbtreeLogistic_ROCAUC_0_0",0.825178,0.825178
+"layer1_Number:0 xgbData, labelType: binary_GbtreeLogistic_ROCAUC_0_1",0.794501,0.794501
+"layer1_Number:0 xgbData, labelType: binary_GblinearLogistic_ROCAUC_0_0",0.622098666667,0.622098666667
+"layer1_Number:0 xgbData, labelType: binary_GblinearLogistic_ROCAUC_0_1",0.530107333333,0.530107333333
+"layer1_Number:1 xgbData, labelType: continuous_GbtreeRegression_ROCAUC_0_0",0.755236666667,0.755236666667
+"layer1_Number:1 xgbData, labelType: continuous_GbtreeRegression_ROCAUC_0_1",0.815598,0.815598
+"layer1_Number:1 xgbData, labelType: continuous_GblinearRegression_ROCAUC_0_0",0.797300666667,0.797300666667
+"layer1_Number:1 xgbData, labelType: continuous_GblinearRegression_ROCAUC_0_1",0.803565666667,0.803565666667
+layer2_GblinearLogistic_ROCAUC_0_0,0.795762333333,0.795762333333
+layer2_GblinearLogistic_ROCAUC_0_1,0.775564333333,0.775564333333
