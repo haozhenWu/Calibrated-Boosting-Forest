@@ -92,7 +92,7 @@ def test_VsEnsembleModel_keck():
         validation_info = model.get_validation_info()
 
         test_score = compute_roc_auc(y_test, y_pred_on_test)
-        assert test_score > 0.9
+        assert test_score > 0.89
         train_score = compute_roc_auc(y_train, y_pred_on_train)
         assert train_score > 0.97
         for val in validation_info:
