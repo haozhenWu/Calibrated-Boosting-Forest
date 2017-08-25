@@ -75,13 +75,13 @@ def test_VsEnsembleModel_keck():
         "./test_datasets/muv_sample/" + my_final_model + "_CBF_cv_result.csv"), index_col=0)
         temp_combine = pd.DataFrame({'old' : old.iloc[:,0],'new':cv_result.iloc[:,0]})
         print rmse(temp_combine.new - temp_combine.old)
-        assert rmse(temp_combine.new - temp_combine.old) < 0.05
+        assert rmse(temp_combine.new - temp_combine.old) < 0.01
 
         old = pd.read_csv(os.path.join(current_dir,
         "./test_datasets/muv_sample/" + my_final_model + "_CBF_all_result.csv"), index_col=0)
         temp_combine = pd.DataFrame({'old' : old.iloc[:,0],'new':all_results.iloc[:,0]})
         print rmse(temp_combine.new - temp_combine.old)
-        assert rmse(temp_combine.new - temp_combine.old) < 0.07
+        assert rmse(temp_combine.new - temp_combine.old) < 0.01
 
         #----------- Predict testset
         print 'Predict test data'
