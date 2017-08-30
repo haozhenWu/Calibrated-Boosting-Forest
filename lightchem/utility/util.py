@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics import auc
+from sklearn import metrics
 import re
 
 def fpString_to_array(fp_col, sep = ""):
@@ -145,7 +146,35 @@ def nef_auc(y_true, y_pred, perc_vec):
     """
     Returns nef auc value.
     """
-    nef_mat  = norm_enrichment_factor(y_true, y_pred, perc_vec)
+    nef_mat = norm_enrichment_factor(y_true, y_pred, perc_vec)
     nef_auc_arr = auc(perc_vec, nef_mat)
     return nef_auc_arr / max(perc_vec)
 ###########
+
+def __normalize_Logloss(input_arr):
+    if max(input_arr) - min(input_arr) > 1:
+        # normalize prediction into (0,1)
+        input_arr = (input_arr - min(input_arr)) / (max(input_arr) - min(input_arr))
+        input_arr[np.where(input_arr==0)] = 0.000001
+        input_arr[np.where(input_arr==1)] = 0.999999
+    return input_arr
+
+def __normalize_minMax(input_arr):
+    if max(input_arr) - min(input_arr) > 1:
+        # normalize prediction into [0,1]
+        input_arr = (input_arr - min(input_arr)) / (max(input_arr) - min(input_arr))
+    return input_arr
+
+def logloss(y_ture, y_pred):
+    loss = np.sum(-(y_ture*np.log(y_pred) + (1-y_ture)*np.log(1-y_pred)))
+    return loss
+
+def ROC_auc(y_ture, y_pred):
+    '''Use sklearn function to compute ROC AUC'''
+    score = metrics.roc_auc_score(y_ture, y_pred)
+    return score
+
+def avg_precision(y_true, y_pred):
+    '''Use sklearn function to compute average precision'''
+    score = metrics.average_precision_score(y_true, y_pred)
+    return score

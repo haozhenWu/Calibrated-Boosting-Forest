@@ -1,5 +1,5 @@
 """
-Contain self-define evalutaion methods that used for monitor xgboost
+Contain self-defined evalutaion methods that used to monitor xgboost
 training process.
 """
 
@@ -8,13 +8,7 @@ from sklearn.model_selection import StratifiedKFold
 import numpy as np
 from lightchem.utility import util
 
-def evalrocauc(preds, dtrain, cut=None):
-    '''
-    Return ROC AUC score
-    '''
-    # Check infinite, NaN. Convert to 0.
-    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
-    preds[index] = 0
+def __map_cont_to_bin(dtrain, cut):
     labels = dtrain.get_label()
     unique = np.unique(labels)
     if len(unique) > 2: # which means it is continuous label
@@ -24,91 +18,51 @@ def evalrocauc(preds, dtrain, cut=None):
                 cut = unique[1]
         labels[np.where(dtrain.get_label()>cut)] = 1
         labels[np.where(dtrain.get_label()<=cut)] = 0
-    # use sklearn.metrics to compute rocauc
-    return 'ROCAUC', metrics.roc_auc_score( labels, preds )
+    return labels
+
+def __NA_to_zero(prediction):
+    # Check infinite, NaN. Convert to 0.
+    index = np.where(np.logical_or(np.isinf(prediction), np.isnan(prediction)))
+    prediction[index] = 0
+    return prediction
+
+def evalrocauc(preds, dtrain, cut=None):
+    '''
+    Return ROC AUC score
+    '''
+    preds = __NA_to_zero(preds)
+    labels = __map_cont_to_bin(dtrain, cut)
+    return 'ROCAUC', util.ROC_auc(labels, preds)
 
 def evalprauc(preds, dtrain, cut=None):
     '''
     Return Precision Recall AUC score
     '''
-    # Check infinite, NaN. Convert to 0.
-    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
-    preds[index] = 0
-    labels = dtrain.get_label()
-    unique = np.unique(labels)
-    if len(unique) > 2: # which means it is continuous label
-        if cut == None:
-            cut = np.percentile(labels,99)
-            if cut == unique[0]:
-                cut = unique[1]
-        labels[np.where(dtrain.get_label()>cut)] = 1
-        labels[np.where(dtrain.get_label()<=cut)] = 0
-    prauc = metrics.average_precision_score(labels, preds)
+    preds = __NA_to_zero(preds)
+    labels = __map_cont_to_bin(dtrain, cut)
+    prauc = util.avg_precision(labels, preds)
     if len(np.unique(preds)) <= 128:
         prauc = 0
-    # use sklearn.metrics to compute prauc
     return 'PRAUC', prauc
 
 def evalefr1(preds, dtrain, cut=None):
     '''
     Return enrichment factor at 0.01
     '''
-    # Check infinite, NaN. Convert to 0.
-    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
-    preds[index] = 0
-    labels = dtrain.get_label()
-    unique = np.unique(labels)
-    if len(unique) > 2: # which means it is continuous label
-        if cut == None:
-            cut = np.percentile(labels,99)
-            if cut == unique[0]:
-                cut = unique[1]
-        labels[np.where(dtrain.get_label()>cut)] = 1
-        labels[np.where(dtrain.get_label()<=cut)] = 0
-
-    labels_arr = labels
-    scores_arr = preds
+    preds = __NA_to_zero(preds)
+    labels = __map_cont_to_bin(dtrain, cut)
     percentile = 0.01
-    sample_size = int(labels_arr.shape[0] * percentile)  # determine number mols in subset
-    pred = np.sort(scores_arr)[::-1][:sample_size] # sort the scores list, take top subset from library
-    indices = np.argsort(scores_arr)[::-1][:sample_size] # get the index positions for these in library
-    n_actives = np.nansum(labels_arr) # count number of positive labels in library
-    n_experimental = np.nansum( labels_arr[indices] ) # count number of positive labels in subset
-    if n_actives > 0.0:
-        ef = float(n_experimental) / n_actives / percentile # calc EF at percentile
-    else:
-        ef = -1
+    ef = util.enrichment_factor(labels, preds, np.array([percentile]))[0]
     return 'EFR1', ef
 
 def evalefr015(preds, dtrain, cut=None):
     '''
     Return enrichment factor at 0.0015
     '''
-    # Check infinite, NaN. Convert to 0.
-    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
-    preds[index] = 0
-    labels = dtrain.get_label()
-    unique = np.unique(labels)
-    if len(unique) > 2: # which means it is continuous label
-        if cut == None:
-            cut = np.percentile(labels,99)
-            if cut == unique[0]:
-                cut = unique[1]
-        labels[np.where(dtrain.get_label()>cut)] = 1
-        labels[np.where(dtrain.get_label()<=cut)] = 0
-
-    labels_arr = labels
-    scores_arr = preds
+    preds = __NA_to_zero(preds)
+    labels = __map_cont_to_bin(dtrain, cut)
     percentile = 0.0015
-    sample_size = int(labels_arr.shape[0] * percentile)  # determine number mols in subset
-    pred = np.sort(scores_arr)[::-1][:sample_size] # sort the scores list, take top subset from library
-    indices = np.argsort(scores_arr)[::-1][:sample_size] # get the index positions for these in library
-    n_actives = np.nansum(labels_arr) # count number of positive labels in library
-    n_experimental = np.nansum( labels_arr[indices] ) # count number of positive labels in subset
-    if n_actives > 0.0:
-        ef = float(n_experimental) / n_actives / percentile # calc EF at percentile
-    else:
-        ef = -1
+    ef = util.enrichment_factor(labels, preds, np.array([percentile]))[0]
     return 'EFR015', ef
 
 
@@ -116,18 +70,8 @@ def evalNEFauc25(preds, dtrain, cut=None):
     '''
     Return Normalized Enrichment Factor AUC ranging from 0.001 to 0.25
     '''
-    # Check infinite, NaN. Convert to 0.
-    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
-    preds[index] = 0
-    labels = dtrain.get_label()
-    unique = np.unique(labels)
-    if len(unique) > 2: # which means it is continuous label
-        if cut == None:
-            cut = np.percentile(labels,99)
-            if cut == unique[0]:
-                cut = unique[1]
-        labels[np.where(dtrain.get_label()>cut)] = 1
-        labels[np.where(dtrain.get_label()<=cut)] = 0
+    preds = __NA_to_zero(preds)
+    labels = __map_cont_to_bin(dtrain, cut)
     nef = util.nef_auc(labels, preds, np.linspace(0.001, .25, 10))
     # EF calculation for first several rounds are wrong when trees are small and
     # unique predictions are low.
@@ -140,18 +84,8 @@ def evalNEFauc5(preds, dtrain, cut=None):
     '''
     Return Normalized Enrichment Factor AUC ranging from 0.001 to 0.05
     '''
-    # Check infinite, NaN. Convert to 0.
-    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
-    preds[index] = 0
-    labels = dtrain.get_label()
-    unique = np.unique(labels)
-    if len(unique) > 2: # which means it is continuous label
-        if cut == None:
-            cut = np.percentile(labels,99)
-            if cut == unique[0]:
-                cut = unique[1]
-        labels[np.where(dtrain.get_label()>cut)] = 1
-        labels[np.where(dtrain.get_label()<=cut)] = 0
+    preds = __NA_to_zero(preds)
+    labels = __map_cont_to_bin(dtrain, cut)
     nef = util.nef_auc(labels, preds, np.linspace(0.001, .05, 10))
     # EF calculation for first several rounds are wrong when trees are small and
     # unique predictions are low.
@@ -164,23 +98,10 @@ def evalAEF5(preds, dtrain, cut=None):
     '''
     Return average enrichment factor at multiple threshold where max threshold is 5%.
     '''
-    # Check infinite, NaN. Convert to 0.
-    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
-    preds[index] = 0
-    labels = dtrain.get_label()
-    unique = np.unique(labels)
-    if len(unique) > 2: # which means it is continuous label
-        if cut == None:
-            cut = np.percentile(labels,99)
-            if cut == unique[0]:
-                cut = unique[1]
-        labels[np.where(dtrain.get_label()>cut)] = 1
-        labels[np.where(dtrain.get_label()<=cut)] = 0
-
-    labels_arr = labels
-    scores_arr = preds
+    preds = __NA_to_zero(preds)
+    labels = __map_cont_to_bin(dtrain, cut)
     percentile_list = np.linspace(0,0.05,10)
-    aef = util.enrichment_factor(labels_arr, scores_arr, percentile_list)
+    aef = util.enrichment_factor(labels, preds, percentile_list)
     aef = np.nanmean(aef)
     # EF calculation for first 2 round is wrong when trees are small.
     # Mannually set to zero. 2^7 = 128 -> Tree with depth 7
@@ -189,41 +110,21 @@ def evalAEF5(preds, dtrain, cut=None):
     return 'AEF', aef
 
 def evalLogloss(preds, dtrain, cut=None):
-    # Check infinite, NaN. Convert to 0.
-    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
-    preds[index] = 0
-    labels = dtrain.get_label()
-    unique = np.unique(labels)
-    if len(unique) > 2: # which means it is continuous label
-        if cut == None:
-            cut = np.percentile(labels,99)
-            if cut == unique[0]:
-                cut = unique[1]
-        labels[np.where(dtrain.get_label()>cut)] = 1
-        labels[np.where(dtrain.get_label()<=cut)] = 0
-        # normalize prediction into 0 and 1
-        preds = (preds - min(preds)) / (max(preds) - min(preds))
-
-    labels_arr = labels
-    scores_arr = preds
-    logloss = np.sum(-(labels_arr*np.log(scores_arr) + (1-labels_arr)*np.log(1-scores_arr)))
+    '''
+    Return logistic loss
+    '''
+    preds = __NA_to_zero(preds)
+    labels = __map_cont_to_bin(dtrain, cut)
+    preds = util.__normalize_Logloss(preds)
+    logloss = util.logloss(labels, preds)
     return 'Logloss', logloss
 
 def evalReliabilityScore(preds, dtrain, cut=None):
-    # Check infinite, NaN. Convert to 0.
-    index = np.where(np.logical_or(np.isinf(preds), np.isnan(preds)))
-    preds[index] = 0
-    labels = dtrain.get_label()
-    unique = np.unique(labels)
-    if len(unique) > 2: # which means it is continuous label
-        if cut == None:
-            cut = np.percentile(labels,99)
-            if cut == unique[0]:
-                cut = unique[1]
-        labels[np.where(dtrain.get_label()>cut)] = 1
-        labels[np.where(dtrain.get_label()<=cut)] = 0
-        # normalize prediction into 0 and 1
-        preds = (preds - min(preds)) / (max(preds) - min(preds))
-
+    '''
+    Return realibility scores
+    '''
+    preds = __NA_to_zero(preds)
+    labels = __map_cont_to_bin(dtrain, cut)
+    preds = util.__normalize_minMax(preds)
     rs = util.reliability_score(labels, preds, n_bin=20)
     return "ReliabilityScore", rs
