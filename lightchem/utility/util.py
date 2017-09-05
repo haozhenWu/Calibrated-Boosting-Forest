@@ -155,8 +155,8 @@ def __normalize_Logloss(input_arr):
     if max(input_arr) - min(input_arr) > 1:
         # normalize prediction into (0,1)
         input_arr = (input_arr - min(input_arr)) / (max(input_arr) - min(input_arr))
-        input_arr[np.where(input_arr==0)] = 0.000001
-        input_arr[np.where(input_arr==1)] = 0.999999
+        input_arr[np.where(input_arr==0)[0]] = 0.000001
+        input_arr[np.where(input_arr==1)[0]] = 0.999999
     return input_arr
 
 def __normalize_minMax(input_arr):
