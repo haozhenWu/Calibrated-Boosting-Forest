@@ -152,6 +152,7 @@ def nef_auc(y_true, y_pred, perc_vec):
 ###########
 
 def __normalize_Logloss(input_arr):
+    input_arr = np.array(input_arr)
     if max(input_arr) - min(input_arr) > 1:
         # normalize prediction into (0,1)
         input_arr = (input_arr - min(input_arr)) / (max(input_arr) - min(input_arr))
