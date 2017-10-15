@@ -74,7 +74,7 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
    ```bash
    git clone https://github.com/haozhenWu/Calibrated-Boosting-Forest.git
    ```
-   `cd` into `lightchem` directory and execute  
+   `cd` into `Calibrated-Boosting-Forest` directory and execute  
    ```
    pip install -e .
    ```
