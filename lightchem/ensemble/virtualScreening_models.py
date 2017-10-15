@@ -298,9 +298,7 @@ class VsEnsembleModel(object):
         return self.__best_model.get_validation_info()
 
 
-#TODO: Future customized VsEnsembleModel_ should inherit from VsEnsembleModel.
-# Read hyperparameters from a file, instead of changing inside the class.
-class VsEnsembleModel_keck(object):
+class CalibratedBoostingForest(object):
     """
     Wrapper class to build ensemble models structure for KECK dataset.
     """
