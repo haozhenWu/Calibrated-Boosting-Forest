@@ -1,4 +1,4 @@
-# LightChem
+# Calibrated Boosting-Forest
 
 [![Build Status](https://travis-ci.org/haozhenWu/lightchem.svg?branch=master)](https://travis-ci.org/haozhenWu/lightchem)
 
