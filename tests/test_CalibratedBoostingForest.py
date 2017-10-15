@@ -21,7 +21,7 @@ def rmse(series):
     '''
     return np.sqrt(np.sum(np.square(series))/len(series))
 
-def test_VsEnsembleModel_keck():
+def test_CalibratedBoostingForest():
     SEED = 2016
     current_dir = os.path.dirname(os.path.realpath(__file__))
     result_dir = tempfile.mkdtemp()
@@ -53,14 +53,14 @@ def test_VsEnsembleModel_keck():
     num_gbtree = [2,2]
     num_gblinear = [2,2]
     eval_name = 'ROCAUC' + "_" + str(0)
-    model = VsEnsembleModel_keck(training_info,
-                                 eval_name,
-                                 fold_info = 3,
-                                 createTestset = False,
-                                 num_gblinear = num_gblinear,
-                                 num_gbtree = num_gbtree,
-                                 layer2_modeltype = ['GblinearLogistic'],
-                                 nthread = 1)
+    model = CalibratedBoostingForest(training_info,
+                                     eval_name,
+                                     fold_info = 3,
+                                     createTestset = False,
+                                     num_gblinear = num_gblinear,
+                                     num_gbtree = num_gbtree,
+                                     layer2_modeltype = ['GblinearLogistic'],
+                                     nthread = 1)
     model.train()
 
     my_final_model_list = ['layer2', 'layer1']

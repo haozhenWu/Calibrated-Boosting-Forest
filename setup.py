@@ -1,9 +1,9 @@
 from setuptools import setup
 
-setup(name='lightchem',
+setup(name='Calibrated-Boosting-Forest',
       version='0.1',
-      description='Light-weight Machine Learning models for Drug Discovery',
-      url='https://github.com/haozhenWu/lightchem',
+      description='Original implementation of Calibrated Boosting-Forest',
+      url='https://github.com/haozhenWu/Calibrated-Boosting-Forest',
       author='Haozhen Wu',
       author_email='wuhaozhen@hotmail.com',
       license='GPL v3',
