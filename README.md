@@ -12,7 +12,7 @@ at University of Wisconsin-Madison.
 * Take both continuous and binary labels as input
 * Superior ranking power over individual regression or classification model  
 * Output well calibrated posterior probabilities
-* Reduce tuning gradient boosting machines (GBMs) to one single parameter
+* Streamlined hyper-parameter tuning stage
 * Support multiple evaluation metrics  
 * Competitive benchmark results for well-known public datasets  
 * [XGBoost](https://github.com/dmlc/xgboost) backend
