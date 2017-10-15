@@ -60,7 +60,7 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
    conda install scikit-learn=0.18
    ```
 
-4. # Install conda distribution of xgboost
+4. Install conda distribution of xgboost
    ```bash
    conda install --yes -c conda-forge xgboost=0.6a2
    ```
