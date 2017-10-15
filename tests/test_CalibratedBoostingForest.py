@@ -1,5 +1,5 @@
 '''
-Use MUV-466 to test ensemble model VsEnsembleModel_keck (Rename to Calibrated Boosting-Forest later)
+Use MUV-466 to test CalibratedBoostingForest model
 '''
 
 import sys
