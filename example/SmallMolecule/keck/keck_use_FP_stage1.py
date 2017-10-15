@@ -421,14 +421,14 @@ for n_gbtree, n_gblinear in zip([[1,1],[5,5]],[[1,1],[5,5]]):
                 testing_info = [comb2_test]
 
             print 'Building and selecting best model'
-            model = VsEnsembleModel_keck(training_info,
-                                         eval_name,
-                                         fold_info = my_fold_index,
-                                         createTestset = False,
-                                         num_gblinear = num_gblinear,
-                                         num_gbtree = num_gbtree,
-                                         layer2_modeltype = ['GblinearLogistic'],#['GbtreeLogistic', 'GblinearLogistic']
-                                         nthread = 20)
+            model = CalibratedBoostingForest(training_info,
+                                             eval_name,
+                                             fold_info = my_fold_index,
+                                             createTestset = False,
+                                             num_gblinear = num_gblinear,
+                                             num_gbtree = num_gbtree,
+                                             layer2_modeltype = ['GblinearLogistic'],#['GbtreeLogistic', 'GblinearLogistic']
+                                             nthread = 20)
             model.train()
             for my_final_model in my_final_model_list:
                 model.set_final_model(my_final_model)

@@ -1,3 +1,5 @@
+# NOTE: This script is depreciated.
+
 import sys
 #sys.path.remove('/usr/lib/python2.7/dist-packages')
 sys.path.append("../virtual-screening/virtual_screening")
