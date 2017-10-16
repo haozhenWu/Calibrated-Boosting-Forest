@@ -1,0 +1,11 @@
+NR-AR --- 14.9132020473 seconds ---
+NR-AR-LBD --- 15.4571280479 seconds ---
+NR-AhR --- 16.202286005 seconds ---
+NR-Aromatase --- 18.7390961647 seconds ---
+NR-ER --- 17.5549240112 seconds ---
+NR-ER-LBD --- 15.6167960167 seconds ---
+NR-PPAR-gamma --- 17.7879219055 seconds ---
+SR-ARE --- 17.3814380169 seconds ---
+SR-ATAD5 --- 17.0234251022 seconds ---
+SR-HSE --- 16.838891983 seconds ---
+SR-MMP --- 16.2720961571 seconds ---

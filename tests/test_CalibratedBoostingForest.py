@@ -1,5 +1,5 @@
 '''
-Use MUV-466 to test ensemble model VsEnsembleModel_keck (Rename to Calibrated Boosting-Forest later)
+Use MUV-466 to test CalibratedBoostingForest model
 '''
 
 import sys
@@ -44,7 +44,7 @@ def test_CalibratedBoostingForest():
     test_index = np.unique(test_index)
     train_data = muv.iloc[train_index]
     test_data = muv.iloc[test_index]
-    # Create VsEnsembleModel_keck
+    # Create CalibratedBoostingForest
     training_info = []
     testing_info = []
     label_name_list = ['MUV-466', 'cont_label']

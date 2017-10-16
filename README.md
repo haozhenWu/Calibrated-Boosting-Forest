@@ -19,10 +19,10 @@ at University of Wisconsin-Madison.
 
 ### Table of contents:
 
-* [Example](https://github.com/haozhenWu/lightchem/tree/master/example)
-    * [MUV](https://github.com/haozhenWu/lightchem/tree/master/example/muv)
-    * [TOX21](https://github.com/haozhenWu/lightchem/tree/master/example/tox21)
-    * [PCBA128](https://github.com/haozhenWu/lightchem/tree/master/example/pcba128)  
+* [Example](https://github.com/haozhenWu/lightchem/tree/master/example_old)
+    * [MUV](https://github.com/haozhenWu/lightchem/tree/master/example_old/muv)
+    * [TOX21](https://github.com/haozhenWu/lightchem/tree/master/example_old/tox21)
+    * [PCBA128](https://github.com/haozhenWu/lightchem/tree/master/example_old/pcba128)  
 * [Datasets](https://github.com/haozhenWu/lightchem/tree/master/datasets)
 * [Dependencies](#dependencies)
 * [Installation](#installation)
@@ -60,7 +60,7 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
    conda install scikit-learn=0.18
    ```
 
-4. # Install conda distribution of xgboost
+4. Install conda distribution of xgboost
    ```bash
    conda install --yes -c conda-forge xgboost=0.6a2
    ```
@@ -74,7 +74,7 @@ We recommend you to use Anaconda for convenient installing packages. Right now, 
    ```bash
    git clone https://github.com/haozhenWu/Calibrated-Boosting-Forest.git
    ```
-   `cd` into `lightchem` directory and execute  
+   `cd` into `Calibrated-Boosting-Forest` directory and execute  
    ```
    pip install -e .
    ```
