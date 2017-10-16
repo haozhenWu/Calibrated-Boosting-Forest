@@ -29,9 +29,10 @@ testing_info = []
 label_name_list = ['aid1030_binary', 'aid1030_logAC50']
 training_info.append((train_data, label_name_list))
 testing_info.append((test_data, None))
-# Set both number of gbtree and gblinear to 1. This is same as H = 1.
-num_gbtree = [1,1]
-num_gblinear = [1,1]
+# Depending on your compute resource, try increase H and see the performance difference.
+H = 1
+num_gbtree = [H,H]
+num_gblinear = [H,H]
 threshold = train_data.loc[train_data.loc[:,label_name_list[0]]==1,label_name_list[1]].min()
 # Internally convert continuous label to binary based on threshold.
 # This is used to compate cv scores of regression models on ROC-AUC.
