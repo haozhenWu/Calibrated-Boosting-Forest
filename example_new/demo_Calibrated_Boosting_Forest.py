@@ -14,12 +14,14 @@ pos_index = np.where(pcba_1030.loc[:,'aid1030_binary'] == 1)[0]
 neg_index = np.where(pcba_1030.loc[:,'aid1030_binary'] != 1)[0]
 train_pos_index = pos_index[1:len(pos_index)/2]
 test_pos_index = pos_index[len(pos_index)/2+1:len(pos_index)]
-train_neg_index = neg_index[1:len(neg_index)/2]
-test_neg_index = neg_index[len(neg_index)/2+1:len(neg_index)]
+train_neg_index = neg_index[1:len(neg_index)/4]
+test_neg_index = neg_index[len(neg_index)/4+1:len(neg_index)/2]
 train_index = list(train_pos_index) + list(train_neg_index)
 test_index = list(test_pos_index) + list(test_neg_index)
 train_data = pcba_1030.iloc[train_index]
 test_data = pcba_1030.iloc[test_index]
+print train_data.shape
+print test_data.shape
 
 # Create CalibratedBoostingForest input format.
 training_info = []
@@ -27,9 +29,9 @@ testing_info = []
 label_name_list = ['aid1030_binary', 'aid1030_logAC50']
 training_info.append((train_data, label_name_list))
 testing_info.append((test_data, None))
-# Set both number of gbtree and gblinear to 2. This is same as H = 2.
-num_gbtree = [2,2]
-num_gblinear = [2,2]
+# Set both number of gbtree and gblinear to 1. This is same as H = 1.
+num_gbtree = [1,1]
+num_gblinear = [1,1]
 threshold = train_data.loc[train_data.loc[:,label_name_list[0]]==1,label_name_list[1]].min()
 # Internally convert continuous label to binary based on threshold.
 # This is used to compate cv scores of regression models on ROC-AUC.
