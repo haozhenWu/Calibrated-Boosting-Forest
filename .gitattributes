@@ -9,8 +9,8 @@ datasets/tox21/classification/tox21_BinaryLabel_MACCSkey167.csv.zip filter=lfs d
 datasets/tox21/classification/tox21_BinaryLabel_ecfp1024.csv.zip filter=lfs diff=lfs merge=lfs -text
 datasets/tox21/classification/deepchem_tox21.csv.gz filter=lfs diff=lfs merge=lfs -text
 ./datasets/pcba128/pcba128_canon_raw_withNA.csv.zip filter=lfs diff=lfs merge=lfs -text
-datasets/README.md filter=lfs diff=lfs merge=lfs -text
 datasets/muv filter=lfs diff=lfs merge=lfs -text
 datasets/pcba128 filter=lfs diff=lfs merge=lfs -text
 datasets/tox21 filter=lfs diff=lfs merge=lfs -text
 tests/test_datasets/muv_sample filter=lfs diff=lfs merge=lfs -text
+example_new/demo_data/demo_pcba1030.csv.gzip filter=lfs diff=lfs merge=lfs -text
