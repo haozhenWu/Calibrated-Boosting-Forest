@@ -9,11 +9,11 @@ at University of Wisconsin-Madison.
 
 ## Key features:  
 
-* Take both continuous and binary labels as input
+* Take both continuous and binary labels as input (multi-labels)
 * Superior ranking power over individual regression or classification model  
 * Output well calibrated posterior probabilities
 * Streamlined hyper-parameter tuning stage
-* Support multiple evaluation metrics  
+* Support multiple evaluation and stopping metrics  
 * Competitive benchmark results for well-known public datasets  
 * [XGBoost](https://github.com/dmlc/xgboost) backend
 
