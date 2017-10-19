@@ -13,3 +13,4 @@ datasets/muv filter=lfs diff=lfs merge=lfs -text
 datasets/pcba128 filter=lfs diff=lfs merge=lfs -text
 datasets/tox21 filter=lfs diff=lfs merge=lfs -text
 tests/test_datasets/muv_sample filter=lfs diff=lfs merge=lfs -text
+example_new/demo_data/demo_pcba1030.csv.gzip filter=lfs diff=lfs merge=lfs -text
