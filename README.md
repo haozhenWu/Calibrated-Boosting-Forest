@@ -1,6 +1,6 @@
 # Calibrated Boosting-Forest
 
-[![Build Status](https://travis-ci.org/haozhenWu/lightchem.svg?branch=master)](https://travis-ci.org/haozhenWu/lightchem)
+[![Build Status](https://api.travis-ci.org/haozhenWu/Calibrated-Boosting-Forest.svg?branch=master)](https://travis-ci.org/haozhenWu/Calibrated-Boosting-Forest)
 
 Calibrated Boosting-Forest (CBF) is an integrative technique that leverages both continuous and binary labels and output calibrated posterior probabilities. It is originally designed for ligand-based virtual screening and can be extended to
 other applications.
