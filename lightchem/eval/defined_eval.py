@@ -11,6 +11,7 @@ class definedEvaluation(object):
     Currently supports:
         `ROCAUC`: Area under curve of ROC
         `PRAUC`: Area under curve of Precision-recall
+        `PRAVG`: Average of Precision-recall
         `EFR1`: Enrichment factor at 0.01
         `EFR015`: Enrichment factor at 0.0015
         `NEFAUC25`: Area under curve of Normalized Enrichment Factor,
@@ -27,10 +28,11 @@ class definedEvaluation(object):
         pre-defined evaluation metric name and X is the threshold to cut.
     """
     def __init__(self):
-        self.__DEFINED_EVAL = ['ROCAUC','PRAUC','EFR1','EFR015','NEFAUC25',
+        self.__DEFINED_EVAL = ['ROCAUC','PRAVG','PRAUC','EFR1','EFR015','NEFAUC25',
                                 'NEFAUC5','AEF5', 'Logloss','ReliabilityScore']
         self.__MATCH =  {'ROCAUC' : [xgb_eval.evalrocauc,True,100],
-                        'PRAUC' :   [xgb_eval.evalprauc,True,300],
+                        'PRAVG' :   [xgb_eval.evalpravg,True,300],
+                        'PRAUC' : [xgb_eval.evalprauc,True,300],
                         'EFR1' : [xgb_eval.evalefr1,True,50],
                         'EFR015' : [xgb_eval.evalefr015,True,50],
                         'NEFAUC25': [xgb_eval.evalNEFauc25,True,100],

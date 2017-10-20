@@ -17,12 +17,22 @@ def compute_roc_auc(labels_arr, scores_arr ):
         auc = 'ND'
     return auc
 
-def compute_PR_auc(labels_arr, scores_arr ):
+def compute_PR_avg(labels_arr, scores_arr ):
     '''
-    Compute average precision. Treat it as AUC of PR
+    Compute average precision.
     '''
     if len(np.unique(labels_arr)) == 2:
-        auc = util.avg_precision(labels_arr, scores_arr)
+        avg = util.avg_precision(labels_arr, scores_arr)
+    else:
+        avg = 'ND'
+    return avg
+
+def compute_PR_auc(labels_arr, scores_arr ):
+    '''
+    Compute AUC of Precision-recall
+    '''
+    if len(np.unique(labels_arr)) == 2:
+        auc = util.PRC_auc(labels_arr, scores_arr)
     else:
         auc = 'ND'
     return auc
