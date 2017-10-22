@@ -179,3 +179,7 @@ def avg_precision(y_true, y_pred):
     '''Use sklearn function to compute average precision'''
     score = metrics.average_precision_score(y_true, y_pred)
     return score
+
+def PRC_auc(y_ture, y_pred):
+    precision, recall, _ = metrics.precision_recall_curve(y_ture, y_pred)
+    return auc(recall, precision)

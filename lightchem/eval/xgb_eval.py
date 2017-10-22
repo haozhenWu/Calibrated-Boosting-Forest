@@ -34,13 +34,24 @@ def evalrocauc(preds, dtrain, cut=None):
     labels = __map_cont_to_bin(dtrain, cut)
     return 'ROCAUC', util.ROC_auc(labels, preds)
 
+def evalpravg(preds, dtrain, cut=None):
+    '''
+    Return Precision Recall avg score
+    '''
+    preds = __NA_to_zero(preds)
+    labels = __map_cont_to_bin(dtrain, cut)
+    pravg = util.avg_precision(labels, preds)
+    if len(np.unique(preds)) <= 128:
+        pravg = 0
+    return 'PRAVG', pravg
+
 def evalprauc(preds, dtrain, cut=None):
     '''
     Return Precision Recall AUC score
     '''
     preds = __NA_to_zero(preds)
     labels = __map_cont_to_bin(dtrain, cut)
-    prauc = util.avg_precision(labels, preds)
+    prauc = util.PRC_auc(labels, preds)
     if len(np.unique(preds)) <= 128:
         prauc = 0
     return 'PRAUC', prauc
