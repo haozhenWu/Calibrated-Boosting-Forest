@@ -7,6 +7,10 @@ other applications.
 Calibrated Boosting-Forest is a package created by Haozhen Wu from [Small Molecule Screening Facility](http://www.uwhealth.org/uw-carbone-cancer-center/for-researchers/shared-resources/smsf/small-molecule-screening/27197)  
 at University of Wisconsin-Madison.  
 
+For more details, please see our paper:      
+[Calibrated Boosting-Forest](https://arxiv.org/abs/1710.05476)
+by Haozhen Wu
+
 ## Key features:  
 
 * Take both continuous and binary labels as input (multi-labels)
